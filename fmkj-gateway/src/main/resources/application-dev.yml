@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: fmkj-gateway
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:     # 密码（默认为空）
+    timeout: 6000  # 连接超时时长（毫秒）
+    jedis:
+      pool:
+        max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10      # 连接池中的最大空闲连接
+        min-idle: 5       # 连接池中的最小空闲连接
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/,http://localhost:8762/eureka/
+zuul:
+  #sensitive-headers为空则全部服务都可以传递Cookie信息
+  sensitive-headers:
+  routes:
+    #自定义路由配置
+    race:
+      path: /myRace/**
+      serviceId: fmkj-race
+    order:
+      path: /myOrder/**
+      serviceId: fmkj-order
+  #排除某些路由 写法  - /**/myRace/**
+  ignored-patterns:
+
+server:
+  port: 8999
+
+
+
