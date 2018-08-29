@@ -55,7 +55,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     @ApiOperation(value="新增商品", notes="新增商品")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "新增商品")
     @PostMapping("/addProduct")
-    public BaseResult addProduct(@RequestParam ProductInfo productInfo){
+    public BaseResult addProduct(ProductInfo productInfo){
         try {
             return super.insert(productInfo);
         } catch (Exception e) {
@@ -66,7 +66,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     @ApiOperation(value="修改商品", notes="根据ID修改商品")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "修改商品")
     @PostMapping("/updateProduct")
-    public BaseResult updateProduct(@RequestParam ProductInfo productInfo){
+    public BaseResult updateProduct(ProductInfo productInfo){
         try {
             return super.updateById(productInfo);
         } catch (Exception e) {
