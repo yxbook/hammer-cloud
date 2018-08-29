@@ -9,7 +9,7 @@ public class LogConstant {
 
     public static final String HC_ACCOUNT = "竞锤用户";
 
-    public static final String HC_PRODUCT = "商品发布";
+    public static final String HC_PRODUCT = "商品接口";
 
     public static final Integer OPERATE_FAIL = 2; // 失败
 

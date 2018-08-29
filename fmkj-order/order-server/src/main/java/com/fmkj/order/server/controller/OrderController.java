@@ -4,9 +4,9 @@ import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.order.client.RaceClient;
-import com.fmkj.order.dao.domain.UserInfo;
+import com.fmkj.order.dao.domain.OrderInfo;
 import com.fmkj.order.server.annotation.OrderLog;
-import com.fmkj.order.server.service.HistryService;
+import com.fmkj.order.server.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,14 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 
+/**
+ * 订单服务
+ */
 @RestController
 @RequestMapping("/order")
 @DependsOn("springContextHolder")
-public class HyistyController extends BaseController<UserInfo, HistryService> implements BaseApiService<UserInfo> {
+public class OrderController extends BaseController<OrderInfo, OrderService> implements BaseApiService<OrderInfo> {
 
 
     @Autowired
-    HistryService hcAccountService;
+    OrderService hcAccountService;
 
 
     @Autowired

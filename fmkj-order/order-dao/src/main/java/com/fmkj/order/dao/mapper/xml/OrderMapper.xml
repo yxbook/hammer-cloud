@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmkj.order.dao.mapper.OrderMapper">
+	<resultMap id="BaseResultMap" type="com.fmkj.order.dao.domain.OrderInfo">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="order_no" jdbcType="INTEGER" property="orderNo" />
+		<result column="buyer_id" jdbcType="INTEGER" property="buyerId" />
+		<result column="payment" jdbcType="BigDecimal" property="payment" />
+		<result column="payment_type" jdbcType="INTEGER" property="paymentType" />
+		<result column="order_status" jdbcType="INTEGER" property="orderStatus" />
+		<result column="payment_time" jdbcType="TIMESTAMP" property="paymentTime" />
+		<result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+		<result column="leave_msg" jdbcType="VARCHAR" property="leaveMsg" />
+		<result column="is_pay" jdbcType="INTEGER" property="isPay" />
+	</resultMap>
+
+</mapper>

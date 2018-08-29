@@ -3,9 +3,9 @@ package com.fmkj.order.server.service.impl;
 
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
-import com.fmkj.order.dao.domain.UserInfo;
-import com.fmkj.order.dao.mapper.UserMapper;
-import com.fmkj.order.server.service.HistryService;
+import com.fmkj.order.dao.domain.OrderInfo;
+import com.fmkj.order.dao.mapper.OrderMapper;
+import com.fmkj.order.server.service.OrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @BaseService
-public class HistryServiceImpl extends BaseServiceImpl<UserMapper, UserInfo> implements HistryService {
+public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> implements OrderService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HistryServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
 
 }
