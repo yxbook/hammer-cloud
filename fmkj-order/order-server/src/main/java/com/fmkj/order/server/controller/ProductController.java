@@ -10,6 +10,7 @@ import com.fmkj.common.util.StringUtils;
 import com.fmkj.order.dao.domain.ProductInfo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.service.ProductService;
+import com.fmkj.order.server.util.MakeOrderNumUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.joda.time.DateTime;
@@ -64,6 +65,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     @PostMapping("/addProduct")
     public BaseResult addProduct(ProductInfo productInfo){
         try {
+            productInfo.setProductNo(MakeOrderNumUtils.createProductNum());
             productInfo.setCreateTime(new Date());
             return super.insert(productInfo);
         } catch (Exception e) {

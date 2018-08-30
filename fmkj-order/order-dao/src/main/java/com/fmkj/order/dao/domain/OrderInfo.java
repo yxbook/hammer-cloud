@@ -22,7 +22,7 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private Integer id;                //主键
 
     @TableField("order_no")
-    private Integer orderNo;    //订单编号
+    private String orderNo;    //订单编号
 
     @TableField("buyer_id")
     private Integer buyerId;   //买家
@@ -62,11 +62,11 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
         this.id = id;
     }
 
-    public Integer getOrderNo() {
+    public String getOrderNo() {
         return orderNo;
     }
 
-    public void setOrderNo(Integer orderNo) {
+    public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
     }
 

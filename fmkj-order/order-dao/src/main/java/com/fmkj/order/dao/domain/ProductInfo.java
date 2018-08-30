@@ -23,7 +23,7 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
     private Integer id;                //主键
 
     @TableField("product_no")
-    private Integer productNo;    //商品编号
+    private String productNo;    //商品编号
 
     @TableField("product_name")
     private String productName;   //商品名称
@@ -79,11 +79,11 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
         this.id = id;
     }
 
-    public Integer getProductNo() {
+    public String getProductNo() {
         return productNo;
     }
 
-    public void setProductNo(Integer productNo) {
+    public void setProductNo(String productNo) {
         this.productNo = productNo;
     }
 

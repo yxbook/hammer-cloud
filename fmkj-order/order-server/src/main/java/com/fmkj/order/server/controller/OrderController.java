@@ -11,6 +11,7 @@ import com.fmkj.order.dao.domain.OrderInfo;
 import com.fmkj.order.dao.domain.ProductInfo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.service.OrderService;
+import com.fmkj.order.server.util.MakeOrderNumUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     @PostMapping("/addOrder")
     public BaseResult addOrder(OrderInfo orderInfo){
         try {
+            orderInfo.setOrderNo(MakeOrderNumUtils.createOrderNum());
             orderInfo.setCreateTime(new Date());
             return super.insert(orderInfo);
         } catch (Exception e) {
