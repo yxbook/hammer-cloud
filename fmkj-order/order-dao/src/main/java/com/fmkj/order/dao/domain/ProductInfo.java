@@ -45,11 +45,11 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
     @TableField("user_id")
     private Integer userId;  //商品创建人
 
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time")
     private Date createTime;  //创建时间
 
     @TableField("update_time")
-    private Date update_time;   //修改时间
+    private Date updateTime;   //修改时间
 
     @TableField("product_detail")
     private String productDetail;  //商品描述
@@ -151,12 +151,12 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
         this.createTime = createTime;
     }
 
-    public Date getUpdate_time() {
-        return update_time;
+    public Date getUpdateTime() {
+        return updateTime;
     }
 
-    public void setUpdate_time(Date update_time) {
-        this.update_time = update_time;
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public String getProductDetail() {

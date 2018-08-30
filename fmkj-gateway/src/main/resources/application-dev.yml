@@ -16,17 +16,17 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/,http://localhost:8762/eureka/
+      defaultZone: http://localhost:8761/eureka/
 zuul:
   #sensitive-headers为空则全部服务都可以传递Cookie信息
   sensitive-headers:
   routes:
     #自定义路由配置
     race:
-      path: /myRace/**
+      path: /api-race/**
       serviceId: fmkj-race
     order:
-      path: /myOrder/**
+      path: /api-order/**
       serviceId: fmkj-order
   #排除某些路由 写法  - /**/myRace/**
   ignored-patterns:

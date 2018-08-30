@@ -11,6 +11,8 @@ public class LogConstant {
 
     public static final String HC_PRODUCT = "商品接口";
 
+    public static final String HC_ORDER = "订单接口";
+
     public static final Integer OPERATE_FAIL = 2; // 失败
 
     public static final Integer OPERATE_SUCCESS = 1; // 成功

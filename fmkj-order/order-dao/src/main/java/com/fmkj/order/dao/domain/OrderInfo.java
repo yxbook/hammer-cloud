@@ -3,6 +3,7 @@ package com.fmkj.order.dao.domain;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import java.util.Date;
  * @Date: 2018/8/29 15:13
  * @Description:
  */
+@TableName("fm_order_info")
 public class OrderInfo extends Model<OrderInfo> implements Serializable{
 
     @TableId(type = IdType.AUTO)
