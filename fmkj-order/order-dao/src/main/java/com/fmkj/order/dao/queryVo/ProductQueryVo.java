@@ -1,4 +1,4 @@
-package com.fmkj.order.server.queryVo;
+package com.fmkj.order.dao.queryVo;
 
 import com.fmkj.order.dao.domain.ProductInfo;
 

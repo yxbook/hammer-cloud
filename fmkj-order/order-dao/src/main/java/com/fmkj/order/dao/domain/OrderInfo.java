@@ -33,7 +33,7 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private Integer paymentType;  //买家支付方式1、微信; 2、支付宝
 
     @TableField("order_status")
-    private Integer order_status;  //订单状态1、未付款; 2、已付款(付款确认); 3、订单取消; 4、交易成功
+    private Integer orderStatus;  //订单状态1、未付款; 2、已付款(付款确认); 3、订单取消; 4、交易成功
 
     @TableField("payment_time")
     private Date paymentTime;  //支付时间
@@ -51,7 +51,7 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private String leaveMsg;  //下单留言
 
     @TableField("is_pay")
-    private Integer is_pay;  //付款确认0、未付款确认;1、确认已付款
+    private Integer isPay;  //付款确认0、未付款确认;1、确认已付款
 
 
     public Integer getId() {
@@ -94,12 +94,12 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
         this.paymentType = paymentType;
     }
 
-    public Integer getOrder_status() {
-        return order_status;
+    public Integer getOrderStatus() {
+        return orderStatus;
     }
 
-    public void setOrder_status(Integer order_status) {
-        this.order_status = order_status;
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
     public Date getPaymentTime() {
@@ -142,12 +142,12 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
         this.leaveMsg = leaveMsg;
     }
 
-    public Integer getIs_pay() {
-        return is_pay;
+    public Integer getIsPay() {
+        return isPay;
     }
 
-    public void setIs_pay(Integer is_pay) {
-        this.is_pay = is_pay;
+    public void setIsPay(Integer isPay) {
+        this.isPay = isPay;
     }
 
     @Override

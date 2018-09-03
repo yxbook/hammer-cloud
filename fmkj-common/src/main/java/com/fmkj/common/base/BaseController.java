@@ -30,7 +30,7 @@ public class BaseController<T,S extends IService<T>> implements BaseApiService<T
 
     @Override
     public BaseResult insert(@RequestBody T entity) {
-        return new BaseResult(BaseResultEnum.SUCCESS,service.insert(entity));
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "添加成功", service.insert(entity));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class BaseController<T,S extends IService<T>> implements BaseApiService<T
 
     @Override
     public BaseResult updateById(@RequestBody T entity) {
-        if (service.updateById(entity))return new BaseResult(BaseResultEnum.SUCCESS,"数据修改成功");
+        if (service.updateById(entity))return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "修改成功","数据修改成功");
         else return new BaseResult(BaseResultEnum.ERROR,"修改失败");
     }
 
@@ -95,7 +95,7 @@ public class BaseController<T,S extends IService<T>> implements BaseApiService<T
         if (null != request.getHeader("X-Requested-With") && "XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
             request.setAttribute("requestHeader", "ajax");
         }
-        return new BaseResult(BaseResultEnum.ERROR,"请求错误！");
+        return new BaseResult(BaseResultEnum.ERROR.getStatus(),"请求错误！", exception.getMessage());
     }
 
 
