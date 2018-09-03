@@ -7,6 +7,7 @@
 		<result column="product_name" jdbcType="VARCHAR" property="productName" />
 		<result column="prodcut_price" jdbcType="BigDecimal" property="prodcutPrice" />
 		<result column="prodcut_stock" jdbcType="BigDecimal" property="prodcutStock" />
+		<result column="prodcut_sum" jdbcType="BigDecimal" property="prodcutSum" />
 		<result column="prodcut_icon" jdbcType="VARCHAR" property="prodcutIcon" />
 		<result column="status" jdbcType="INTEGER" property="status" />
 		<result column="category_type" jdbcType="INTEGER" property="categoryType" />

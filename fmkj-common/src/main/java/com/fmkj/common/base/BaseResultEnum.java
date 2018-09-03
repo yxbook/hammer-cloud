@@ -10,11 +10,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(using = BaseResultEnumSerializer.class)
 public enum BaseResultEnum {
     SUCCESS(200,"请求成功"),
-    ERROR(503,"请求失败"),
+    ERROR(500,"请求失败"),
     BLANK(400,"请求错误"),
     TIMEOUT(408,"请求超时"),
     NOACCESS(401,"未授权"),
-    DEGRAD(409,"服务降级");
+    DEGRAD(409,"服务降级"),
+    TOKEN_INVALID(700,"Token失效");
     public int status;
     public String msg;
     private BaseResultEnum(int status, String msg) {

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
@@ -28,6 +27,9 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
     @TableField("product_name")
     private String productName;   //商品名称
 
+    @TableField("prodcut_sum")
+    private BigDecimal prodcutSum; // 出售数量
+
     @TableField("prodcut_price")
     private BigDecimal prodcutPrice;  //商品单价
 
@@ -37,7 +39,7 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
     @TableField("prodcut_icon")
     private String prodcutIcon;   //商品图标
 
-    private Integer status;       //商品状态0、正常; 1、下架; -1、删除
+    private Integer status;       //商品状态0、新建状态; 1、正常; 2、下架; -1、删除
 
     @TableField("category_type")
     private Integer categoryType;  //类型
@@ -213,6 +215,14 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
 
     public void setPaymentTerm(Integer paymentTerm) {
         this.paymentTerm = paymentTerm;
+    }
+
+    public BigDecimal getProdcutSum() {
+        return prodcutSum;
+    }
+
+    public void setProdcutSum(BigDecimal prodcutSum) {
+        this.prodcutSum = prodcutSum;
     }
 
     @Override

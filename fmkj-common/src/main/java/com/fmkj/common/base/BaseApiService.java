@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ public interface BaseApiService<T> {
     @RequestMapping(value = "/deleteById" ,method = RequestMethod.DELETE)
     BaseResult deleteById(@RequestParam("id") String id);
 
-    @RequestMapping(value = "/updateById" ,method = RequestMethod.PUT ,consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/updateById" ,method = RequestMethod.POST ,consumes = MediaType.APPLICATION_JSON_VALUE)
     BaseResult updateById(@RequestBody T entity);
 
     @RequestMapping(value = "/selectById" ,method = RequestMethod.GET)

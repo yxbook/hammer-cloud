@@ -81,6 +81,7 @@ public class BaseController<T,S extends IService<T>> implements BaseApiService<T
         }
     }
 
+
     /**
      * 统一异常处理
      * @param request
@@ -99,14 +100,14 @@ public class BaseController<T,S extends IService<T>> implements BaseApiService<T
 
 
     /**
-     * 查询参数
-     */
+         * 查询参数
+         */
     public class Query<T> extends LinkedHashMap<String, Object> {
         private static final long serialVersionUID = 1L;
         //当前页码
         private int pageNo = 1;
         //每页条数
-        private int pageSize = 10;
+        private int pageSize = 20;
 
         private EntityWrapper<T> entityWrapper = new EntityWrapper<>();
 
