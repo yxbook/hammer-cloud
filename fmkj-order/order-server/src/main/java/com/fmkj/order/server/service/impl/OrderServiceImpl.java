@@ -4,6 +4,7 @@ package com.fmkj.order.server.service.impl;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.order.dao.domain.OrderInfo;
+import com.fmkj.order.dao.dto.OrderDto;
 import com.fmkj.order.dao.mapper.OrderMapper;
 import com.fmkj.order.dao.queryVo.OrderQueryVo;
 import com.fmkj.order.server.service.OrderService;
@@ -32,7 +33,7 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
     private OrderMapper orderMapper;
 
     @Override
-    public List<OrderInfo> getOrderPage(OrderQueryVo orderQueryVo) {
+    public List<OrderDto> getOrderPage(OrderQueryVo orderQueryVo) {
         return orderMapper.queryOrderPage(orderQueryVo);
     }
 }

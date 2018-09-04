@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fmkj.order.dao.mapper.ProductMapper">
-	<resultMap id="BaseResultMap" type="com.fmkj.order.dao.domain.ProductInfo">
+	<resultMap id="BaseResultMap" type="com.fmkj.order.dao.dto.ProductDto">
 		<id column="id" property="id" />
 		<result column="product_no" property="productNo" />
 		<result column="product_name" property="productName" />

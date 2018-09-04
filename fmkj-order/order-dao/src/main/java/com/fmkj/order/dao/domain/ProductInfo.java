@@ -115,16 +115,6 @@ public class ProductInfo extends Model<ProductInfo>{
     @TableField("payment_term")
     private Integer paymentTerm;
 
-    private HcAccount hcAccount;
-
-    public HcAccount getHcAccount() {
-        return hcAccount;
-    }
-
-    public void setHcAccount(HcAccount hcAccount) {
-        this.hcAccount = hcAccount;
-    }
-
     public Integer getId() {
         return id;
     }

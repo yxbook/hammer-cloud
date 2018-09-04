@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fmkj.order.dao.mapper.OrderMapper">
-	<resultMap id="BaseResultMap" type="com.fmkj.order.dao.domain.OrderInfo">
+	<resultMap id="BaseResultMap" type="com.fmkj.order.dao.dto.OrderDto">
 		<id column="id" jdbcType="INTEGER" property="id" />
-		<result column="order_no" jdbcType="VARCHAR" property="orderNo" />
-		<result column="buyer_id" jdbcType="INTEGER" property="buyerId" />
-		<result column="payment" jdbcType="DECIMAL" property="payment" />
-		<result column="payment_type" jdbcType="INTEGER" property="paymentType" />
-		<result column="order_status" jdbcType="INTEGER" property="orderStatus" />
-		<result column="payment_time" jdbcType="TIMESTAMP" property="paymentTime" />
-		<result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
-		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-		<result column="leave_msg" jdbcType="VARCHAR" property="leaveMsg" />
-		<result column="is_pay" jdbcType="INTEGER" property="isPay" />
+		<result column="order_no"  property="orderNo" />
+		<result column="user_id"  property="userId" />
+		<result column="payment"  property="payment" />
+		<result column="payment_type"  property="paymentType" />
+		<result column="order_status"  property="orderStatus" />
+		<result column="payment_time"  property="paymentTime" />
+		<result column="end_time"  property="endTime" />
+		<result column="create_time"  property="createTime" />
+		<result column="update_time"  property="updateTime" />
+		<result column="leave_msg"  property="leaveMsg" />
+		<result column="is_pay"  property="isPay" />
+		<result column="trade_num"  property="tradeNum" />
+		<result column="product_id"  property="productId" />
 		<association column="hcAccount" property="hcAccount" javaType="com.fmkj.order.dao.domain.HcAccount">
 			<id column="id" property="id" />
 			<result column="nation" property="nation" />
@@ -43,7 +45,7 @@
 		SELECT
 		fm.id,
 		fm.order_no,
-		fm.buyer_id,
+		fm.user_id,
 		fm.payment,
 		fm.payment_type,
 		fm.order_status,
@@ -53,16 +55,18 @@
 		fm.update_time,
 		fm.is_pay,
 		fm.leave_msg,
+		fm.trade_num,
+		fm.product_id,
 		hc.*
 		FROM
-		fm_order_info fm LEFT JOIN hc_account hc on fm.buyer_id = hc.id
+		fm_order_info fm LEFT JOIN hc_account hc on fm.user_id = hc.id
 		WHERE 1 = 1
 		<if test="order.orderNo != null">
 			and fm.order_no = #{order.orderNo}
 		</if>
 
-		<if test="order.buyerId != null">
-			and fm.buyer_id = #{order.buyerId}
+		<if test="order.userId != null">
+			and fm.user_id = #{order.userId}
 		</if>
 
 		<if test="order.orderStatus != null">

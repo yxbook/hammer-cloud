@@ -23,11 +23,14 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     @TableId(type = IdType.AUTO)
     private Integer id;                //主键
 
+    @TableField("product_id")
+    private Integer productId;   // 商品ID
+
     @TableField("order_no")
     private String orderNo;    //订单编号
 
-    @TableField("buyer_id")
-    private Integer buyerId;   //买家
+    @TableField("user_id")
+    private Integer userId;   //订单用户
 
     private BigDecimal payment;  //买家支付总金额
 
@@ -35,7 +38,7 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private Integer paymentType;  //买家支付方式1、微信; 2、支付宝
 
     @TableField("order_status")
-    private Integer orderStatus;  //订单状态1、未付款; 2、已付款(付款确认); 3、订单取消; 4、交易成功
+    private Integer orderStatus;  // 订单状态0、未付款; 1、已付款(付款确认); 2、订单取消; 3、交易成功
 
     @TableField("payment_time")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
@@ -59,14 +62,15 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     @TableField("is_pay")
     private Integer isPay;  //付款确认0、未付款确认;1、确认已付款
 
-    private HcAccount hcAccount;
+    @TableField("trade_num")
+    private Double tradeNum; //交易数量,购买或卖出数量
 
-    public HcAccount getHcAccount() {
-        return hcAccount;
+    public Double getTradeNum() {
+        return tradeNum;
     }
 
-    public void setHcAccount(HcAccount hcAccount) {
-        this.hcAccount = hcAccount;
+    public void setTradeNum(Double tradeNum) {
+        this.tradeNum = tradeNum;
     }
 
     public Integer getId() {
@@ -77,6 +81,14 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
         this.id = id;
     }
 
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
     public String getOrderNo() {
         return orderNo;
     }
@@ -85,12 +97,12 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
         this.orderNo = orderNo;
     }
 
-    public Integer getBuyerId() {
-        return buyerId;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setBuyerId(Integer buyerId) {
-        this.buyerId = buyerId;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public BigDecimal getPayment() {

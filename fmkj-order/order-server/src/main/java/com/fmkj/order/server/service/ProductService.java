@@ -2,6 +2,7 @@ package com.fmkj.order.server.service;
 
 import com.fmkj.common.base.BaseService;
 import com.fmkj.order.dao.domain.ProductInfo;
+import com.fmkj.order.dao.dto.ProductDto;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 
 import java.util.List;
@@ -13,5 +14,5 @@ import java.util.List;
 **/
 public interface ProductService extends BaseService<ProductInfo> {
 
-    List<ProductInfo> getProductPage(ProductQueryVo productQueryVo);
+    List<ProductDto> getProductPage(ProductQueryVo productQueryVo);
 }

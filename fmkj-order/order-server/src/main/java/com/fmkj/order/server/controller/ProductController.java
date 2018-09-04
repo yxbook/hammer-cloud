@@ -10,6 +10,7 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.order.dao.domain.HcAccount;
 import com.fmkj.order.dao.domain.ProductInfo;
+import com.fmkj.order.dao.dto.ProductDto;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.enmu.ProductEnum;
@@ -51,10 +52,10 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     @ApiOperation(value="查询商品列表", notes="分页查询商品列表")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "查询商品列表")
     @PutMapping("/getProductPage")
-    public BaseResult<Page<ProductInfo>> getProductPage(@RequestBody ProductQueryVo productQueryVo){
+    public BaseResult<Page<ProductDto>> getProductPage(@RequestBody ProductQueryVo productQueryVo){
         try {
-            Page<ProductInfo> tPage =new Page<ProductInfo>(productQueryVo.getPageNo(),productQueryVo.getPageSize());
-            List<ProductInfo> list = productService.getProductPage(productQueryVo);
+            Page<ProductDto> tPage =new Page<ProductDto>(productQueryVo.getPageNo(),productQueryVo.getPageSize());
+            List<ProductDto> list = productService.getProductPage(productQueryVo);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }
