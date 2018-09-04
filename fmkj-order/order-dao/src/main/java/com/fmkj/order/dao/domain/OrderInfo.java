@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -36,15 +38,19 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private Integer orderStatus;  //订单状态1、未付款; 2、已付款(付款确认); 3、订单取消; 4、交易成功
 
     @TableField("payment_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date paymentTime;  //支付时间
 
     @TableField("end_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date endTime;      //交易完成时间
 
     @TableField("create_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;  //下单时间
 
     @TableField("update_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;  //订单修改时间
 
     @TableField("leave_msg")
@@ -53,6 +59,15 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     @TableField("is_pay")
     private Integer isPay;  //付款确认0、未付款确认;1、确认已付款
 
+    private HcAccount hcAccount;
+
+    public HcAccount getHcAccount() {
+        return hcAccount;
+    }
+
+    public void setHcAccount(HcAccount hcAccount) {
+        this.hcAccount = hcAccount;
+    }
 
     public Integer getId() {
         return id;
