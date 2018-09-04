@@ -98,8 +98,8 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     @PostMapping("/addOrder")
     public BaseResult addOrder(@RequestBody OrderInfo orderInfo){
         try {
-            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getUserId())){
-                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
             }
             if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getProductId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
@@ -131,7 +131,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     public BaseResult updateProduct(@RequestBody OrderInfo orderInfo){
         try {
             if(StringUtils.isNull(orderInfo) || orderInfo.getId() == null){
-                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
             }
             orderInfo.setUpdateTime(new Date());
             return super.updateById(orderInfo);
@@ -140,15 +140,33 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    @ApiOperation(value="已支付", notes="作为买方购买P能量、确认是否支付金额")
-    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "我已支付")
-    @PostMapping("/payOrder")
-    public BaseResult payOrder(@RequestBody OrderInfo orderInfo){
+    @ApiOperation(value="买方支付确认", notes="作为买方购买P能量、确认已支付金额")
+    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "买方支付确认")
+    @PostMapping("/buyerPayConfirm")
+    public BaseResult buyerPayConfirm(@RequestBody OrderInfo orderInfo){
         try {
-            if(StringUtils.isNull(orderInfo) || orderInfo.getUserId() == null){
-                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            if(StringUtils.isNull(orderInfo) || orderInfo.getId() == null){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
             }
             orderInfo.setUpdateTime(new Date());
+            orderInfo.setOrderStatus(OrderEnum.ORDER_PAY.status);
+            if (service.updateById(orderInfo))return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "支付成功","买方支付金额成功");
+            else return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付失败","买方支付金额失败");
+        } catch (Exception e) {
+            throw new RuntimeException("买方支付金额失败：" + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value="卖方支付确认", notes="卖方出售P能量、收到买方支付金额后确认放出P能量")
+    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "卖方支付确认")
+    @PostMapping("/sellerPayConfirm")
+    public BaseResult sellerPayConfirm(@RequestBody OrderInfo orderInfo){
+        try {
+            if(StringUtils.isNull(orderInfo) || orderInfo.getId() == null){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
+            }
+            orderInfo.setUpdateTime(new Date());
+            // 可能要加卖方支付确认字段
             return super.updateById(orderInfo);
         } catch (Exception e) {
             throw new RuntimeException("修改异常：" + e.getMessage());
