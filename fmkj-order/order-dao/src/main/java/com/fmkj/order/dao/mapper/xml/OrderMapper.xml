@@ -5,7 +5,7 @@
 		<id column="id" jdbcType="INTEGER" property="id" />
 		<result column="order_no" jdbcType="VARCHAR" property="orderNo" />
 		<result column="buyer_id" jdbcType="INTEGER" property="buyerId" />
-		<result column="payment" jdbcType="BigDecimal" property="payment" />
+		<result column="payment" jdbcType="DECIMAL" property="payment" />
 		<result column="payment_type" jdbcType="INTEGER" property="paymentType" />
 		<result column="order_status" jdbcType="INTEGER" property="orderStatus" />
 		<result column="payment_time" jdbcType="TIMESTAMP" property="paymentTime" />

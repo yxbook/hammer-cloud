@@ -1,9 +1,6 @@
 package com.fmkj.order.server.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.SqlHelper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
@@ -12,7 +9,6 @@ import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.order.dao.domain.ProductInfo;
-import com.fmkj.order.dao.dto.ProductDto;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.service.HcAccountService;
@@ -22,13 +18,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * 商品服务
@@ -54,10 +48,10 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     public BaseResult<Page<ProductInfo>> getProductPage(@RequestBody ProductQueryVo productQueryVo){
         try {
             Page<ProductInfo> tPage =new Page<ProductInfo>(productQueryVo.getPageNo(),productQueryVo.getPageSize());
-            //tPage.setRecords(service.getProductPage(productQueryVo));
-            EntityWrapper<ProductInfo> entityWrapper = transWrapper(productQueryVo);
-            return new BaseResult(BaseResultEnum.SUCCESS,service.selectPage(tPage, entityWrapper));
-            //return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
+            tPage.setRecords(service.getProductPage(productQueryVo));
+            /*EntityWrapper<ProductInfo> entityWrapper = transWrapper(productQueryVo);
+            return new BaseResult(BaseResultEnum.SUCCESS,service.selectPage(tPage, entityWrapper));*/
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
            throw new RuntimeException("查询商品列表异常：" + e.getMessage());
         }
@@ -135,11 +129,11 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
         if(StringUtils.isNotEmpty(productQueryVo.getProductNo())){
             entityWrapper.eq("product_no", productQueryVo.getProductNo());
         }
-        if(StringUtils.isNotNull(productQueryVo.getProdcutPrice())){
-            entityWrapper.eq("prodcut_price", productQueryVo.getProdcutPrice());
+        if(StringUtils.isNotNull(productQueryVo.getProductPrice())){
+            entityWrapper.eq("product_price", productQueryVo.getProductPrice());
         }
-        if(StringUtils.isNotNull(productQueryVo.getProdcutStock())){
-            entityWrapper.eq("prodcut_stock", productQueryVo.getProdcutStock());
+        if(StringUtils.isNotNull(productQueryVo.getProductStock())){
+            entityWrapper.eq("product_stock", productQueryVo.getProductStock());
         }
         if(StringUtils.isNotNull(productQueryVo.getStatus())){
             entityWrapper.eq("status", productQueryVo.getStatus());

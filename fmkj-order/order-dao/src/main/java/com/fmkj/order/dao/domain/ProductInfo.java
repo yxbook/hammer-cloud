@@ -16,62 +16,102 @@ import java.util.Date;
  * @Description:
  */
 @TableName("fm_product_info")
-public class ProductInfo extends Model<ProductInfo> implements Serializable{
+public class ProductInfo extends Model<ProductInfo>{
 
-    @TableId(type = IdType.AUTO)
-    private Integer id;                //主键
-
+    /**
+     * 主键
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+    /**
+     * 商品编号
+     */
     @TableField("product_no")
-    private String productNo;    //商品编号
-
+    private String productNo;
+    /**
+     * 商品名称
+     */
     @TableField("product_name")
-    private String productName;   //商品名称
-
-    @TableField("prodcut_sum")
-    private BigDecimal prodcutSum; // 出售数量
-
-    @TableField("prodcut_price")
-    private BigDecimal prodcutPrice;  //商品单价
-
-    @TableField("prodcut_stock")
-    private BigDecimal prodcutStock;   //库存
-
-    @TableField("prodcut_icon")
-    private String prodcutIcon;   //商品图标
-
-    private Integer status;       //商品状态0、新建状态; 1、正常; 2、下架; -1、删除
-
+    private String productName;
+    /**
+     * 商品单价
+     */
+    @TableField("product_price")
+    private BigDecimal productPrice;
+    /**
+     * 出售数量
+     */
+    @TableField("product_sum")
+    private BigDecimal productSum;
+    /**
+     * 库存
+     */
+    @TableField("product_stock")
+    private BigDecimal productStock;
+    /**
+     * 商品图标
+     */
+    @TableField("product_icon")
+    private String productIcon;
+    /**
+     * 商品状态0、新建状态; 1、正常; 2、下架; -1、删除
+     */
+    private Integer status;
+    /**
+     * 类目类型1、P能量
+     */
     @TableField("category_type")
-    private Integer categoryType;  //类型
-
+    private Integer categoryType;
+    /**
+     * 商品创建人
+     */
     @TableField("user_id")
-    private Integer userId;  //商品创建人
-
-    @TableField(value = "create_time")
-    private Date createTime;  //创建时间
-
+    private Integer userId;
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+    /**
+     * 修改时间
+     */
     @TableField("update_time")
-    private Date updateTime;   //修改时间
-
+    private Date updateTime;
+    /**
+     * 商品描述
+     */
     @TableField("product_detail")
-    private String productDetail;  //商品描述
-
+    private String productDetail;
+    /**
+     * 商品类型1、卖出;2、买入
+     */
     @TableField("product_type")
-    private Integer productType;//商品类型1、卖出;2、买入
-
-    private Integer currency; //币种
-
+    private Integer productType;
+    /**
+     * 币种1、人民币
+     */
+    private Integer currency;
+    /**
+     * 最高可成交的价格
+     */
     @TableField("max_price")
-    private BigDecimal maxPrice;  //最高可成交的价格
-
+    private BigDecimal maxPrice;
+    /**
+     * 每一笔交易额的最小限额
+     */
     @TableField("min_limit")
-    private BigDecimal minLimit; //每一笔交易额的最小限额
-
+    private BigDecimal minLimit;
+    /**
+     * 每一笔交易额的最大限额
+     */
     @TableField("max_limit")
-    private BigDecimal maxLimit; //每一笔交易额的最大限额
-
+    private BigDecimal maxLimit;
+    /**
+     * 付款期限、默认15分钟
+     */
     @TableField("payment_term")
-    private Integer paymentTerm; //付款期限
+    private Integer paymentTerm;
+
 
     public Integer getId() {
         return id;
@@ -97,28 +137,36 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
         this.productName = productName;
     }
 
-    public BigDecimal getProdcutPrice() {
-        return prodcutPrice;
+    public BigDecimal getProductPrice() {
+        return productPrice;
     }
 
-    public void setProdcutPrice(BigDecimal prodcutPrice) {
-        this.prodcutPrice = prodcutPrice;
+    public void setProductPrice(BigDecimal productPrice) {
+        this.productPrice = productPrice;
     }
 
-    public BigDecimal getProdcutStock() {
-        return prodcutStock;
+    public BigDecimal getProductSum() {
+        return productSum;
     }
 
-    public void setProdcutStock(BigDecimal prodcutStock) {
-        this.prodcutStock = prodcutStock;
+    public void setProductSum(BigDecimal productSum) {
+        this.productSum = productSum;
     }
 
-    public String getProdcutIcon() {
-        return prodcutIcon;
+    public BigDecimal getProductStock() {
+        return productStock;
     }
 
-    public void setProdcutIcon(String prodcutIcon) {
-        this.prodcutIcon = prodcutIcon;
+    public void setProductStock(BigDecimal productStock) {
+        this.productStock = productStock;
+    }
+
+    public String getProductIcon() {
+        return productIcon;
+    }
+
+    public void setProductIcon(String productIcon) {
+        this.productIcon = productIcon;
     }
 
     public Integer getStatus() {
@@ -215,14 +263,6 @@ public class ProductInfo extends Model<ProductInfo> implements Serializable{
 
     public void setPaymentTerm(Integer paymentTerm) {
         this.paymentTerm = paymentTerm;
-    }
-
-    public BigDecimal getProdcutSum() {
-        return prodcutSum;
-    }
-
-    public void setProdcutSum(BigDecimal prodcutSum) {
-        this.prodcutSum = prodcutSum;
     }
 
     @Override

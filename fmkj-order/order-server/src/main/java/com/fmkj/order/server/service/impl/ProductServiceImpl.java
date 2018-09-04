@@ -4,7 +4,6 @@ package com.fmkj.order.server.service.impl;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.order.dao.domain.ProductInfo;
-import com.fmkj.order.dao.dto.ProductDto;
 import com.fmkj.order.dao.mapper.ProductMapper;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.service.ProductService;
@@ -32,8 +31,8 @@ public class ProductServiceImpl extends BaseServiceImpl<ProductMapper, ProductIn
     private ProductMapper productMapper;
 
     @Override
-    public List<ProductDto> getProductPage(ProductQueryVo productQueryVo) {
-        List<ProductDto> result = productMapper.queryProductPage(productQueryVo);
+    public List<ProductInfo> getProductPage(ProductQueryVo productQueryVo) {
+        List<ProductInfo> result = productMapper.queryProductPage(productQueryVo);
         return result;
     }
 }

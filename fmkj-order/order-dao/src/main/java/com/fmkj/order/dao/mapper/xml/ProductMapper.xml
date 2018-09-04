@@ -2,62 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fmkj.order.dao.mapper.ProductMapper">
 	<resultMap id="BaseResultMap" type="com.fmkj.order.dao.domain.ProductInfo">
-	<id column="id" jdbcType="INTEGER" property="id" />
-	<result column="product_no" jdbcType="VARCHAR" property="productNo" />
-	<result column="product_name" jdbcType="VARCHAR" property="productName" />
-	<result column="prodcut_price" jdbcType="BigDecimal" property="prodcutPrice" />
-	<result column="prodcut_stock" jdbcType="BigDecimal" property="prodcutStock" />
-	<result column="prodcut_sum" jdbcType="BigDecimal" property="prodcutSum" />
-	<result column="prodcut_icon" jdbcType="VARCHAR" property="prodcutIcon" />
-	<result column="status" jdbcType="INTEGER" property="status" />
-	<result column="category_type" jdbcType="INTEGER" property="categoryType" />
-	<result column="user_id" jdbcType="INTEGER" property="userId" />
-	<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-	<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-	<result column="product_detail" jdbcType="VARCHAR" property="productDetail" />
-	<result column="product_type" jdbcType="INTEGER" property="productType" />
-	<result column="currency" jdbcType="INTEGER" property="currency" />
-	<result column="max_price" jdbcType="BigDecimal" property="maxPrice" />
-	<result column="min_limit" jdbcType="BigDecimal" property="minLimit" />
-	<result column="max_limit" jdbcType="BigDecimal" property="maxLimit" />
-	<result column="payment_term" jdbcType="INTEGER" property="paymentTerm" />
-</resultMap>
-
-	<resultMap id="DtoResultMap" type="com.fmkj.order.dao.dto.ProductDto">
-		<id column="id" jdbcType="INTEGER" property="id" />
-		<result column="product_no" jdbcType="VARCHAR" property="productNo" />
-		<result column="product_name" jdbcType="VARCHAR" property="productName" />
-		<result column="prodcut_price" jdbcType="BigDecimal" property="prodcutPrice" />
-		<result column="prodcut_stock" jdbcType="BigDecimal" property="prodcutStock" />
-		<result column="prodcut_sum" jdbcType="BigDecimal" property="prodcutSum" />
-		<result column="prodcut_icon" jdbcType="VARCHAR" property="prodcutIcon" />
-		<result column="status" jdbcType="INTEGER" property="status" />
-		<result column="category_type" jdbcType="INTEGER" property="categoryType" />
-		<result column="user_id" jdbcType="INTEGER" property="userId" />
-		<result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-		<result column="product_detail" jdbcType="VARCHAR" property="productDetail" />
-		<result column="product_type" jdbcType="INTEGER" property="productType" />
-		<result column="currency" jdbcType="INTEGER" property="currency" />
-		<result column="max_price" jdbcType="BigDecimal" property="maxPrice" />
-		<result column="min_limit" jdbcType="BigDecimal" property="minLimit" />
-		<result column="max_limit" jdbcType="BigDecimal" property="maxLimit" />
-		<result column="payment_term" jdbcType="INTEGER" property="paymentTerm" />
+		<id column="id" property="id" />
+		<result column="product_no" property="productNo" />
+		<result column="product_name" property="productName" />
+		<result column="product_price" property="productPrice" />
+		<result column="product_sum" property="productSum" />
+		<result column="product_stock" property="productStock" />
+		<result column="product_icon" property="productIcon" />
+		<result column="status" property="status" />
+		<result column="category_type" property="categoryType" />
+		<result column="user_id" property="userId" />
+		<result column="create_time" property="createTime" />
+		<result column="update_time" property="updateTime" />
+		<result column="product_detail" property="productDetail" />
+		<result column="product_type" property="productType" />
+		<result column="currency" property="currency" />
+		<result column="max_price" property="maxPrice" />
+		<result column="min_limit" property="minLimit" />
+		<result column="max_limit" property="maxLimit" />
+		<result column="payment_term" property="paymentTerm" />
 		<!--<association property="hcAccount" column="hcAccount" javaType="com.fmkj.order.dao.domain.HcAccount">
 			<result column="nation" property="nation" />
 			<result column="telephone" property="telephone" />
 		</association>-->
 	</resultMap>
 
-	<select id="queryProductPage" parameterType="com.fmkj.order.dao.queryVo.ProductQueryVo" resultMap="DtoResultMap">
+
+	<select id="queryProductPage" parameterType="com.fmkj.order.dao.queryVo.ProductQueryVo" resultMap="BaseResultMap">
 		SELECT
 		  id AS id,
 		  product_no AS productNo,
 		  product_name AS productName,
-		  prodcut_sum AS prodcutSum,
-		  prodcut_price AS prodcutPrice,
-		  prodcut_stock AS prodcutStock,
-		  prodcut_icon AS prodcutIcon,
+		  product_sum AS productSum,
+		  product_price AS productPrice,
+		  product_stock AS productStock,
+		  product_icon AS productIcon,
 		  `status`,
 		  category_type AS categoryType,
 		  user_id AS userId,
@@ -72,6 +51,7 @@
 		  payment_term AS paymentTerm
 		FROM
 		  fm_product_info
+		ORDER BY create_time DESC
 	</select>
 
 </mapper>
