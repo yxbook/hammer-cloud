@@ -11,4 +11,13 @@
         <result column="defaultval" property="defaultval" />
     </resultMap>
 
+    <select id="getPremiumByIntegral" parameterType="java.lang.Integer" resultType="com.fmkj.race.dao.domain.GcPremium">
+		SELECT
+		  Id,premax,integralmin,integralmax,defaultval
+		FROM
+		  gc_premium
+		where
+		 #{integral}>=integralmin and  integralmax>#{integral}
+	</select>
+
 </mapper>

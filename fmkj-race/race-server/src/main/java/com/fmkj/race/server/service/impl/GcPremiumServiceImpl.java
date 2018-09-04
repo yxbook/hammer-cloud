@@ -12,16 +12,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
-* @Description: GcPremium Service实现
-* @Author: ru
-* @CreateDate: 2018/9/3.
-* @Version: 1.0
-**/
+ * @Description: GcPremium Service实现
+ * @Author: ru
+ * @CreateDate: 2018/9/3.
+ * @Version: 1.0
+ **/
 @Service
 @Transactional
 @BaseService
 public class GcPremiumServiceImpl extends BaseServiceImpl<GcPremiumMapper, GcPremium> implements GcPremiumService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GcPremiumServiceImpl.class);
+
+    @Autowired
+    private GcPremiumMapper gcPremiumMapper;
+
+    @Override
+    public GcPremium getPremiumByIntegral(Integer integral) {
+        return gcPremiumMapper.getPremiumByIntegral(integral);
+    }
 
 }
