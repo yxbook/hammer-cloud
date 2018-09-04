@@ -10,5 +10,6 @@ import com.fmkj.race.dao.domain.GcPremium;
 * @Version: 1.0
 **/
 public interface GcPremiumService extends BaseService<GcPremium> {
+    public GcPremium getPremiumByIntegral(Integer integral);
 
 }
