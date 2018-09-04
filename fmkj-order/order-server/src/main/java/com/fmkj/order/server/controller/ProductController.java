@@ -22,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 商品服务
@@ -48,9 +51,11 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     public BaseResult<Page<ProductInfo>> getProductPage(@RequestBody ProductQueryVo productQueryVo){
         try {
             Page<ProductInfo> tPage =new Page<ProductInfo>(productQueryVo.getPageNo(),productQueryVo.getPageSize());
-            tPage.setRecords(service.getProductPage(productQueryVo));
-            /*EntityWrapper<ProductInfo> entityWrapper = transWrapper(productQueryVo);
-            return new BaseResult(BaseResultEnum.SUCCESS,service.selectPage(tPage, entityWrapper));*/
+            List<ProductInfo> list = productService.getProductPage(productQueryVo);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
            throw new RuntimeException("查询商品列表异常：" + e.getMessage());

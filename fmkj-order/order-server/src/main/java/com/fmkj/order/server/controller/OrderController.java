@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 订单服务
@@ -43,8 +44,12 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     public BaseResult<Page<OrderInfo>> getOrderPage(@RequestBody OrderQueryVo orderQueryVo){
         try {
             Page<OrderInfo> tPage =new Page<OrderInfo>(orderQueryVo.getPageNo(),orderQueryVo.getPageSize());
-            EntityWrapper<OrderInfo> entityWrapper = transWrapper(orderQueryVo);
-            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", service.selectPage(tPage, entityWrapper));
+            List<OrderInfo> list = orderService.getOrderPage(orderQueryVo);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("查询订单列表异常：" + e.getMessage());
         }

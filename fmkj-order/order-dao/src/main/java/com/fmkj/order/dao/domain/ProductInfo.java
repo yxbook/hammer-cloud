@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -71,11 +72,13 @@ public class ProductInfo extends Model<ProductInfo>{
      * 创建时间
      */
     @TableField("create_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;
     /**
      * 修改时间
      */
     @TableField("update_time")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;
     /**
      * 商品描述
@@ -112,6 +115,15 @@ public class ProductInfo extends Model<ProductInfo>{
     @TableField("payment_term")
     private Integer paymentTerm;
 
+    private HcAccount hcAccount;
+
+    public HcAccount getHcAccount() {
+        return hcAccount;
+    }
+
+    public void setHcAccount(HcAccount hcAccount) {
+        this.hcAccount = hcAccount;
+    }
 
     public Integer getId() {
         return id;
