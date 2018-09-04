@@ -73,8 +73,7 @@ public class BaseResult<T> implements Serializable{
 
         this.status = status;
         this.message = message;
-        if (status == BaseResultEnum.SUCCESS.status)this.data = data;
-        else if (null != data)this.message = (String) data;
+        this.data = data;
     }
 
 }

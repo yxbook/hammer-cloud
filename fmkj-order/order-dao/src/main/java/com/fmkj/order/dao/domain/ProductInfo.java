@@ -43,12 +43,12 @@ public class ProductInfo extends Model<ProductInfo>{
      * 出售数量
      */
     @TableField("product_sum")
-    private BigDecimal productSum;
+    private Double productSum;
     /**
      * 库存
      */
     @TableField("product_stock")
-    private BigDecimal productStock;
+    private Double productStock;
     /**
      * 商品图标
      */
@@ -157,19 +157,19 @@ public class ProductInfo extends Model<ProductInfo>{
         this.productPrice = productPrice;
     }
 
-    public BigDecimal getProductSum() {
+    public Double getProductSum() {
         return productSum;
     }
 
-    public void setProductSum(BigDecimal productSum) {
+    public void setProductSum(Double productSum) {
         this.productSum = productSum;
     }
 
-    public BigDecimal getProductStock() {
+    public Double getProductStock() {
         return productStock;
     }
 
-    public void setProductStock(BigDecimal productStock) {
+    public void setProductStock(Double productStock) {
         this.productStock = productStock;
     }
 

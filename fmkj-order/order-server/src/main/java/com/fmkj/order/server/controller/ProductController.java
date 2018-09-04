@@ -8,9 +8,11 @@ import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
+import com.fmkj.order.dao.domain.HcAccount;
 import com.fmkj.order.dao.domain.ProductInfo;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.annotation.OrderLog;
+import com.fmkj.order.server.enmu.ProductEnum;
 import com.fmkj.order.server.service.HcAccountService;
 import com.fmkj.order.server.service.ProductService;
 import com.fmkj.order.server.util.MakeOrderNumUtils;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -83,6 +86,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     public BaseResult addProduct(@RequestBody ProductInfo productInfo){
         try {
             productInfo.setProductNo(MakeOrderNumUtils.createProductNum());
+            productInfo.setProductStock(productInfo.getProductSum());
             productInfo.setCreateTime(new Date());
             return super.insert(productInfo);
         } catch (Exception e) {
@@ -106,21 +110,79 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     }
 
 
-    @ApiOperation(value="发布商品", notes="发布商品、扣除P能量")
+    @ApiOperation(value="发布商品", notes="发布商品、扣除用户等于销售数量的P能量")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "发布商品")
     @PostMapping("/publishProduct")
     public BaseResult publishProduct(@RequestBody ProductInfo productInfo){
         try {
             if(StringUtils.isNull(productInfo) || productInfo.getId() == null){
-                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
             }
-            productInfo.setUpdateTime(new Date());
-            return super.updateById(productInfo);
+            if(StringUtils.isNull(productInfo.getUserId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
+            if(StringUtils.isNull(productInfo.getProductSum())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "出售数量不能为空", false);
+            }
+            synchronized (this){
+                //第一步：更新商品表状态
+                productInfo.setUpdateTime(new Date());
+                productInfo.setStatus(ProductEnum.PRODUCT_LINE.status);
+                boolean rs = service.updateById(productInfo);
+                //第二步：扣除P能量
+                if(rs){
+                    HcAccount hcAccount = hcAccountService.selectById(productInfo.getUserId());
+                    Double productSum = productInfo.getProductSum();
+                    Double myP = hcAccount.getMyP();
+                    hcAccount.setMyP(myP - productSum);
+                    hcAccountService.updateById(hcAccount);
+                    return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "发布商品", "账号扣除: " + productSum + "P");
+                }else {
+                    return new BaseResult(BaseResultEnum.ERROR.getStatus(), "发布商品", false);
+                }
+            }
         } catch (Exception e) {
-            throw new RuntimeException("修改异常：" + e.getMessage());
+            throw new RuntimeException("出售异常：" + e.getMessage());
         }
     }
 
+    @ApiOperation(value="下架", notes="商品下架、如果库存有剩余，用户需要加P能量")
+    @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "下架")
+    @PostMapping("/unLineProduct")
+    public BaseResult unLineProduct(@RequestBody ProductInfo productInfo){
+        try {
+            if(StringUtils.isNull(productInfo) || productInfo.getId() == null){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
+            }
+            if(StringUtils.isNull(productInfo.getUserId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
+            if(StringUtils.isNull(productInfo.getProductStock())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "库存不能为空", false);
+            }
+            synchronized (this){
+                //第一步：更新商品表状态
+                productInfo.setUpdateTime(new Date());
+                productInfo.setStatus(ProductEnum.PRODUCT_UNLINE.status);
+                boolean rs = service.updateById(productInfo);
+                //第二步：添加P能量
+                if(rs && productInfo.getProductStock() >= 0){
+                    if(productInfo.getProductStock() == 0){
+                        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "下架成功", "用户P能量已售罄!");
+                    }
+                    HcAccount hcAccount = hcAccountService.selectById(productInfo.getUserId());
+                    Double myP = hcAccount.getMyP();
+                    hcAccount.setMyP(myP + productInfo.getProductStock());
+                    hcAccountService.updateById(hcAccount);
+                    return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "下架成功", "用户增加: " + productInfo.getProductStock() + "P");
+                }else {
+                    return new BaseResult(BaseResultEnum.ERROR.getStatus(), "下架失败", false);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("下架异常：" + e.getMessage());
+        }
+    }
 
     /**
      * 构建查询条件
