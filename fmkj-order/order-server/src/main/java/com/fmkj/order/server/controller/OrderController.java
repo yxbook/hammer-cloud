@@ -15,6 +15,7 @@ import com.fmkj.order.dao.queryVo.OrderQueryVo;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.enmu.OrderEnum;
+import com.fmkj.order.server.enmu.PayEnum;
 import com.fmkj.order.server.service.OrderService;
 import com.fmkj.order.server.service.ProductService;
 import com.fmkj.order.server.util.MakeOrderNumUtils;
@@ -36,7 +37,6 @@ import java.util.List;
 @DependsOn("springContextHolder")
 @Api(tags ={ "订单服务"},description = "商品服务接口-网关路径/api-order")
 public class OrderController extends BaseController<OrderInfo, OrderService> implements BaseApiService<OrderInfo> {
-
 
     @Autowired
     private OrderService orderService;
@@ -72,21 +72,13 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             if(StringUtils.isNull(orderInfo.getProductId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
             }
-            synchronized (this){
-                orderInfo.setUpdateTime(new Date());
-                orderInfo.setOrderStatus(OrderEnum.ORDER_CANCEL.status);
-                boolean result = service.updateById(orderInfo);
-                if(result){
-                    //需要把P能量退回到商品的库存中
-                    ProductInfo productInfo = productService.selectById(orderInfo.getProductId());
-                    Double stock = productInfo.getProductStock();
-                    Double tradeNum = orderInfo.getTradeNum();
-                    productInfo.setProductStock(stock + tradeNum);
-                    productService.updateById(productInfo);
-                    return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "订单取消成功", "商品ID【" + productInfo.getId() + "】库存增加" + tradeNum + "P");
-                }else{
-                    return new BaseResult(BaseResultEnum.ERROR.getStatus(), "取消订单失败", false);
-                }
+            orderInfo.setUpdateTime(new Date());
+            orderInfo.setOrderStatus(OrderEnum.ORDER_CANCEL.status);
+            boolean result = orderService.cancelOrder(orderInfo);
+            if(result){
+                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "订单取消成功", "商品ID【" + orderInfo.getProductId() + "】库存增加" + orderInfo.getTradeNum() + "P");
+            }else{
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(), "取消订单失败", false);
             }
         } catch (Exception e) {
             throw new RuntimeException("取消订单异常：" + e.getMessage());
@@ -104,22 +96,15 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getProductId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
             }
-            synchronized (this){
-                orderInfo.setOrderNo(MakeOrderNumUtils.createOrderNum());
-                orderInfo.setCreateTime(new Date());
-                boolean result = service.insert(orderInfo);
-                if(result){
-                    //从商品表的库存减掉
-                    ProductInfo productInfo = productService.selectById(orderInfo.getProductId());
-                    Double stock = productInfo.getProductStock();
-                    Double tradeNum = orderInfo.getTradeNum();
-                    productInfo.setProductStock(stock - tradeNum);
-                    productService.updateById(productInfo);
-                    return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "新建订单成功", "从商品ID【" + productInfo.getId() + "】库存中减掉" + tradeNum + "P");
-                }else{
-                    return new BaseResult(BaseResultEnum.ERROR.getStatus(), "新建订单失败", false);
-                }
+            orderInfo.setOrderNo(MakeOrderNumUtils.createOrderNum());
+            orderInfo.setCreateTime(new Date());
+            boolean result = orderService.addOrder(orderInfo);
+            if(result){
+                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "新建订单成功", "从商品ID【" + orderInfo.getProductId() + "】库存中减掉" + orderInfo.getTradeNum() + "P");
+            }else{
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(), "新建订单失败", false);
             }
+
         } catch (Exception e) {
             throw new RuntimeException("新增异常：" + e.getMessage());
         }
@@ -145,15 +130,21 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     @PostMapping("/buyerPayConfirm")
     public BaseResult buyerPayConfirm(@RequestBody OrderInfo orderInfo){
         try {
-            if(StringUtils.isNull(orderInfo) || orderInfo.getId() == null){
+            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
             }
+            if(StringUtils.isNull(orderInfo.getPaymentType())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "支付类型不能为空", false);
+            }
             orderInfo.setUpdateTime(new Date());
+            orderInfo.setPaymentTime(new Date());
+            orderInfo.setIsPay(PayEnum.PAY_BUYER_PAY.status);
+            orderInfo.setPaymentType(orderInfo.getPaymentType());
             orderInfo.setOrderStatus(OrderEnum.ORDER_PAY.status);
-            if (service.updateById(orderInfo))return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "支付成功","买方支付金额成功");
+            if (orderService.updateById(orderInfo))return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "支付成功","买方支付金额成功");
             else return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付失败","买方支付金额失败");
         } catch (Exception e) {
-            throw new RuntimeException("买方支付金额失败：" + e.getMessage());
+            throw new RuntimeException("买方支付金额异常：" + e.getMessage());
         }
     }
 
@@ -162,14 +153,24 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     @PostMapping("/sellerPayConfirm")
     public BaseResult sellerPayConfirm(@RequestBody OrderInfo orderInfo){
         try {
-            if(StringUtils.isNull(orderInfo) || orderInfo.getId() == null){
+            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
             }
+            if(StringUtils.isNull(orderInfo.getProductId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
+            }
             orderInfo.setUpdateTime(new Date());
-            // 可能要加卖方支付确认字段
-            return super.updateById(orderInfo);
+            orderInfo.setEndTime(new Date());
+            orderInfo.setIsPay(PayEnum.PAY_SELLER_PAY.status);
+            orderInfo.setOrderStatus(OrderEnum.ORDER_SUCCESS.status);
+            boolean result = orderService.sellerPayConfirm(orderInfo);
+            if(result){
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付成功","卖方支付"+orderInfo.getTradeNum()+"P");
+            }else{
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付失败","卖方支付P能量失败");
+            }
         } catch (Exception e) {
-            throw new RuntimeException("修改异常：" + e.getMessage());
+            throw new RuntimeException("卖方支付确认异常：" + e.getMessage());
         }
     }
 
