@@ -13,6 +13,7 @@
         <module>fmkj-race</module>
         <module>fmkj-gateway</module>
         <module>fmkj-order</module>
+        <module>fmkj-hammer</module>
     </modules>
     <packaging>pom</packaging>
 
