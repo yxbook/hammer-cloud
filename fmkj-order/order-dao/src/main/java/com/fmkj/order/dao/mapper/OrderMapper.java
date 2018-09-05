@@ -13,4 +13,5 @@ public interface OrderMapper extends BaseMapper<OrderInfo> {
 
     List<OrderDto> queryOrderPage(@Param("order") OrderQueryVo orderQueryVo);
 
+    List<OrderDto> getOrderPageBySeller(@Param("order") OrderQueryVo orderQueryVo);
 }

@@ -43,6 +43,11 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
     }
 
     @Override
+    public List<OrderDto> getOrderPageBySeller(OrderQueryVo orderQueryVo) {
+        return orderMapper.getOrderPageBySeller(orderQueryVo);
+    }
+
+    @Override
     public boolean sellerPayConfirm(OrderInfo orderInfo) {
         int result = orderMapper.updateById(orderInfo);
         if(result > 0){
@@ -81,7 +86,7 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
      * @return
      */
     @Override
-    public boolean cancelOrder(OrderInfo orderInfo) {
+    public boolean updateOrder(OrderInfo orderInfo) {
         int result = orderMapper.updateById(orderInfo);
         if(result > 0){
             ProductInfo productInfo = productMapper.selectById(orderInfo.getProductId());
@@ -93,4 +98,6 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
         }
         return false;
     }
+
+
 }

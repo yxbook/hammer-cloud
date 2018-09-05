@@ -9,7 +9,8 @@ public enum OrderEnum {
     ORDER_ADD(0,"新建状态-未付款"),
     ORDER_PAY(1,"已付款(付款确认)"),
     ORDER_CANCEL(2,"订单取消"),
-    ORDER_SUCCESS(3,"交易成功");
+    ORDER_SUCCESS(3,"交易成功"),
+    ORDER_DEL(-1,"订单已删除");
     public int status;
     public String msg;
     private OrderEnum(int status, String msg) {

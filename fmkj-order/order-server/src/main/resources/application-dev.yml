@@ -63,9 +63,11 @@ mybatis-plus:
       configuration:
         map-underscore-to-camel-case: true
         cache-enabled: false
+logging:
+  level:
+     com.fmkj.order.dao: debug
 server:
   port: 8086
-
 feign:
   hystrix:
       enabled: true

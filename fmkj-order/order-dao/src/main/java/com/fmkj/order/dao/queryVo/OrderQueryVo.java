@@ -2,6 +2,8 @@ package com.fmkj.order.dao.queryVo;
 
 import com.fmkj.order.dao.domain.OrderInfo;
 
+import java.util.List;
+
 /**
  * @Author: youxun
  * @Date: 2018/9/3 17:05

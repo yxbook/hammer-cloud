@@ -38,7 +38,6 @@ public class HcAccount extends Model<HcAccount> {
      */
     private String dycode;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date dycodetime;
     /**
      * 头像

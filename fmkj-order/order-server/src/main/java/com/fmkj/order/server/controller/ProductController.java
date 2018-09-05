@@ -18,6 +18,8 @@ import com.fmkj.order.server.service.HcAccountService;
 import com.fmkj.order.server.service.ProductService;
 import com.fmkj.order.server.util.MakeOrderNumUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,7 +110,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     }
 
 
-    @ApiOperation(value="发布商品", notes="发布商品、扣除用户等于销售数量的P能量")
+    @ApiOperation(value="发布商品", notes="发布商品、扣除用户等于销售数量的P能量--入参为：id, userId, productSum")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "发布商品")
     @PostMapping("/publishProduct")
     public BaseResult publishProduct(@RequestBody ProductInfo productInfo){
@@ -139,7 +141,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
         }
     }
 
-    @ApiOperation(value="下架", notes="商品下架、如果库存有剩余，用户需要加P能量")
+    @ApiOperation(value="下架", notes="商品下架、如果库存有剩余，用户需要加P能量--入参为：id, userId, productStock")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "下架")
     @PostMapping("/unLineProduct")
     public BaseResult unLineProduct(@RequestBody ProductInfo productInfo){

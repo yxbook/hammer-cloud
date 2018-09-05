@@ -10,6 +10,7 @@ import com.fmkj.order.dao.domain.OrderInfo;
  */
 public class OrderDto extends OrderInfo{
 
+    // 下单用户信息
     private HcAccount hcAccount;
 
     public HcAccount getHcAccount() {

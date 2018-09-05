@@ -30,7 +30,10 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private String orderNo;    //订单编号
 
     @TableField("user_id")
-    private Integer userId;   //订单用户
+    private Integer userId;   //下单用户
+
+    @TableField("seller_id")
+    private Integer sellerId;   //卖家用户
 
     private BigDecimal payment;  //买家支付总金额
 
@@ -41,19 +44,15 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     private Integer orderStatus;  // 订单状态0、未付款; 1、已付款(付款确认); 2、订单取消; 3、交易成功
 
     @TableField("payment_time")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date paymentTime;  //支付时间
 
     @TableField("end_time")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date endTime;      //交易完成时间
 
     @TableField("create_time")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date createTime;  //下单时间
 
     @TableField("update_time")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private Date updateTime;  //订单修改时间
 
     @TableField("leave_msg")
@@ -64,6 +63,14 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
 
     @TableField("trade_num")
     private Double tradeNum; //交易数量,购买或卖出数量
+
+    public Integer getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Integer sellerId) {
+        this.sellerId = sellerId;
+    }
 
     public Double getTradeNum() {
         return tradeNum;

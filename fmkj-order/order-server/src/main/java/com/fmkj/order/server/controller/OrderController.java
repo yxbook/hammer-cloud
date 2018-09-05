@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,23 +46,33 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     private ProductService productService;
 
     @ApiOperation(value="查询订单列表", notes="分页查询订单列表")
-    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "查询订单列表")
     @PutMapping("/getOrderPage")
     public BaseResult<Page<OrderDto>> getOrderPage(@RequestBody OrderQueryVo orderQueryVo){
         try {
-            Page<OrderDto> tPage =new Page<OrderDto>(orderQueryVo.getPageNo(),orderQueryVo.getPageSize());
             List<OrderDto> list = orderService.getOrderPage(orderQueryVo);
-            if(StringUtils.isNotEmpty(list)){
-                tPage.setTotal(list.size());
-            }
-            tPage.setRecords(list);
+            Page<OrderDto> tPage =buildPage(orderQueryVo, list);
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("查询订单列表异常：" + e.getMessage());
         }
     }
 
-    @ApiOperation(value="取消订单", notes="取消订单、需要把P能量退回到商品的库存中")
+    @ApiOperation(value="分页查询商品下的订单列表", notes="分页查询商品下的订单列表--输入参数:sellerId")
+    @PutMapping("/getOrderPageBySeller")
+    public BaseResult<Page<OrderDto>> getOrderPageBySeller(@RequestBody OrderQueryVo orderQueryVo){
+        try {
+            if(StringUtils.isNull(orderQueryVo) || StringUtils.isNull(orderQueryVo.getSellerId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "卖家用户ID不能为空", false);
+            }
+            List<OrderDto> list = orderService.getOrderPageBySeller(orderQueryVo);
+            Page<OrderDto> tPage =buildPage(orderQueryVo, list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
+        } catch (Exception e) {
+            throw new RuntimeException("查询商品下订单列表异常：" + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value="取消订单", notes="取消订单、需要把P能量退回到商品的库存中--入参为：id, productId")
     @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "取消订单")
     @PostMapping("/cancelOrder")
     public BaseResult cancelOrder(@RequestBody OrderInfo orderInfo){
@@ -74,7 +85,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             }
             orderInfo.setUpdateTime(new Date());
             orderInfo.setOrderStatus(OrderEnum.ORDER_CANCEL.status);
-            boolean result = orderService.cancelOrder(orderInfo);
+            boolean result = orderService.updateOrder(orderInfo);
             if(result){
                 return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "订单取消成功", "商品ID【" + orderInfo.getProductId() + "】库存增加" + orderInfo.getTradeNum() + "P");
             }else{
@@ -85,16 +96,55 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    @ApiOperation(value="新建订单", notes="新建订单，需要扣除商品表的库存")
-    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "新建订单")
-    @PostMapping("/addOrder")
-    public BaseResult addOrder(@RequestBody OrderInfo orderInfo){
+    @ApiOperation(value="删除订单", notes="根据ID删除订单--传入参数ID，orderStatus, productId, tradeNum")
+    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "删除订单")
+    @PostMapping("/deleteOrderById")
+    public BaseResult deleteById(@RequestBody OrderInfo orderInfo){
         try {
             if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
             }
-            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getProductId())){
+            if(StringUtils.isNull(orderInfo.getOrderStatus())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单状态不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getProductId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getTradeNum())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "购买数量不能为空", false);
+            }
+            if(orderInfo.getOrderStatus() == OrderEnum.ORDER_PAY.status){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "已付款不能删除", false);
+            }
+
+            //新建状态下的删除商品需要返回P能量、订单的删除只作逻辑删除
+            orderInfo.setUpdateTime(new Date());
+            orderInfo.setOrderStatus(OrderEnum.ORDER_DEL.status);
+            if(orderInfo.getOrderStatus() == OrderEnum.ORDER_ADD.status){
+                orderService.updateOrder(orderInfo);
+            }else{
+                orderService.updateById(orderInfo);
+            }
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "删除成功", "数据删除成功");
+        } catch (Exception e) {
+            throw new RuntimeException("删除异常：" + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value="新建订单", notes="新建订单，需要扣除商品表的库存")
+    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "新建订单")
+    @PostMapping("/addOrder")
+
+    public BaseResult addOrder(@RequestBody OrderInfo orderInfo){
+        try {
+            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getUserId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "下单用户ID不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getProductId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getSellerId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "卖家用户ID不能为空", false);
             }
             orderInfo.setOrderNo(MakeOrderNumUtils.createOrderNum());
             orderInfo.setCreateTime(new Date());
@@ -125,7 +175,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    @ApiOperation(value="买方支付确认", notes="作为买方购买P能量、确认已支付金额")
+    @ApiOperation(value="买方支付确认", notes="作为买方购买P能量、确认已支付金额--入参为：id, paymentType")
     @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "买方支付确认")
     @PostMapping("/buyerPayConfirm")
     public BaseResult buyerPayConfirm(@RequestBody OrderInfo orderInfo){
@@ -148,7 +198,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    @ApiOperation(value="卖方支付确认", notes="卖方出售P能量、收到买方支付金额后确认放出P能量")
+    @ApiOperation(value="卖方支付确认", notes="卖方出售P能量、收到买方支付金额后确认放出P能量--入参为：id, productId")
     @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "卖方支付确认")
     @PostMapping("/sellerPayConfirm")
     public BaseResult sellerPayConfirm(@RequestBody OrderInfo orderInfo){
@@ -174,6 +224,15 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
+    private Page<OrderDto> buildPage(OrderQueryVo orderQueryVo, List<OrderDto> list){
+        Page<OrderDto> tPage =new Page<OrderDto>(orderQueryVo.getPageNo(),orderQueryVo.getPageSize());
+        if(StringUtils.isNotEmpty(list)){
+            tPage.setTotal(list.size());
+        }
+        tPage.setRecords(list);
+        return tPage;
+    }
+
     /**
      * 构建查询条件
      * @param productQueryVo
@@ -194,6 +253,9 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
         if(StringUtils.isNotNull(orderQueryVo.getUserId())){
             entityWrapper.eq("userId", orderQueryVo.getUserId());
+        }
+        if(StringUtils.isNotNull(orderQueryVo.getSellerId())){
+            entityWrapper.eq("sellerId", orderQueryVo.getSellerId());
         }
         // 降序字段
         if(StringUtils.isNotEmpty(orderQueryVo.getOrderBy())) {

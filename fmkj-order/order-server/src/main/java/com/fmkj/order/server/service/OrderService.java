@@ -20,6 +20,7 @@ public interface OrderService extends BaseService<OrderInfo> {
 
     boolean addOrder(OrderInfo orderInfo);
 
-    boolean cancelOrder(OrderInfo orderInfo);
+    boolean updateOrder(OrderInfo orderInfo);
 
+    List<OrderDto> getOrderPageBySeller(OrderQueryVo orderQueryVo);
 }

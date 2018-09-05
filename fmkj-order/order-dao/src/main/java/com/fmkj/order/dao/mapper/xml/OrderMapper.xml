@@ -5,6 +5,7 @@
 		<id column="id" jdbcType="INTEGER" property="id" />
 		<result column="order_no"  property="orderNo" />
 		<result column="user_id"  property="userId" />
+		<result column="seller_id"  property="sellerId" />
 		<result column="payment"  property="payment" />
 		<result column="payment_type"  property="paymentType" />
 		<result column="order_status"  property="orderStatus" />
@@ -16,7 +17,7 @@
 		<result column="is_pay"  property="isPay" />
 		<result column="trade_num"  property="tradeNum" />
 		<result column="product_id"  property="productId" />
-		<association column="hcAccount" property="hcAccount" javaType="com.fmkj.order.dao.domain.HcAccount">
+		<association column="hc" property="hcAccount" javaType="com.fmkj.order.dao.domain.HcAccount">
 			<id column="id" property="id" />
 			<result column="nation" property="nation" />
 			<result column="telephone" property="telephone" />
@@ -43,23 +44,26 @@
 
 	<select id="queryOrderPage" parameterType="com.fmkj.order.dao.queryVo.OrderQueryVo" resultMap="BaseResultMap">
 		SELECT
-		fm.id,
-		fm.order_no,
-		fm.user_id,
-		fm.payment,
-		fm.payment_type,
-		fm.order_status,
-		fm.payment_time,
-		fm.end_time,
-		fm.create_time,
-		fm.update_time,
-		fm.is_pay,
-		fm.leave_msg,
-		fm.trade_num,
-		fm.product_id,
-		hc.*
+			fm.id,
+			fm.order_no,
+			fm.user_id,
+			fm.seller_id,
+			fm.payment,
+			fm.payment_type,
+			fm.order_status,
+			fm.payment_time,
+			fm.end_time,
+			fm.create_time,
+			fm.update_time,
+			fm.is_pay,
+			fm.leave_msg,
+			fm.trade_num,
+			fm.product_id,
+			hc.*
 		FROM
-		fm_order_info fm LEFT JOIN hc_account hc on fm.user_id = hc.id
+			fm_order_info fm
+			LEFT JOIN hc_account hc
+			ON fm.seller_id = hc.id
 		WHERE 1 = 1
 		<if test="order.orderNo != null">
 			and fm.order_no = #{order.orderNo}
@@ -75,6 +79,40 @@
 
 		<if test="order.paymentType != null">
 			and fm.payment_type = #{order.paymentType}
+		</if>
+
+		<if test="order.sellerId != null">
+			and fm.seller_id = #{order.sellerId}
+		</if>
+
+	</select>
+
+
+	<select id="getOrderPageBySeller" parameterType="com.fmkj.order.dao.queryVo.OrderQueryVo" resultMap="BaseResultMap">
+		SELECT
+			fm.id,
+			fm.order_no,
+			fm.user_id,
+			fm.seller_id,
+			fm.payment,
+			fm.payment_type,
+			fm.order_status,
+			fm.payment_time,
+			fm.end_time,
+			fm.create_time,
+			fm.update_time,
+			fm.is_pay,
+			fm.leave_msg,
+			fm.trade_num,
+			fm.product_id,
+			hc.*
+		FROM
+			fm_order_info fm
+			LEFT JOIN hc_account hc
+			ON fm.user_id = hc.id
+		WHERE 1 = 1
+		<if test="order.sellerId != null">
+			and fm.seller_id = #{order.sellerId}
 		</if>
 
 	</select>
