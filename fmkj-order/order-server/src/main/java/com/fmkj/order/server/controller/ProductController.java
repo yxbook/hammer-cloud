@@ -45,9 +45,6 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private HcAccountService hcAccountService;
-
 
     @ApiOperation(value="查询商品列表", notes="分页查询商品列表")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "查询商品列表")
@@ -125,23 +122,18 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
             if(StringUtils.isNull(productInfo.getProductSum())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "出售数量不能为空", false);
             }
-            synchronized (this){
-                //第一步：更新商品表状态
-                productInfo.setUpdateTime(new Date());
-                productInfo.setStatus(ProductEnum.PRODUCT_LINE.status);
-                boolean rs = service.updateById(productInfo);
-                //第二步：扣除P能量
-                if(rs){
-                    HcAccount hcAccount = hcAccountService.selectById(productInfo.getUserId());
-                    Double productSum = productInfo.getProductSum();
-                    Double myP = hcAccount.getMyP();
-                    hcAccount.setMyP(myP - productSum);
-                    hcAccountService.updateById(hcAccount);
-                    return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "发布商品", "账号扣除: " + productSum + "P");
-                }else {
-                    return new BaseResult(BaseResultEnum.ERROR.getStatus(), "发布商品", false);
-                }
+
+            //第一步：更新商品表状态
+            //第二步：扣除P能量
+            productInfo.setUpdateTime(new Date());
+            productInfo.setStatus(ProductEnum.PRODUCT_LINE.status);
+            boolean result = productService.publishProduct(productInfo);
+            if(result){
+                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "发布商品", "账号扣除: " + productInfo.getProductSum() + "P");
+            }else {
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(), "发布商品", false);
             }
+
         } catch (Exception e) {
             throw new RuntimeException("出售异常：" + e.getMessage());
         }
@@ -161,25 +153,16 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
             if(StringUtils.isNull(productInfo.getProductStock())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "库存不能为空", false);
             }
-            synchronized (this){
-                //第一步：更新商品表状态
-                productInfo.setUpdateTime(new Date());
-                productInfo.setStatus(ProductEnum.PRODUCT_UNLINE.status);
-                boolean rs = service.updateById(productInfo);
-                //第二步：添加P能量
-                if(rs && productInfo.getProductStock() >= 0){
-                    if(productInfo.getProductStock() == 0){
-                        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "下架成功", "用户P能量已售罄!");
-                    }
-                    HcAccount hcAccount = hcAccountService.selectById(productInfo.getUserId());
-                    Double myP = hcAccount.getMyP();
-                    hcAccount.setMyP(myP + productInfo.getProductStock());
-                    hcAccountService.updateById(hcAccount);
-                    return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "下架成功", "用户增加: " + productInfo.getProductStock() + "P");
-                }else {
-                    return new BaseResult(BaseResultEnum.ERROR.getStatus(), "下架失败", false);
-                }
+            //第一步：更新商品表状态
+            productInfo.setUpdateTime(new Date());
+            productInfo.setStatus(ProductEnum.PRODUCT_UNLINE.status);
+            boolean rs = productService.unLineProduct(productInfo);
+            if(rs){
+                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "下架成功", "用户增加: " + productInfo.getProductStock() + "P");
+            }else {
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(), "下架失败", false);
             }
+
         } catch (Exception e) {
             throw new RuntimeException("下架异常：" + e.getMessage());
         }

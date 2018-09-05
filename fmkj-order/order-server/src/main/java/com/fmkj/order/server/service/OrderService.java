@@ -15,4 +15,11 @@ import java.util.List;
 public interface OrderService extends BaseService<OrderInfo> {
 
     List<OrderDto> getOrderPage(OrderQueryVo orderQueryVo);
+
+    boolean sellerPayConfirm(OrderInfo orderInfo);
+
+    boolean addOrder(OrderInfo orderInfo);
+
+    boolean cancelOrder(OrderInfo orderInfo);
+
 }

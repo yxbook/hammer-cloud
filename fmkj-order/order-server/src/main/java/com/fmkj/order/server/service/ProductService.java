@@ -15,4 +15,8 @@ import java.util.List;
 public interface ProductService extends BaseService<ProductInfo> {
 
     List<ProductDto> getProductPage(ProductQueryVo productQueryVo);
+
+    boolean publishProduct(ProductInfo productInfo);
+
+    boolean unLineProduct(ProductInfo productInfo);
 }
