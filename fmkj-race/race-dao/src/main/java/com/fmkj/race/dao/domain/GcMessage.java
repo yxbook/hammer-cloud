@@ -1,37 +1,39 @@
 package com.fmkj.race.dao.domain;
 
 import com.baomidou.mybatisplus.enums.IdType;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
 
 /**
+ * <p>
+ * 消息表
+ * </p>
+ *
  * @author yangshengbin
- * @Description：活动图片实体
- * @date 2018/8/30 0030 11:33
- * @param null
- * @return
-*/
-@TableName("gc_pimage")
-public class GcPimage extends Model<GcPimage> {
+ * @since 2018-08-30
+ */
+@TableName("gc_message")
+public class GcMessage extends Model<GcMessage> {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer Id;
     /**
-     * 活动id
+     * 通知内容
      */
-    private Integer aid;
+    private String message;
     /**
-     * 产品图片
+     * 通知时间
      */
-    private String imageurl;
+    private Date time;
     /**
-     * 图片标识
+     * 消息类型 2广播 1组 0个人
      */
-    private Integer flag;
+    private Integer type;
 
 
     public Integer getId() {
@@ -42,28 +44,28 @@ public class GcPimage extends Model<GcPimage> {
         this.Id = Id;
     }
 
-    public Integer getAid() {
-        return aid;
+    public String getMessage() {
+        return message;
     }
 
-    public void setAid(Integer aid) {
-        this.aid = aid;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getImageurl() {
-        return imageurl;
+    public Date getTime() {
+        return time;
     }
 
-    public void setImageurl(String imageurl) {
-        this.imageurl = imageurl;
+    public void setTime(Date time) {
+        this.time = time;
     }
 
-    public Integer getFlag() {
-        return flag;
+    public Integer getType() {
+        return type;
     }
 
-    public void setFlag(Integer flag) {
-        this.flag = flag;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     @Override
@@ -73,11 +75,11 @@ public class GcPimage extends Model<GcPimage> {
 
     @Override
     public String toString() {
-        return "GcPimage{" +
+        return "GcMessage{" +
         "Id=" + Id +
-        ", aid=" + aid +
-        ", imageurl=" + imageurl +
-        ", flag=" + flag +
+        ", message=" + message +
+        ", time=" + time +
+        ", type=" + type +
         "}";
     }
 }

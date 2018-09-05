@@ -7,55 +7,55 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
 
 /**
+ * <p>
+ * 通知信息实体
+ * </p>
+ *
  * @author yangshengbin
- * @Description：活动图片实体
- * @date 2018/8/30 0030 11:33
- * @param null
- * @return
-*/
-@TableName("gc_pimage")
-public class GcPimage extends Model<GcPimage> {
+ * @since 2018-08-30
+ */
+@TableName("gc_notice")
+public class GcNotice extends Model<GcNotice> {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer Id;
     /**
-     * 活动id
+     * 用户id
      */
-    private Integer aid;
+    private Integer uid;
     /**
-     * 产品图片
+     * 消息id
      */
-    private String imageurl;
+    private Integer mid;
     /**
-     * 图片标识
+     * 已读标识 1未读 0已读
      */
     private Integer flag;
-
 
     public Integer getId() {
         return Id;
     }
 
-    public void setId(Integer Id) {
-        this.Id = Id;
+    public void setId(Integer id) {
+        Id = id;
     }
 
-    public Integer getAid() {
-        return aid;
+    public Integer getUid() {
+        return uid;
     }
 
-    public void setAid(Integer aid) {
-        this.aid = aid;
+    public void setUid(Integer uid) {
+        this.uid = uid;
     }
 
-    public String getImageurl() {
-        return imageurl;
+    public Integer getMid() {
+        return mid;
     }
 
-    public void setImageurl(String imageurl) {
-        this.imageurl = imageurl;
+    public void setMid(Integer mid) {
+        this.mid = mid;
     }
 
     public Integer getFlag() {
@@ -73,11 +73,12 @@ public class GcPimage extends Model<GcPimage> {
 
     @Override
     public String toString() {
-        return "GcPimage{" +
+        return "GcNotice{" +
         "Id=" + Id +
-        ", aid=" + aid +
-        ", imageurl=" + imageurl +
+        ", uid=" + uid +
+        ", mid=" + mid +
         ", flag=" + flag +
         "}";
     }
+
 }

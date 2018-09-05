@@ -19,6 +19,8 @@ public class LogConstant {
 
     public static final Integer OPERATE_SUCCESS = 1; // 成功
 
+    public static final String Gc_Activity = "竞锤服务";
+
 
 
 }

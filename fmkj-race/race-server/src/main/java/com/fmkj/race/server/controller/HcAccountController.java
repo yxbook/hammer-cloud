@@ -9,16 +9,21 @@ import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
+import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.validator.LengthValidator;
 import com.fmkj.common.validator.NotNullValidator;
 import com.fmkj.race.dao.domain.HcAccount;
 import com.fmkj.race.dao.domain.HcSession;
+import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.HcAccountService;
 import com.fmkj.race.server.service.HcSessionService;
 import com.fmkj.race.server.util.CalendarTime;
+import com.fmkj.race.server.util.TokenStatus;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -28,9 +33,18 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/race")
-//@Api(tags ={ "用户信息"},description = "HcAccountController")
+@RequestMapping("/hcaccount")
+@DependsOn("springContextHandler")
+@Api(tags ={ "用户信息"},description = "用户信息接口-网关路径/api-race")
 public class HcAccountController extends BaseController<HcAccount, HcAccountService> implements BaseApiService<HcAccount> {
+
+
+//    使用快捷键CTRL+K,就会弹出提交的界面，点击Commit and Push即可
+//    点击快捷键Ctrl+T，就会弹出更新的界面，点击OK即可
+//    在idea中添加try/catch的快捷键  ctrl+alt+t
+    // 切换大小写  ctrl+sh+u
+    //IDEA中自动生成get/set的方式:快捷键为：alt+insert
+
 
     //用户表接口
     @Autowired
@@ -71,17 +85,16 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         return new BaseResult<Page<HcAccount>>(BaseResultEnum.SUCCESS, result);
     }
 
-    
 
-    
+
+
     /**
-    * @Description:  用户通过电话号码和密码进行登录
-    * @Param:  params
-    * @return:  
-    * @Author: 杨胜彬 
-    * @Date: 2018/8/27 0027 
-    */
-//    @PostMapping(value = "loginByPassword")
+     * @author yangshengbin
+     * @Description：用户通过电话号码和密码进行登录
+     * @date 2018/8/29 0029 15:39
+     * @param params
+     * @return com.fmkj.common.base.BaseResult<java.util.Map<java.lang.String,java.lang.Object>>
+     */
     @RequestMapping(value = "/loginByPassword", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public BaseResult<Map<String,Object>> loginByPassword(@RequestBody Map<String, Object> params){
 
@@ -101,7 +114,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         //判断用户电话号码和密码是否匹配
         HcAccount hca = new HcAccount();
         map.put("telephone",telephone);
-//        map.put("password",pwd);
+        map.put("password",pwd);
         List<HcAccount> account = hcAccountService.selectByMap(map);
         if (account.size()<=0||account == null) {
             return new BaseResult(BaseResultEnum.ERROR.status,"用户名或密码错误!",null);
@@ -116,31 +129,33 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         Timestamp ltime = clt.thisDate();//当前时间
 
         Integer uid = account.get(0).getId();
-        System.err.println("uid="+uid);
         //创建hcsession对象存放session值
         HcSession hcSession = new HcSession();
         hcSession.setToken(token);
         hcSession.setBtime(btime);
         hcSession.setEtime(etime);
         hcSession.setLtime(ltime);
-        hcSession.setUid(uid);
 
         // 更新hc_session表，
+        HcSession session = new HcSession();
+        session.setUid(uid);
         EntityWrapper<HcSession> wrapper = new EntityWrapper<HcSession>();
-        wrapper.setEntity(hcSession);
-        int row = hcSessionService.selectCount(wrapper);
+        wrapper.setEntity(session);
+        int row = hcSessionService.selectCount(wrapper); //根据用户id查询是否存在记录
         boolean isupdate = false;
         if (row>0) {
-            isupdate = hcSessionService.updateById(hcSession);//更新session表
+            EntityWrapper<HcSession> wra = new EntityWrapper<HcSession>();
+            wra.setEntity(session);
+            isupdate = hcSessionService.update(hcSession, wra);  //update第一个参数为修改的参数,第二个为条件
             if (!isupdate) {
                 System.err.println("error:hc_session表更新失败或用户状态更改失败");
-                return new BaseResult(BaseResultEnum.ERROR.status,"系统错误，请重新登录!",false);
+                return new BaseResult(BaseResultEnum.ERROR.status,"系统错误，请重新登录!",null);
             }
         }else {
             boolean result = hcSessionService.insert(hcSession);
             if(!result) {
                 System.err.println("error:hc_session表更新失败或用户状态更改失败");
-                return new BaseResult(BaseResultEnum.ERROR.status,"系统错误，请重新登录!",false);
+                return new BaseResult(BaseResultEnum.ERROR.status,"系统错误，请重新登录!",null);
             }
         }
 
@@ -149,12 +164,39 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         boolean flg = hcAccountService.updateBatchById(account);
         if (!flg) {
             System.err.println("error:hc_session表更新失败或用户状态更改失败");
-            return new BaseResult(BaseResultEnum.ERROR.status,"系统错误，请重新登录!",false);
+            return new BaseResult(BaseResultEnum.ERROR.status,"系统错误，请重新登录!",null);
         }
 
         map.put("token", token);
         map.put("uid", account.get(0).getId()+"");
         return new BaseResult(BaseResultEnum.SUCCESS.status,"用户名密码正确，登录成功!",map);
     }
+
+
+
+
+    @ApiOperation(value="查询最新一条中奖用户信息", notes="查询最新一条中奖用户信息")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "查询最新一条中奖用户信息")
+    @PutMapping("/queryOneNewNotice")
+    public BaseResult queryOneNewNotice(@RequestParam String token){
+
+        if (token==null||"".equals(token)){
+            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
+        }
+        TokenStatus tokenStatus = new TokenStatus();
+        Boolean flag = tokenStatus.getStatus(token);
+        if (!flag) {// token验证不通过
+            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
+        }
+
+        try {
+            List<Map<String,Object>> map = hcAccountService.queryOneNewNotice();
+            return new BaseResult(BaseResultEnum.SUCCESS,map);
+        } catch (Exception e) {
+            throw new RuntimeException("查询最新一条中奖用户信息异常：" + e.getMessage());
+        }
+    }
+
+
 
 }

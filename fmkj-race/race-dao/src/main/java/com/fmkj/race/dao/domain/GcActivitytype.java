@@ -8,31 +8,27 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 活动物流表
+ * 活动（竟锤）类型表
  * </p>
  *
- * @author yangshengbin
- * @since 2018-08-31
+ * @author 杨胜彬
+ * @since 2018-09-04
  */
-@TableName("gc_order")
-public class GcOrder extends Model<GcOrder> {
+@TableName("gc_activitytype")
+public class GcActivitytype extends Model<GcActivitytype> {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer Id;
     /**
-     * 活动id
+     * 活动的类型
      */
-    private Integer aid;
+    private String type;
     /**
-     * 物流名称
+     * 持续天数
      */
-    private String name;
-    /**
-     * 物流单号
-     */
-    private String number;
+    private Integer days;
 
 
     public Integer getId() {
@@ -43,28 +39,20 @@ public class GcOrder extends Model<GcOrder> {
         this.Id = Id;
     }
 
-    public Integer getAid() {
-        return aid;
+    public String getType() {
+        return type;
     }
 
-    public void setAid(Integer aid) {
-        this.aid = aid;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getName() {
-        return name;
+    public Integer getDays() {
+        return days;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
+    public void setDays(Integer days) {
+        this.days = days;
     }
 
     @Override
@@ -74,11 +62,10 @@ public class GcOrder extends Model<GcOrder> {
 
     @Override
     public String toString() {
-        return "GcOrder{" +
+        return "GcActivitytype{" +
         "Id=" + Id +
-        ", aid=" + aid +
-        ", name=" + name +
-        ", number=" + number +
+        ", type=" + type +
+        ", days=" + days +
         "}";
     }
 }

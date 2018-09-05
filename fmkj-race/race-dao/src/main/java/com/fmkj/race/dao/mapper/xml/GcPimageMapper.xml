@@ -10,4 +10,8 @@
         <result column="flag" property="flag" />
     </resultMap>
 
+    <!-- 传入活动id查询活动产品图片 -->
+    <select id="queryActivityImageById" parameterType="com.fmkj.race.dao.queryVo.GcBaseModel" resultMap="BaseResultMap">
+        SELECT * FROM gc_pimage WHERE aid=#{id}
+    </select>
 </mapper>

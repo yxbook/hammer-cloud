@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmkj.race.dao.mapper.GcJoinactivityrecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fmkj.race.dao.domain.GcJoinactivityrecord">
+        <id column="Id" property="Id" />
+        <result column="uid" property="uid" />
+        <result column="aid" property="aid" />
+        <result column="isChain" property="isChain" />
+        <result column="time" property="time" />
+    </resultMap>
+
+</mapper>

@@ -1,37 +1,43 @@
 package com.fmkj.race.dao.domain;
 
 import com.baomidou.mybatisplus.enums.IdType;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
 import java.io.Serializable;
 
 /**
+ * <p>
+ * 参与活动的记录表
+ * </p>
+ *
  * @author yangshengbin
- * @Description：活动图片实体
- * @date 2018/8/30 0030 11:33
- * @param null
- * @return
-*/
-@TableName("gc_pimage")
-public class GcPimage extends Model<GcPimage> {
+ * @since 2018-09-05
+ */
+@TableName("gc_joinactivityrecord")
+public class GcJoinactivityrecord extends Model<GcJoinactivityrecord> {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer Id;
     /**
-     * 活动id
+     * 参与活动的用户id
+     */
+    private Integer uid;
+    /**
+     * 对应活动表activity中的主键
      */
     private Integer aid;
     /**
-     * 产品图片
+     * 是否上链
      */
-    private String imageurl;
+    private Integer isChain;
     /**
-     * 图片标识
+     * 参与活动的时间
      */
-    private Integer flag;
+    private Date time;
 
 
     public Integer getId() {
@@ -42,6 +48,14 @@ public class GcPimage extends Model<GcPimage> {
         this.Id = Id;
     }
 
+    public Integer getUid() {
+        return uid;
+    }
+
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
     public Integer getAid() {
         return aid;
     }
@@ -50,20 +64,20 @@ public class GcPimage extends Model<GcPimage> {
         this.aid = aid;
     }
 
-    public String getImageurl() {
-        return imageurl;
+    public Integer getIsChain() {
+        return isChain;
     }
 
-    public void setImageurl(String imageurl) {
-        this.imageurl = imageurl;
+    public void setIsChain(Integer isChain) {
+        this.isChain = isChain;
     }
 
-    public Integer getFlag() {
-        return flag;
+    public Date getTime() {
+        return time;
     }
 
-    public void setFlag(Integer flag) {
-        this.flag = flag;
+    public void setTime(Date time) {
+        this.time = time;
     }
 
     @Override
@@ -73,11 +87,12 @@ public class GcPimage extends Model<GcPimage> {
 
     @Override
     public String toString() {
-        return "GcPimage{" +
+        return "GcJoinactivityrecord{" +
         "Id=" + Id +
+        ", uid=" + uid +
         ", aid=" + aid +
-        ", imageurl=" + imageurl +
-        ", flag=" + flag +
+        ", isChain=" + isChain +
+        ", time=" + time +
         "}";
     }
 }
