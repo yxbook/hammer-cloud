@@ -14,13 +14,13 @@ import java.util.List;
 **/
 public interface GcActivitytypeService extends BaseService<GcActivitytype> {
 
-    
+
     /**
      * @author yangshengbin
      * @Description：查询所有活动类型
      * @date 2018/9/4 0004 16:34
      * @param
-     * @return 
+     * @return
     */
     List<GcActivitytype> queryAllActivityType();
 }

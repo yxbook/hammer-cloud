@@ -24,5 +24,15 @@ public interface HcSessionMapper extends BaseMapper<HcSession> {
 
     int queryHcSessionByUid(Integer uid);
 
+
+
+    /**
+    * @Description:  更新session表
+    * @Param:  hcSession
+    * @return:  int
+    * @Author: 杨胜彬
+    * @Date: 2018/8/29 0029
+    */
+    int updateHcSession(HcSession hcSession);
 }
 

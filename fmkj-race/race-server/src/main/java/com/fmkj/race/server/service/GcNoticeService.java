@@ -4,7 +4,6 @@ import com.fmkj.common.base.BaseService;
 import com.fmkj.race.dao.domain.GcNotice;
 import com.fmkj.race.dao.queryVo.NoticeQueryPage;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,4 +27,12 @@ public interface GcNoticeService extends BaseService<GcNotice> {
 
 
 
+    /**
+     * @author yangshengbin
+     * @Description：查询最新一条中奖用户信息
+     * @date 2018/9/4 0004 10:47
+     * @param
+     * @return
+    */
+    List<Map<String,Object>> queryOneNewNotice();
 }

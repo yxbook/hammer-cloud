@@ -14,13 +14,13 @@ import java.util.List;
 **/
 public interface GcPimageService extends BaseService<GcPimage> {
 
-    
+
     /**
      * @author yangshengbin
      * @Description：传入活动id查询活动产品的所有图片
      * @date 2018/9/4 0004 16:19
      * @param gcBaseModel
-     * @return 
+     * @return
     */
     List<GcPimage> queryActivityImageById(GcBaseModel gcBaseModel);
 }

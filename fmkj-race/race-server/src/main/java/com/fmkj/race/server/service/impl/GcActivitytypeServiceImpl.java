@@ -2,7 +2,6 @@ package com.fmkj.race.server.service.impl;
 
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
-import com.fmkj.race.dao.domain.GcPimage;
 import com.fmkj.race.dao.mapper.GcActivitytypeMapper;
 import com.fmkj.race.dao.domain.GcActivitytype;
 import com.fmkj.race.server.service.GcActivitytypeService;

@@ -25,4 +25,15 @@
 		<result column="cdbid" jdbcType="BIGINT" property="cdbid" />
 	</resultMap>
 
+
+	<!-- 查询最新一条中奖用户的信息 -->
+	<select id="queryOneNewNotice" resultType="java.util.Map">
+		select ga.id as aid,ga.name,ga.pname,ga.pnumber,ga.price,ha.id as uid,ha.nickname
+		from gc_activity ga
+		left join hc_account ha on ga.getid=ha.id
+		where ga.getid is not null
+		order by endtime desc
+		limit 0,1
+	</select>
+
 </mapper>

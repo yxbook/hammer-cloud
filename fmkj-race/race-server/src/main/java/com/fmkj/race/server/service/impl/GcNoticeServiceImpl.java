@@ -50,4 +50,15 @@ public class GcNoticeServiceImpl extends BaseServiceImpl<GcNoticeMapper, GcNotic
 
 
 
+    /**查询最新一条中奖用户信息
+     * @author yangshengbin
+     * @Description：
+     * @date 2018/9/4 0004 10:48
+     * @param
+     * @return java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+    */
+    public List<Map<String, Object>> queryOneNewNotice() {
+
+        return gcNoticeMapper.queryOneNewNotice();
+    }
 }

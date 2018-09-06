@@ -19,7 +19,7 @@ public interface GcNoticeMapper extends BaseMapper<GcNotice> {
 
     /**
      * @author yangshengbin
-     * @Description：
+     * @Description：查询用户所有通知信息
      * @date 2018/9/3 0003 16:46
      * @param
      * @return List
@@ -27,4 +27,13 @@ public interface GcNoticeMapper extends BaseMapper<GcNotice> {
     List<Map<String,Object>> queryGcNoticeByUid(NoticeQueryPage  noticeQueryPage);
 
 
+
+    /**
+     * @author yangshengbin
+     * @Description：查询最新一条中奖用户信息
+     * @date 2018/9/4 0004 10:48
+     * @param
+     * @return
+    */
+    List<Map<String,Object>> queryOneNewNotice();
 }
