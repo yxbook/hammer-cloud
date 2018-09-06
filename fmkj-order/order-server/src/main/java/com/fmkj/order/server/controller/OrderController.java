@@ -45,7 +45,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     @Autowired
     private ProductService productService;
 
-    @ApiOperation(value="查询订单列表", notes="分页查询订单列表")
+    @ApiOperation(value="分页查询订单列表", notes="分页查询订单列表")
     @PutMapping("/getOrderPage")
     public BaseResult<Page<OrderDto>> getOrderPage(@RequestBody OrderQueryVo orderQueryVo){
         try {
@@ -58,6 +58,20 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("查询订单列表异常：" + e.getMessage());
+        }
+    }
+
+    @ApiOperation(value="根据ID查询订单详情", notes="根据ID查询订单详情-入参：ID")
+    @PutMapping("/getOrderById")
+    public BaseResult<OrderInfo> getOrderById(@RequestBody OrderQueryVo orderQueryVo){
+        try {
+            if(StringUtils.isNull(orderQueryVo) || StringUtils.isNull(orderQueryVo.getId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
+            }
+            OrderInfo orderInfo = orderService.selectById(orderQueryVo.getId());
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", orderInfo);
+        } catch (Exception e) {
+            throw new RuntimeException("根据ID查询订单异常：" + e.getMessage());
         }
     }
 
@@ -80,7 +94,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    @ApiOperation(value="取消订单", notes="取消订单、需要把P能量退回到商品的库存中--入参为：id, productId")
+    @ApiOperation(value="取消订单", notes="取消订单、需要把P能量退回到商品的库存中--入参为：id, productId, tradeNum")
     @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "取消订单")
     @PostMapping("/cancelOrder")
     public BaseResult cancelOrder(@RequestBody OrderInfo orderInfo){
@@ -90,6 +104,9 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             }
             if(StringUtils.isNull(orderInfo.getProductId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getTradeNum())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "交易数量不能为空", false);
             }
             orderInfo.setUpdateTime(new Date());
             orderInfo.setOrderStatus(OrderEnum.ORDER_CANCEL.status);
@@ -206,7 +223,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    @ApiOperation(value="卖方支付确认", notes="卖方出售P能量、收到买方支付金额后确认放出P能量--入参为：id, productId")
+    @ApiOperation(value="卖方支付确认", notes="卖方出售P能量、收到买方支付金额后确认放出P能量--入参为：id, productId, userId, tradeNum")
     @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "卖方支付确认")
     @PostMapping("/sellerPayConfirm")
     public BaseResult sellerPayConfirm(@RequestBody OrderInfo orderInfo){
@@ -217,13 +234,19 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             if(StringUtils.isNull(orderInfo.getProductId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
             }
+            if(StringUtils.isNull(orderInfo.getUserId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "userId不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getTradeNum())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "交易数量不能为空", false);
+            }
             orderInfo.setUpdateTime(new Date());
             orderInfo.setEndTime(new Date());
             orderInfo.setIsPay(PayEnum.PAY_SELLER_PAY.status);
             orderInfo.setOrderStatus(OrderEnum.ORDER_SUCCESS.status);
             boolean result = orderService.sellerPayConfirm(orderInfo);
             if(result){
-                return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付成功","卖方支付"+orderInfo.getTradeNum()+"P");
+                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(),"支付成功","卖方支付"+orderInfo.getTradeNum()+"P");
             }else{
                 return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付失败","卖方支付P能量失败");
             }

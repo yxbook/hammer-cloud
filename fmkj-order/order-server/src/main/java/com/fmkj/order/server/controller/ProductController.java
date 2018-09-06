@@ -65,6 +65,20 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
         }
     }
 
+    @ApiOperation(value="根据ID查询商品详情", notes="根据ID查询商品详情-入参：ID")
+    @PutMapping("/getProductById")
+    public BaseResult<ProductInfo> getOrderById(@RequestBody ProductQueryVo productQueryVo){
+        try {
+            if(StringUtils.isNull(productQueryVo) || StringUtils.isNull(productQueryVo.getId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
+            }
+            ProductInfo productInfo = productService.selectById(productQueryVo.getId());
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", productInfo);
+        } catch (Exception e) {
+            throw new RuntimeException("根据ID查询商品异常：" + e.getMessage());
+        }
+    }
+
     @ApiOperation(value="删除商品", notes="根据ID删除商品")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "删除商品")
     @PostMapping("/deleteById")
