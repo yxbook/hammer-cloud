@@ -3,6 +3,9 @@ package com.fmkj.race.server.service;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
 
+import java.util.HashMap;
+import java.util.List;
+
 /**
 * @Description: GcJoinactivityrecord Service接口
 * @Author: yangshengbin
@@ -54,4 +57,11 @@ public interface GcJoinactivityrecordService extends BaseService<GcJoinactivityr
      * @return
     */
     boolean initAndloadContractAndChangeStage(String contract, Integer aid);
+
+
+    /**
+     * @author ru
+     * @Description:获得活动参与记录
+     */
+    List<HashMap<String,Object>> queryJoinActivityByAid(Integer aid);
 }

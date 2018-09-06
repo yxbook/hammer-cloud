@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
 
 /**
 * @Description: GcJoinactivityrecord Service实现
@@ -252,6 +254,14 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
     }
 
 
-
+    /**
+     * 活动参与记录
+     * @author ru
+     * @param aid
+     * @return
+     */
+    public List<HashMap<String,Object>> queryJoinActivityByAid(Integer aid) {
+        return gcJoinactivityrecordMapper.queryJoinActivityByAid(aid);
+    }
 
 }

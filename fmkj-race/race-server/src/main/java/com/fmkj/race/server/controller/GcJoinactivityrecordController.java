@@ -9,6 +9,7 @@ import com.fmkj.race.dao.domain.GcJoinactivityrecord;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcJoinactivityrecordService;
 import com.fmkj.race.server.rabbitmq.MessageProducer;
+import com.fmkj.race.server.service.GcPremiumService;
 import com.fmkj.race.server.util.TokenStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @ Author     ：yangshengbin
@@ -32,6 +35,8 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
 
     @Autowired
     private MessageProducer messageProducer;
+    @Autowired
+    private GcJoinactivityrecordService gcJoinactivityrecordService;
 
     /**
      *  用户参加活动
@@ -57,6 +62,13 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
     }
 
 
+    @ApiOperation(value="活动参与记录 ", notes="活动参与记录")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "活动参与记录")
+    @PutMapping("/queryJoinActivityByAid")
+    public BaseResult<HashMap<String,Object>> queryJoinActivityByAid(@RequestBody Map<String,Object> param) {
+        List<HashMap<String, Object>> rets = gcJoinactivityrecordService.queryJoinActivityByAid((Integer) param.get("aid"));
+        return new BaseResult(BaseResultEnum.SUCCESS,rets);
+    }
 
 
 }
