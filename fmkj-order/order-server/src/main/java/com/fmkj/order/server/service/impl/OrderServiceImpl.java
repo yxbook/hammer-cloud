@@ -1,11 +1,14 @@
 package com.fmkj.order.server.service.impl;
 
 
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
+import com.fmkj.order.dao.domain.HcAccount;
 import com.fmkj.order.dao.domain.OrderInfo;
 import com.fmkj.order.dao.domain.ProductInfo;
 import com.fmkj.order.dao.dto.OrderDto;
+import com.fmkj.order.dao.mapper.HcAccountMapper;
 import com.fmkj.order.dao.mapper.OrderMapper;
 import com.fmkj.order.dao.mapper.ProductMapper;
 import com.fmkj.order.dao.queryVo.OrderQueryVo;
@@ -37,25 +40,28 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
     @Autowired
     private ProductMapper productMapper;
 
+    @Autowired
+    private HcAccountMapper hcAccountMapper;
+
     @Override
-    public List<OrderDto> getOrderPage(OrderQueryVo orderQueryVo) {
-        return orderMapper.queryOrderPage(orderQueryVo);
+    public List<OrderDto> getOrderPage(Pagination page, OrderQueryVo orderQueryVo) {
+        return orderMapper.queryOrderPage(page, orderQueryVo);
     }
 
     @Override
-    public List<OrderDto> getOrderPageBySeller(OrderQueryVo orderQueryVo) {
-        return orderMapper.getOrderPageBySeller(orderQueryVo);
+    public List<OrderDto> getOrderPageBySeller(Pagination page, OrderQueryVo orderQueryVo) {
+        return orderMapper.getOrderPageBySeller(page, orderQueryVo);
     }
 
     @Override
     public boolean sellerPayConfirm(OrderInfo orderInfo) {
         int result = orderMapper.updateById(orderInfo);
         if(result > 0){
-            ProductInfo productInfo = productMapper.selectById(orderInfo.getProductId());
-            Double stock = productInfo.getProductStock();
+            HcAccount hcAccount = hcAccountMapper.selectById(orderInfo.getUserId());
+            Double myP = hcAccount.getMyP();
             Double tradeNum = orderInfo.getTradeNum();
-            productInfo.setProductStock(stock - tradeNum);
-            productMapper.updateById(productInfo);
+            hcAccount.setMyP(myP + tradeNum);
+            hcAccountMapper.updateById(hcAccount);
             return true;
         }
         return false;
