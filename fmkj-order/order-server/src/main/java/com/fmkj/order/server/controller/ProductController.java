@@ -53,8 +53,8 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     @PutMapping("/getProductPage")
     public BaseResult<Page<ProductDto>> getProductPage(@RequestBody ProductQueryVo productQueryVo){
         try {
-            Page<ProductDto> tPage =new Page<ProductDto>(productQueryVo.getPageNo(),productQueryVo.getPageSize());
-            List<ProductDto> list = productService.getProductPage(productQueryVo);
+            Page<ProductDto> tPage = buildPage(productQueryVo);
+            List<ProductDto> list = productService.getProductPage(tPage, productQueryVo);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }
@@ -217,6 +217,19 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
 
         return entityWrapper;
 
+    }
+
+    private Page<ProductDto> buildPage(ProductQueryVo productQueryVo) {
+        Page<ProductDto> tPage =new Page<ProductDto>(productQueryVo.getPageNo(),productQueryVo.getPageSize());
+        if(StringUtils.isNotEmpty(productQueryVo.getOrderBy())){
+            tPage.setOrderByField(productQueryVo.getOrderBy());
+            tPage.setAsc(false);
+        }
+        if(StringUtils.isNotEmpty(productQueryVo.getOrderByAsc())){
+            tPage.setOrderByField(productQueryVo.getOrderByAsc());
+            tPage.setAsc(true);
+        }
+        return tPage;
     }
 
 }

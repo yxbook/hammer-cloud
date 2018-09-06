@@ -49,8 +49,12 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     @PutMapping("/getOrderPage")
     public BaseResult<Page<OrderDto>> getOrderPage(@RequestBody OrderQueryVo orderQueryVo){
         try {
-            List<OrderDto> list = orderService.getOrderPage(orderQueryVo);
-            Page<OrderDto> tPage =buildPage(orderQueryVo, list);
+            Page<OrderDto> tPage = buildPage(orderQueryVo);
+            List<OrderDto> list = orderService.getOrderPage(tPage, orderQueryVo);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("查询订单列表异常：" + e.getMessage());
@@ -64,8 +68,12 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             if(StringUtils.isNull(orderQueryVo) || StringUtils.isNull(orderQueryVo.getSellerId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "卖家用户ID不能为空", false);
             }
-            List<OrderDto> list = orderService.getOrderPageBySeller(orderQueryVo);
-            Page<OrderDto> tPage =buildPage(orderQueryVo, list);
+            Page<OrderDto> tPage = buildPage(orderQueryVo);
+            List<OrderDto> list = orderService.getOrderPageBySeller(tPage, orderQueryVo);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("查询商品下订单列表异常：" + e.getMessage());
@@ -224,15 +232,6 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
         }
     }
 
-    private Page<OrderDto> buildPage(OrderQueryVo orderQueryVo, List<OrderDto> list){
-        Page<OrderDto> tPage =new Page<OrderDto>(orderQueryVo.getPageNo(),orderQueryVo.getPageSize());
-        if(StringUtils.isNotEmpty(list)){
-            tPage.setTotal(list.size());
-        }
-        tPage.setRecords(list);
-        return tPage;
-    }
-
     /**
      * 构建查询条件
      * @param productQueryVo
@@ -268,6 +267,19 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
 
         return entityWrapper;
 
+    }
+
+    private Page<OrderDto> buildPage(OrderQueryVo orderQueryVo) {
+        Page<OrderDto> tPage =new Page<OrderDto>(orderQueryVo.getPageNo(),orderQueryVo.getPageSize());
+        if(StringUtils.isNotEmpty(orderQueryVo.getOrderBy())){
+            tPage.setOrderByField(orderQueryVo.getOrderBy());
+            tPage.setAsc(false);
+        }
+        if(StringUtils.isNotEmpty(orderQueryVo.getOrderByAsc())){
+            tPage.setOrderByField(orderQueryVo.getOrderByAsc());
+            tPage.setAsc(true);
+        }
+        return tPage;
     }
 
 

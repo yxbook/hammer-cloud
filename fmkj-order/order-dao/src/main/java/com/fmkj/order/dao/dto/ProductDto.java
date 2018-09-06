@@ -12,6 +12,17 @@ public class ProductDto extends ProductInfo{
 
     private HcAccount hcAccount;
 
+    // 交易成功订单数量
+    private Integer successNum;
+
+    public Integer getSuccessNum() {
+        return successNum;
+    }
+
+    public void setSuccessNum(Integer successNum) {
+        this.successNum = successNum;
+    }
+
     public HcAccount getHcAccount() {
         return hcAccount;
     }
