@@ -17,6 +17,7 @@
 		<result column="is_pay"  property="isPay" />
 		<result column="trade_num"  property="tradeNum" />
 		<result column="product_id"  property="productId" />
+		<result column="order_type"  property="orderType" />
 		<association column="hc" property="hcAccount" javaType="com.fmkj.order.dao.domain.HcAccount">
 			<id column="id" property="id" />
 			<result column="nation" property="nation" />
@@ -46,6 +47,7 @@
 		SELECT
 			fm.id,
 			fm.order_no,
+		    fm.order_type,
 			fm.user_id,
 			fm.seller_id,
 			fm.payment,
@@ -92,6 +94,7 @@
 		SELECT
 			fm.id,
 			fm.order_no,
+		    fm.order_type,
 			fm.user_id,
 			fm.seller_id,
 			fm.payment,

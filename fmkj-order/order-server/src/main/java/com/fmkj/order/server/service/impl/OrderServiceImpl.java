@@ -54,6 +54,26 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
     }
 
     @Override
+    public boolean sellPToPublisher(OrderInfo orderInfo) {
+        int result = orderMapper.updateById(orderInfo);
+        if(result > 0){
+            Double tradeNum = orderInfo.getTradeNum();
+            // 1、卖方扣除自己的P能量
+            HcAccount hcAccount = hcAccountMapper.selectById(orderInfo.getUserId());
+            Double myP = hcAccount.getMyP();
+            hcAccount.setMyP(myP - tradeNum);
+            hcAccountMapper.updateById(hcAccount);
+            // 2、收方增加相应的P能量
+            HcAccount seller = hcAccountMapper.selectById(orderInfo.getSellerId());
+            Double sellerP = seller.getMyP();
+            seller.setMyP(sellerP + tradeNum);
+            hcAccountMapper.updateById(seller);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean sellerPayConfirm(OrderInfo orderInfo) {
         int result = orderMapper.updateById(orderInfo);
         if(result > 0){

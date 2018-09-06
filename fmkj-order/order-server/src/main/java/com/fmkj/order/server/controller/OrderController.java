@@ -21,6 +21,8 @@ import com.fmkj.order.server.service.ProductService;
 import com.fmkj.order.server.util.MakeOrderNumUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,8 @@ import java.util.List;
 @DependsOn("springContextHolder")
 @Api(tags ={ "订单服务"},description = "商品服务接口-网关路径/api-order")
 public class OrderController extends BaseController<OrderInfo, OrderService> implements BaseApiService<OrderInfo> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderController.class);
 
     @Autowired
     private OrderService orderService;
@@ -171,6 +175,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             if(StringUtils.isNull(orderInfo.getSellerId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "卖家用户ID不能为空", false);
             }
+            orderInfo.setOrderStatus(OrderEnum.ORDER_ADD.status);
             orderInfo.setOrderNo(MakeOrderNumUtils.createOrderNum());
             orderInfo.setCreateTime(new Date());
             boolean result = orderService.addOrder(orderInfo);
@@ -231,9 +236,6 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
             }
-            if(StringUtils.isNull(orderInfo.getProductId())){
-                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
-            }
             if(StringUtils.isNull(orderInfo.getUserId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "userId不能为空", false);
             }
@@ -254,6 +256,68 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             throw new RuntimeException("卖方支付确认异常：" + e.getMessage());
         }
     }
+
+    /**
+     *  1、卖方扣除自己的P能量
+     *  2、收P的人增加相应的P能量
+     * @param orderInfo
+     * @return
+     */
+    @ApiOperation(value="卖出P能量确认", notes="将自己的P能量卖给别人--入参为：userId, sellerId, tradeNum")
+    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "卖方支付确认")
+    @PostMapping("/sellPToPublisher")
+    public BaseResult sellPToPublisher(@RequestBody OrderInfo orderInfo){
+        try {
+            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getSellerId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "sellerId不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getUserId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "userId不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getTradeNum())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "交易数量不能为空", false);
+            }
+            orderInfo.setUpdateTime(new Date());
+            orderInfo.setPaymentTime(new Date());
+            orderInfo.setOrderStatus(OrderEnum.ORDER_PAY.status);
+            boolean result = orderService.sellPToPublisher(orderInfo);
+            if(result){
+                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(),"成功卖出","成功卖出"+orderInfo.getTradeNum()+"P");
+            }else{
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(),"卖出失败",false);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("卖出P能量异常：" + e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value="收P能量支付确认", notes="收P能量的人作支付金额确认、向出售P能量的人支付金额-入参为：id, paymentType")
+    @OrderLog(module= LogConstant.HC_ORDER, actionDesc = "卖方支付确认")
+    @PostMapping("/merchantPayConfirm")
+    public BaseResult merchantPayConfirm(@RequestBody OrderInfo orderInfo){
+        try {
+            if(StringUtils.isNull(orderInfo) || StringUtils.isNull(orderInfo.getId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "订单ID不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getPaymentType())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "支付类型不能为空", false);
+            }
+            orderInfo.setUpdateTime(new Date());
+            orderInfo.setEndTime(new Date());
+            orderInfo.setIsPay(PayEnum.PAY_BUYER_PAY.status);
+            orderInfo.setPaymentType(orderInfo.getPaymentType());
+            orderInfo.setOrderStatus(OrderEnum.ORDER_SUCCESS.status);
+            if (orderService.updateById(orderInfo))return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "支付成功",true);
+            else return new BaseResult(BaseResultEnum.ERROR.getStatus(),"支付失败",false);
+        } catch (Exception e) {
+            throw new RuntimeException("支付金额确认异常：" + e.getMessage());
+        }
+    }
+
 
     /**
      * 构建查询条件

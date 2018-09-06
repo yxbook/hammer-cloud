@@ -101,6 +101,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
         try {
             productInfo.setProductNo(MakeOrderNumUtils.createProductNum());
             productInfo.setProductStock(productInfo.getProductSum());
+            productInfo.setStatus(ProductEnum.PRODUCT_ADD.status);
             productInfo.setCreateTime(new Date());
             return super.insert(productInfo);
         } catch (Exception e) {
@@ -124,7 +125,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     }
 
 
-    @ApiOperation(value="发布商品", notes="发布商品、扣除用户等于销售数量的P能量--入参为：id, userId, productSum")
+    @ApiOperation(value="发布商品", notes="发布商品、扣除用户等于销售数量的P能量--入参为：id, userId, productSum, productType")
     @OrderLog(module= LogConstant.HC_PRODUCT, actionDesc = "发布商品")
     @PostMapping("/publishProduct")
     public BaseResult publishProduct(@RequestBody ProductInfo productInfo){
@@ -137,6 +138,9 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
             }
             if(StringUtils.isNull(productInfo.getProductSum())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "出售数量不能为空", false);
+            }
+            if(StringUtils.isNull(productInfo.getProductType())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "类型不能为空", false);
             }
 
             //第一步：更新商品表状态

@@ -10,6 +10,7 @@ import com.fmkj.order.dao.dto.ProductDto;
 import com.fmkj.order.dao.mapper.HcAccountMapper;
 import com.fmkj.order.dao.mapper.ProductMapper;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
+import com.fmkj.order.server.enmu.ProductTypeEnum;
 import com.fmkj.order.server.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +45,11 @@ public class ProductServiceImpl extends BaseServiceImpl<ProductMapper, ProductIn
     }
 
     /**
-     * 发布商品
+     *   发布商品：商品类型1、卖出;2、买入
      * //第一步：更新商品表状态
      * //第二步：扣除P能量
+     *
+     *  买入不需要扣除能量
      * @param productInfo
      * @return
      */
@@ -54,6 +57,10 @@ public class ProductServiceImpl extends BaseServiceImpl<ProductMapper, ProductIn
     public boolean publishProduct(ProductInfo productInfo) {
         int result = productMapper.updateById(productInfo);
         if (result > 0){
+            //买入不需要扣除能量
+            if(productInfo.getProductType() == ProductTypeEnum.BUY_TYPE.status){
+                return true;
+            }
             HcAccount hcAccount = hcAccountMapper.selectById(productInfo.getUserId());
             Double productSum = productInfo.getProductSum();
             Double myP = hcAccount.getMyP();

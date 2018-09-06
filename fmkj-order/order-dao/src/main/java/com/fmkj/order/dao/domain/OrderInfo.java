@@ -29,6 +29,9 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
     @TableField("order_no")
     private String orderNo;    //订单编号
 
+    @TableField("order_type")
+    private Integer orderType;  // 订单类型1、买入  2、卖出
+
     @TableField("user_id")
     private Integer userId;   //下单用户
 
@@ -63,6 +66,14 @@ public class OrderInfo extends Model<OrderInfo> implements Serializable{
 
     @TableField("trade_num")
     private Double tradeNum; //交易数量,购买或卖出数量
+
+    public Integer getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(Integer orderType) {
+        this.orderType = orderType;
+    }
 
     public Integer getSellerId() {
         return sellerId;

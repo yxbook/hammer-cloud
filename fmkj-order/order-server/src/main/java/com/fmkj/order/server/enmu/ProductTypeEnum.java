@@ -1,17 +1,16 @@
 package com.fmkj.order.server.enmu;
 
 /**
- * @Description: 商品状态  商品状态0、新建状态; 1、正常; 2、下架; -1、删除
+ * @Description: 商品类型1、卖出;2、买入
  * @Author: youxun
  * @Version: 1.0
  **/
-public enum ProductEnum {
-    PRODUCT_ADD(0,"新建状态"),
-    PRODUCT_LINE(1,"在线-已发布"),
-    PRODUCT_UNLINE(2,"下架");
+public enum ProductTypeEnum {
+    SELL_TYPE(1,"卖出"),
+    BUY_TYPE(2,"买入");
     public int status;
     public String msg;
-    private ProductEnum(int status, String msg) {
+    private ProductTypeEnum(int status, String msg) {
         this.status = status;
         this.msg = msg;
     }

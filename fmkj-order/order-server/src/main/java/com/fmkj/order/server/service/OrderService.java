@@ -24,4 +24,6 @@ public interface OrderService extends BaseService<OrderInfo> {
     boolean updateOrder(OrderInfo orderInfo);
 
     List<OrderDto> getOrderPageBySeller(Pagination page, OrderQueryVo orderQueryVo);
+
+    boolean sellPToPublisher(OrderInfo orderInfo);
 }
