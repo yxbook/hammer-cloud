@@ -21,6 +21,8 @@ public class LogConstant {
 
     public static final String Gc_Activity = "竞锤服务";
 
+    public static final String Gc_Join_Activity_Record = "活动参与记录";
+
 
 
 }

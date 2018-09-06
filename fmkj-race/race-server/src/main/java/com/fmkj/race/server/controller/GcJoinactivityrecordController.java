@@ -63,7 +63,7 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
 
 
     @ApiOperation(value="活动参与记录 ", notes="活动参与记录")
-    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "活动参与记录")
+    @RaceLog(module= LogConstant.Gc_Join_Activity_Record, actionDesc = "活动参与记录")
     @PutMapping("/queryJoinActivityByAid")
     public BaseResult<HashMap<String,Object>> queryJoinActivityByAid(@RequestBody Map<String,Object> param) {
         List<HashMap<String, Object>> rets = gcJoinactivityrecordService.queryJoinActivityByAid((Integer) param.get("aid"));
