@@ -12,6 +12,7 @@ import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @time 2018年8月7日 下午7:55:30
  * @developers 费马科技
  */
-/*@Service
-@Transactional*/
+@Service
+@Transactional
 @Component
-@RabbitListener(queues="workqueue")
+@EnableScheduling
+@RabbitListener(queues = "workqueue", containerFactory = "rabbitListenerContainerFactory")
 public class DirectConsumerOne implements MessageListener{
 
 

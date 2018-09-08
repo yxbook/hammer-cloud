@@ -25,10 +25,8 @@ public class MessageProducer {
 	public HashMap<String, Object> send(Object message) {
 		
 		HashMap<String, Object> map =  new HashMap<String, Object>();
-		//同时将该活动加入用户收藏表
+
 		GcJoinactivityrecord joins = (GcJoinactivityrecord) message;
-		System.err.println("uid="+joins.getUid());
-		System.err.println("aid="+joins.getAid());
 		try {
 			//加入队列
 			amqpTemplate.convertAndSend("workqueue", joins);
