@@ -15,6 +15,7 @@
         <module>fmkj-order</module>
         <module>fmkj-hammer</module>
         <module>fmkj-user</module>
+        <module>fmkj-moon</module>
     </modules>
     <packaging>pom</packaging>
 
