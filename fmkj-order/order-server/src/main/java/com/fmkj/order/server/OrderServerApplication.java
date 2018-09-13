@@ -8,7 +8,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
 @SpringCloudApplication
 @ComponentScan(basePackages = {"com.fmkj.order.server", "com.fmkj.order.dao.domain", "com.fmkj.order.client"})
 @EnableFeignClients/*(basePackages = "com.fmkj.order.client")*/

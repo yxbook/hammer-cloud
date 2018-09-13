@@ -14,14 +14,12 @@ import com.fmkj.race.dao.queryVo.NoticeQueryPage;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcMessageService;
 import com.fmkj.race.server.service.GcNoticeService;
-import com.fmkj.race.server.util.TokenStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +40,6 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
     @Autowired
     private GcMessageService gcMessageService;
 
-
-
     /**
      * @author yangshengbin
      * @Description：传入通知id修改用户通知已读状态
@@ -54,17 +50,7 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
     @ApiOperation(value="修改用户通知已读状态", notes="修改用户通知已读状态")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "修改用户通知已读状态")
     @PostMapping("/updateNoticeById")
-    public BaseResult updateNoticeById(@RequestBody GcNotice gcNotice, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult updateNoticeById(@RequestBody GcNotice gcNotice){
         try {
             if( gcNotice.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
@@ -83,17 +69,7 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
     @ApiOperation(value="分页查询用户所有通知信息", notes="分页查询用户所有通知信息")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "分页查询用户所有通知信息")
     @PutMapping("/queryGcNoticeByUid")
-    public BaseResult<Page<GcNotice>> queryGcNoticeByUid(@RequestBody NoticeQueryPage noticeQueryPage, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult<Page<GcNotice>> queryGcNoticeByUid(@RequestBody NoticeQueryPage noticeQueryPage){
         try {
 
             List<Map<String,Object>> map = gcNoticeService.queryGcNoticeByUid(noticeQueryPage);
@@ -128,17 +104,7 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
     @ApiOperation(value="用户删除通知信息", notes="用户删除通知信息")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户删除通知信息")
     @PutMapping("/deleteGcNoticeById")
-    public BaseResult deleteGcNoticeById(@RequestBody GcNotice gcNotice, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult deleteGcNoticeById(@RequestBody GcNotice gcNotice){
         try {
             if(StringUtils.isNull(gcNotice) || gcNotice.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");

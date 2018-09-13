@@ -9,10 +9,8 @@ import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.order.dao.domain.OrderInfo;
-import com.fmkj.order.dao.domain.ProductInfo;
 import com.fmkj.order.dao.dto.OrderDto;
 import com.fmkj.order.dao.queryVo.OrderQueryVo;
-import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.enmu.OrderEnum;
 import com.fmkj.order.server.enmu.PayEnum;
@@ -27,9 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -241,6 +237,9 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
             }
             if(StringUtils.isNull(orderInfo.getTradeNum())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "交易数量不能为空", false);
+            }
+            if(StringUtils.isNull(orderInfo.getProductId())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "商品ID不能为空", false);
             }
             orderInfo.setUpdateTime(new Date());
             orderInfo.setEndTime(new Date());

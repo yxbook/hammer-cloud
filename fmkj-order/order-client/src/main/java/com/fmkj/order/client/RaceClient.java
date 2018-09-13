@@ -1,9 +1,9 @@
+/*
 package com.fmkj.order.client;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
-import com.fmkj.race.dao.domain.HcAccount;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
 
+*/
 /**
  * @Auther: youxun
  * @Date: 2018/8/25 15:53
  * @Description:
- */
+ *//*
+
 //name表示访问哪个应用的接口、对应配置文件中的name值
 @FeignClient(name="FMKJ-RACE", fallback = RaceClient.RaceClientFallBack.class)
 public interface RaceClient{
@@ -34,3 +36,4 @@ public interface RaceClient{
         }
     }
 }
+*/

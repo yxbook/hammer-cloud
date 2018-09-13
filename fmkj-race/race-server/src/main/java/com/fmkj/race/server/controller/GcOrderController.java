@@ -8,7 +8,6 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.race.dao.domain.GcOrder;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcOrderService;
-import com.fmkj.race.server.util.TokenStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +54,6 @@ public class GcOrderController extends BaseController<GcOrder,GcOrderService> im
         Integer aid = Integer.parseInt(map.get("aid").toString());//活动id
         String name = map.get("name").toString();//物流名称
         String number = map.get("number").toString();//物流单号
-        String token = map.get("token").toString();//token信息
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
         GcOrder gcOrder = new GcOrder();
         gcOrder.setAid(aid);
         gcOrder.setName(name);
@@ -92,17 +81,6 @@ public class GcOrderController extends BaseController<GcOrder,GcOrderService> im
     public BaseResult collectGoods(@RequestBody Map<String, Object> map){
 
         Integer aid = Integer.parseInt(map.get("aid").toString());//活动id
-
-        String token = map.get("token").toString();//token信息
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
         GcOrder order = new GcOrder();
         order.setAid(aid);
         boolean result = gcOrderService.collectGoods(order);

@@ -1,7 +1,6 @@
 package com.fmkj.race.server.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
@@ -9,16 +8,13 @@ import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.race.dao.domain.*;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
-import com.fmkj.race.dao.queryVo.NoticeQueryPage;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.*;
 import com.fmkj.race.server.util.CalendarTime;
 import com.fmkj.race.server.util.GlobalConstants;
 import com.fmkj.race.server.util.SensitiveWordTest;
-import com.fmkj.race.server.util.TokenStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.tomcat.util.descriptor.web.SecurityRoleRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -83,21 +78,10 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         Double price = new Double(jiage);//产品价格
         Integer num = Integer.parseInt( map.get("num").toString());//参与活动人数
         Integer par = Integer.parseInt(map.get("par").toString());//票面值
-        String token = (String) map.get("token");//token信息
         Integer typeid = Integer.parseInt( map.get("typeid").toString());//对应活动类型
         String yijia = map.get("premium").toString();
         Double premium = new Double(yijia );//产品的溢价率
         String type = (String) map.get("type");//活动类型
-
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
 
         //判断用户是否黑名单
         BmList bl = new BmList();
@@ -213,17 +197,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="活动广场分页查询所有活动", notes="活动广场分页查询所有活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "活动广场分页查询所有活动")
     @PutMapping("/queryAllActivityByPage")
-    public BaseResult queryAllActivityByPage(@RequestBody GcBaseModel gcBaseModel, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult queryAllActivityByPage(@RequestBody GcBaseModel gcBaseModel){
         try {
             //活动广场分页查询所有活动,只查询活动中(status=2)
             List<HashMap<String, Object>> list = gcActivityService.queryAllActivityByPage(gcBaseModel);
@@ -242,16 +216,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="传入活动id查询活动详情", notes="传入活动id查询活动详情")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入活动id查询活动详情")
     @PutMapping("/queryActivityById")
-    public BaseResult<HashMap<String,Object>> queryActivityById(@RequestBody GcBaseModel gcBaseModel, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
+    public BaseResult<HashMap<String,Object>> queryActivityById(@RequestBody GcBaseModel gcBaseModel){
 
         HashMap<String, Object> map = gcActivityService.queryActivityById(gcBaseModel);
         return new BaseResult(BaseResultEnum.SUCCESS,map);
@@ -263,16 +228,8 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="传入活动id查询活动产品的所有图片", notes="传入活动id查询活动产品的所有图片")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入活动id查询活动产品的所有图片")
     @PutMapping("/queryActivityImageById")
-    public BaseResult queryActivityImageById(@RequestBody GcBaseModel gcBaseModel, @RequestParam String token){
+    public BaseResult queryActivityImageById(@RequestBody GcBaseModel gcBaseModel){
 
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
         List<GcPimage> list = gcPimageService.queryActivityImageById(gcBaseModel);
         return new BaseResult(BaseResultEnum.SUCCESS,list);
 
@@ -285,16 +242,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="传入uid查询用户参与的活动", notes="传入uid查询用户参与的活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入uid查询用户参与的活动")
     @PutMapping("/queryMyJoinActivityByUid")
-    public BaseResult queryMyJoinActivityByUid(@RequestBody GcBaseModel gcBaseModel, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
+    public BaseResult queryMyJoinActivityByUid(@RequestBody GcBaseModel gcBaseModel){
         List<HashMap<String, Object>> list = gcActivityService.queryMyJoinActivityByUid(gcBaseModel);
         return new BaseResult(BaseResultEnum.SUCCESS,list);
 
@@ -309,17 +257,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="传入uid查询用户发起的活动 ", notes="传入uid查询用户发起的活动 ")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入uid查询用户发起的活动 ")
     @PutMapping("/queryMyStartActivityByUid")
-    public BaseResult queryMyStartActivityByUid(@RequestBody GcBaseModel gcBaseModel, @RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult queryMyStartActivityByUid(@RequestBody GcBaseModel gcBaseModel){
         List<HashMap<String, Object>> list = gcActivityService.queryMyStartActivityByUid(gcBaseModel);
         return new BaseResult(BaseResultEnum.SUCCESS,list);
 

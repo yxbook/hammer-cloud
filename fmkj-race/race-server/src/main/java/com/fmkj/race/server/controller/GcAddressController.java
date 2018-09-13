@@ -11,7 +11,6 @@ import com.fmkj.common.util.StringUtils;
 import com.fmkj.race.dao.domain.GcAddress;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcAddressService;
-import com.fmkj.race.server.util.TokenStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +46,7 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
     @ApiOperation(value="新增用户地址", notes="新增用户地址")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "新增用户地址")
     @PostMapping("/insertNewAddress")
-    public BaseResult insertNewAddress(@RequestBody GcAddress gcAddress ,@RequestParam String token) {
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult insertNewAddress(@RequestBody GcAddress gcAddress) {
         try {
             if(StringUtils.isNull(gcAddress) || gcAddress.getUid() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "UID不能为空", "UID不能为空");
@@ -82,16 +71,7 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
     @ApiOperation(value="传入地址id删除地址", notes="传入地址id删除地址")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入地址id删除地址")
     @PostMapping("/deleteAddressById")
-    public BaseResult deleteAddressById(@RequestBody GcAddress gcAddress,@RequestParam String token){
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult deleteAddressById(@RequestBody GcAddress gcAddress){
         try {
             if( gcAddress.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
@@ -109,16 +89,7 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
     @ApiOperation(value="修改地址", notes="修改地址")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "修改地址")
     @PostMapping("/updateAddressById")
-    public BaseResult updateAddressById(@RequestBody GcAddress gcAddress,@RequestParam String token){
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
+    public BaseResult updateAddressById(@RequestBody GcAddress gcAddress){
         try {
             if( gcAddress.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
@@ -134,18 +105,7 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
     @ApiOperation(value="修改默认地址", notes="修改默认地址")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "修改默认地址")
     @PostMapping("/updateAddressByStatus")
-    public BaseResult updateAddressByStatus(@RequestBody GcAddress gcAddress,@RequestParam String token){
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
-
-
+    public BaseResult updateAddressByStatus(@RequestBody GcAddress gcAddress){
         try {
             if( gcAddress.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");

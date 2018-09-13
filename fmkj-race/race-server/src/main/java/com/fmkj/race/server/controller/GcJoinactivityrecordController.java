@@ -9,8 +9,6 @@ import com.fmkj.race.dao.domain.GcJoinactivityrecord;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcJoinactivityrecordService;
 import com.fmkj.race.server.rabbitmq.MessageProducer;
-import com.fmkj.race.server.service.GcPremiumService;
-import com.fmkj.race.server.util.TokenStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,18 +42,9 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
     @ApiOperation(value="用户参加活动 ", notes="用户参加活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户参加活动")
     @PostMapping("/ActivityRabbitMQ")
-    public BaseResult<HashMap<String, Object>> ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord, @RequestParam String token){
+    public BaseResult<HashMap<String, Object>> ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord){
 
         HashMap<String, Object> map = new HashMap<String, Object>();
-
-        if (token==null||"".equals(token)){
-            return new BaseResult(BaseResultEnum.ERROR.status, "无token信息传入!",null);
-        }
-        TokenStatus tokenStatus = new TokenStatus();
-        Boolean flag = tokenStatus.getStatus(token);
-        if (!flag) {// token验证不通过
-            return new BaseResult(BaseResultEnum.ERROR.status, "您的token过期或不存在!",null);
-        }
         map=messageProducer.send(gcJoinactivityrecord);//生产消息
         return new BaseResult(BaseResultEnum.SUCCESS,map);
 

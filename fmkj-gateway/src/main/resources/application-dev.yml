@@ -28,6 +28,9 @@ zuul:
     order:
       path: /api-order/**
       serviceId: fmkj-order
+    user:
+      path: /api-user/**
+      serviceId: fmkj-user
   #排除某些路由 写法  - /**/myRace/**
   ignored-patterns:
 
