@@ -2,7 +2,7 @@ package com.fmkj.user.server.async;
 
 import com.fmkj.user.dao.domain.UserOperateLog;
 import com.fmkj.user.server.service.UserLogService;
-import com.fmkj.user.server.util.SpringContextHolder;
+import com.fmkj.user.server.util.SpringContextUtil;
 import org.springframework.beans.BeansException;
 
 import java.util.TimerTask;
@@ -23,7 +23,7 @@ public class AsyncFactory {
             @Override
             public void run() {
                 try {
-                    UserLogService raceLogService = SpringContextHolder.getBean(UserLogService.class);
+                    UserLogService raceLogService = SpringContextUtil.getBean(UserLogService.class);
                     raceLogService.insert(operLog);
                 } catch (BeansException e) {
                     e.printStackTrace();

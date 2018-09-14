@@ -12,13 +12,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpringContextHolder implements ApplicationContextAware {
+public class SpringContextUtil implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        SpringContextHolder.applicationContext = applicationContext;
+        SpringContextUtil.applicationContext = applicationContext;
     }
 
     public static ApplicationContext getApplicationContext() {
@@ -37,8 +37,8 @@ public class SpringContextHolder implements ApplicationContextAware {
     }
 
     private static void assertApplicationContext() {
-        if (SpringContextHolder.applicationContext == null) {
-            throw new RuntimeException("applicaitonContext属性为null,请检查是否注入了SpringContextHolder!");
+        if (SpringContextUtil.applicationContext == null) {
+            throw new RuntimeException("applicaitonContext属性为null,请检查是否注入了SpringContextUtil!");
         }
     }
 

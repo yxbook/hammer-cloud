@@ -33,7 +33,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/hcAccount")
-@DependsOn("springContextHoldler")
+@DependsOn("springContextUtil")
 @Api(tags ={ "用户信息"},description = "用户信息接口-网关路径/api-user")
 public class HcAccountController extends BaseController<HcAccount, HcAccountService> implements BaseApiService<HcAccount> {
 
@@ -198,30 +198,25 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "发放p能量")
     @PostMapping("/grantUserP")
     public Boolean grantUserP(Integer id, double par){
+       /* HcAccount ha = new HcAccount();
+        ha.setId(startid);
+        HcAccount account = hcAccountMapper.selectOne(ha);
+        Double allP = null;
+        if(account!=null) {
+            Double myP = account.getMyP();
+            allP = myP+starterP;
+            HcAccount user = new HcAccount();
+            user.setId(account.getId());
+            user.setMyP(allP);
+            hcAccountMapper.updateById(user);*/
         return false;
-
     }
 
-    /*//发放p能量奖励
-    HcAccount ha = new HcAccount();
-            ha.setId(startid);
-    HcAccount account = hcAccountMapper.selectOne(ha);
-    Double allP = null;
-            if(account!=null) {
-        Double myP = account.getMyP();
-        allP = myP+starterP;
-        HcAccount user = new HcAccount();
-        user.setId(account.getId());
-        user.setMyP(allP);
-        hcAccountMapper.updateById(user);
-    }*/
-
-    @ApiOperation(value="更改用户p能量", notes="更改用户p能量")
-    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "更改用户p能量")
+    @ApiOperation(value="根据ID获取用户", notes="根据ID获取用户")
     @PostMapping("/getAccountById")
     public HcAccount getAccountById(Integer id){
-
-        return null;
+        HcAccount hc = hcAccountService.selectById(id);
+        return hc;
 
     }
 
