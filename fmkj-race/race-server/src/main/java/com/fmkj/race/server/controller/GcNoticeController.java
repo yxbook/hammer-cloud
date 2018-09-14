@@ -10,6 +10,9 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.race.dao.domain.GcMessage;
 import com.fmkj.race.dao.domain.GcNotice;
+import com.fmkj.race.dao.dto.GcActivityDto;
+import com.fmkj.race.dao.dto.NoticeQueryDto;
+import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.dao.queryVo.NoticeQueryPage;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcMessageService;
@@ -69,11 +72,19 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
     @ApiOperation(value="分页查询用户所有通知信息", notes="分页查询用户所有通知信息")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "分页查询用户所有通知信息")
     @PutMapping("/queryGcNoticeByUid")
-    public BaseResult<Page<GcNotice>> queryGcNoticeByUid(@RequestBody NoticeQueryPage noticeQueryPage){
-        try {
+    public BaseResult queryGcNoticeByUid(@RequestBody NoticeQueryPage noticeQueryPage){
 
-            List<Map<String,Object>> map = gcNoticeService.queryGcNoticeByUid(noticeQueryPage);
-            return new BaseResult(BaseResultEnum.SUCCESS,map);
+        try {
+            if(StringUtils.isNull(noticeQueryPage) || StringUtils.isNull(noticeQueryPage.getUid())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
+            Page<NoticeQueryDto> tPage = buildPage(noticeQueryPage);
+            List<NoticeQueryDto> list = gcNoticeService.queryGcNoticeByUid(tPage, noticeQueryPage);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("查询用户所有通知信息异常：" + e.getMessage());
         }
@@ -121,6 +132,20 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
         } catch (Exception e) {
             throw new RuntimeException("删除通知信息异常：" + e.getMessage());
         }
+    }
+
+
+    private Page<NoticeQueryDto> buildPage(NoticeQueryPage noticeQueryPage) {
+        Page<NoticeQueryDto> tPage =new Page<NoticeQueryDto>(noticeQueryPage.getPageNo(),noticeQueryPage.getPageSize());
+        if(StringUtils.isNotEmpty(noticeQueryPage.getOrderBy())){
+            tPage.setOrderByField(noticeQueryPage.getOrderBy());
+            tPage.setAsc(false);
+        }
+        if(StringUtils.isNotEmpty(noticeQueryPage.getOrderByAsc())){
+            tPage.setOrderByField(noticeQueryPage.getOrderByAsc());
+            tPage.setAsc(true);
+        }
+        return tPage;
     }
 
 

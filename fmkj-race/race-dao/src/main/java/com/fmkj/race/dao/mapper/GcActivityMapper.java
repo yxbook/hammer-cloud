@@ -1,7 +1,10 @@
 package com.fmkj.race.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.race.dao.domain.GcActivity;
+import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 
 import java.util.HashMap;
@@ -22,7 +25,7 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @param gcBaseModel
      * @return
     */
-    List<HashMap<String,Object>> queryAllActivityByPage(GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryAllActivityByPage(Pagination page, GcBaseModel gcBaseModel);
 
 
 
@@ -56,4 +59,6 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @return
     */
     List<HashMap<String,Object>> queryMyStartActivityByUid(GcBaseModel gcBaseModel);
+
+
 }

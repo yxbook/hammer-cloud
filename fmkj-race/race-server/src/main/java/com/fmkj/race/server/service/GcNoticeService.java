@@ -1,7 +1,10 @@
 package com.fmkj.race.server.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.race.dao.domain.GcNotice;
+import com.fmkj.race.dao.dto.NoticeQueryDto;
 import com.fmkj.race.dao.queryVo.NoticeQueryPage;
 
 import java.util.List;
@@ -23,7 +26,7 @@ public interface GcNoticeService extends BaseService<GcNotice> {
      * @param
      * @return
     */
-    List<Map<String,Object>> queryGcNoticeByUid(NoticeQueryPage  noticeQueryPage);
+    List<NoticeQueryDto> queryGcNoticeByUid(Pagination tPage, NoticeQueryPage noticeQueryPage);
 
 
 
@@ -35,4 +38,6 @@ public interface GcNoticeService extends BaseService<GcNotice> {
      * @return
     */
     List<Map<String,Object>> queryOneNewNotice();
+
+
 }

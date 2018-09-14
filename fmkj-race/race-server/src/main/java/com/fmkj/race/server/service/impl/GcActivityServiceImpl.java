@@ -1,7 +1,10 @@
 package com.fmkj.race.server.service.impl;
 
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.race.dao.domain.GcActivity;
+import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.mapper.GcActivityMapper;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.service.GcActivityService;
@@ -33,11 +36,9 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @param gcBaseModel
      * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
     */
-    public List<HashMap<String, Object>> queryAllActivityByPage(GcBaseModel gcBaseModel) {
-        List<HashMap<String, Object>> list = gcActivityMapper.queryAllActivityByPage(gcBaseModel);
-        return list;
+    public List<GcActivityDto> queryAllActivityByPage(Pagination page, GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryAllActivityByPage(page,gcBaseModel);
     }
-
 
     /**
      * @author yangshengbin

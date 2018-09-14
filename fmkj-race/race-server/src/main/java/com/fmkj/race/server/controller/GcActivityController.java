@@ -1,13 +1,16 @@
 package com.fmkj.race.server.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
+import com.fmkj.common.util.StringUtils;
 import com.fmkj.race.client.BmListApi;
 import com.fmkj.race.dao.domain.*;
+import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.*;
@@ -57,37 +60,38 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     private GcNoticeService gcNoticeService;//通知接口  ,@RequestParam MultipartFile[] file   @RequestParam Map<String,Object> map,
 
 
-
+//, method = RequestMethod.POST, produces = "application/json;charset=UTF-8"
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
-    @RequestMapping(value = "/startActivityByExample", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    @ResponseBody
-    public  BaseResult<Map<String,Object>> startActivityByExample(@RequestParam Map<String,Object> map,HttpServletRequest request) throws IOException {
+    @PostMapping(value = "/startActivityByExample")
+    public  BaseResult<Map<String,Object>> startActivityByExample(@RequestBody GcActivity gcActivity,HttpServletRequest request) throws IOException {
 
         List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
 
         //获取参数列表
-        Integer startid = Integer.parseInt(map.get("startid").toString());//活动发起人id
-        String name = (String) map.get("name");//活动名称
-        String pname = (String) map.get("pname");//产品的名称
-        String pdescribe = (String) map.get("pdescribe");//产品的描述详情
-        Integer pnumber = Integer.parseInt(map.get("pnumber").toString());//产品的数量
-        String jiage = map.get("price").toString();
-        Double price = new Double(jiage);//产品价格
-        Integer num = Integer.parseInt( map.get("num").toString());//参与活动人数
-        Integer par = Integer.parseInt(map.get("par").toString());//票面值
-        Integer typeid = Integer.parseInt( map.get("typeid").toString());//对应活动类型
-        String yijia = map.get("premium").toString();
-        Double premium = new Double(yijia );//产品的溢价率
-        String type = (String) map.get("type");//活动类型
-
+        Integer startid = gcActivity.getStartid(); //活动发起人id
+        String name = gcActivity.getName();//活动名称
+        String pname = gcActivity.getPname();//产品的名称
+        String pdescribe = gcActivity.getPdescribe();//产品的描述详情
+        Integer pnumber = gcActivity.getPnumber();//产品的数量
+        double price = gcActivity.getPrice();//产品价格
+        Integer num = gcActivity.getNum();//参与活动人数
+        Integer par = gcActivity.getPar();//票面值
+        Integer typeid = gcActivity.getTypeid();//对应活动类型
+        double premium = gcActivity.getPremium();//产品的溢价率
+        String type = "";//活动类型
+        System.err.println("name="+name);
+        System.err.println("pname="+pname);
+        System.err.println("pdescribe="+pdescribe);
 
         //判断用户是否黑名单
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        boolean isBlack = bmListApi.isActivityBlack(startid, 2);
+       /* HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("uid", startid);
+        params.put("status", 2);
+        boolean isBlack = bmListApi.isActivityBlack(params);
         if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
-        }
+        }*/
 
         //判断活动名称是否包含敏感词汇
         if(name.trim()!=null && !"".equals(name.trim())) {
@@ -139,6 +143,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setDelivergoodstatus(0);
         ga.setNum(num);
         ga.setCollectgoodstatus(0);
+        ga.setPar(par);
         boolean result = gcActivityService.insert(ga);
         if(!result) {
             return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，填入信息格式有误!",null);
@@ -194,12 +199,16 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @PutMapping("/queryAllActivityByPage")
     public BaseResult queryAllActivityByPage(@RequestBody GcBaseModel gcBaseModel){
         try {
-            //活动广场分页查询所有活动,只查询活动中(status=2)
-            List<HashMap<String, Object>> list = gcActivityService.queryAllActivityByPage(gcBaseModel);
-            if(list.size()==0) {
-                return new BaseResult(BaseResultEnum.ERROR.status, "暂无活动!",null);
+            if(StringUtils.isNull(gcBaseModel) || StringUtils.isNull(gcBaseModel.getUid())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
             }
-            return new BaseResult(BaseResultEnum.SUCCESS,list);
+            Page<GcActivityDto> tPage = buildPage(gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryAllActivityByPage(tPage, gcBaseModel);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
             throw new RuntimeException("活动广场分页查询所有活动异常：" + e.getMessage());
         }
@@ -259,6 +268,18 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     }
 
 
+    private Page<GcActivityDto> buildPage(GcBaseModel gcBaseModel) {
+        Page<GcActivityDto> tPage =new Page<GcActivityDto>(gcBaseModel.getPageNo(),gcBaseModel.getPageSize());
+        if(StringUtils.isNotEmpty(gcBaseModel.getOrderBy())){
+            tPage.setOrderByField(gcBaseModel.getOrderBy());
+            tPage.setAsc(false);
+        }
+        if(StringUtils.isNotEmpty(gcBaseModel.getOrderByAsc())){
+            tPage.setOrderByField(gcBaseModel.getOrderByAsc());
+            tPage.setAsc(true);
+        }
+        return tPage;
+    }
 
 
 

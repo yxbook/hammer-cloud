@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fmkj.race.dao.mapper.GcActivityMapper">
-    <resultMap id="BaseResultMap" type="com.fmkj.race.dao.domain.GcActivity">
+    <resultMap id="BaseResultMap" type="com.fmkj.race.dao.dto.GcActivityDto">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="startid" jdbcType="INTEGER" property="startid" />
         <result column="getid" jdbcType="INTEGER" property="getid" />
@@ -23,22 +23,32 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="num" jdbcType="INTEGER" property="num" />
         <result column="par" jdbcType="INTEGER" property="par" />
+        <result column="type" property="type" />
+        <result column="imageurl" property="imageurl" />
+
     </resultMap>
+
+    <!--<association column="gct" property="GcActivitytype" javaType="com.fmkj.race.dao.domain.GcActivitytype">
+           <id column="Id" property="Id" />
+           <result column="type" property="type" />
+           <result column="days" property="days" />
+       </association>
+     -->
 
 
     <resultMap id="BaseResultMap1" type="java.util.HashMap"></resultMap>
 
+
     <!-- 活动广场分页查询所有活动,只查询活动中(status=2) -->
-    <select id="queryAllActivityByPage" parameterType="com.fmkj.race.dao.queryVo.GcBaseModel" resultMap="BaseResultMap1">
+    <select id="queryAllActivityByPage"  resultMap="BaseResultMap">
         SELECT ga.id,ga.startid,ga.typeid,ga.contract,ga.isbond,ga.pname,ga.pnumber,ga.price,ga.premium,ga.time,ga.num,ga.par,
-        ga.pdescribe,ga.status,ga.delivergoodstatus,ga.collectgoodstatus,ga.endtime,ga.name,gp.imageurl,gat.type AS atype
+        ga.pdescribe,ga.status,ga.delivergoodstatus,ga.collectgoodstatus,ga.endtime,ga.name,gp.imageurl,gat.type
         FROM gc_activity ga
         LEFT JOIN gc_pimage gp ON gp.aid=ga.id
         LEFT JOIN gc_activitytype gat ON ga.typeid=gat.id
         WHERE ga.status = 2
         GROUP BY ga.id
         ORDER BY ga.id DESC
-        limit #{pageNo},#{pageSize}
     </select>
 
 

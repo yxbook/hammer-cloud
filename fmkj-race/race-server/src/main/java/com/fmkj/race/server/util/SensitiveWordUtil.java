@@ -224,7 +224,7 @@ public class SensitiveWordUtil {
      * @returnType void
      * @modification
      */
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Set<String> s = SensitiveWordTest.words;
         Map<String,String> map = SensitiveWordTest.wordMap;
 
@@ -245,6 +245,6 @@ public class SensitiveWordUtil {
         System.out.println("语句中包含敏感词的个数为：" + set.size() + "。包含：" + set);
         System.out.println("总共消耗时间为：" + (endTime - beginTime));
         System.out.println("str：" +str);
+    }*/
 
-    }
 }
