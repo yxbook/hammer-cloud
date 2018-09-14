@@ -81,6 +81,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         Double premium = new Double(yijia );//产品的溢价率
         String type = (String) map.get("type");//活动类型
 
+
         //判断用户是否黑名单
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("uid", startid);

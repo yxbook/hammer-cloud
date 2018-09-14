@@ -224,11 +224,11 @@ public class SensitiveWordUtil {
      * @returnType void
      * @modification
      */
-    /*public static void main(String[] args) {
-        Set<String> s = SensitiveWordUtil.words;
-        Map<String,String> map = SensitiveWordUtil.wordMap;
+    public static void main(String[] args) {
+        Set<String> s = SensitiveWordTest.words;
+        Map<String,String> map = SensitiveWordTest.wordMap;
 
-        System.out.println("敏感词的数量：" + SensitiveWordUtil.wordMap.size());
+        System.out.println("敏感词的数量：" + SensitiveWordTest.wordMap.size());
         String string = "太多的伤yuming感情怀也许只局限于饲养基地 荧幕中的情节，主人公尝试着去用某种方式渐渐的很潇洒地释自杀指南怀那些自己经历的伤感。"
                 + "然后法轮功 我们的扮演的角色就是跟随着主人yum公的喜红客联盟 怒于饲养基地 荧幕中的情节，主人公尝试着去用某种方式渐渐的很潇洒地释自杀指南怀那些自己经历的伤感。"
                 + "然后法轮功 我们的扮演的角色就是跟随着主人yum公的喜红客联盟 怒哀20于饲养基地 荧幕中的情节，主人公尝试着去用某种方式渐渐的很潇洒地释自杀指南怀那些自己经历的伤感。"
@@ -237,14 +237,14 @@ public class SensitiveWordUtil {
                 + "难过就躺在某一个人的怀里尽情的阐述心扉或者手机卡复制器一个人一杯红酒一部电影在夜三级片 深人静的晚上，关上电话静静的发呆着。自由门撒UI的嘎斯";
         System.out.println("待检测语句字数：" + string.length());
         long beginTime = System.currentTimeMillis();
-        Set<String> set = SensitiveWordUtil.getBadWord(string, 2);
-        Boolean i = SensitiveWordUtil.isContaintBadWord(string, 2);
-        String str = SensitiveWordUtil.replaceBadWord(string,2,"*");
+        Set<String> set = SensitiveWordTest.getBadWord(string, 2);
+        Boolean i = SensitiveWordTest.isContaintBadWord(string, 2);
+        String str = SensitiveWordTest.replaceBadWord(string,2,"*");
         long endTime = System.currentTimeMillis();
         System.out.println("i:"+i);
         System.out.println("语句中包含敏感词的个数为：" + set.size() + "。包含：" + set);
         System.out.println("总共消耗时间为：" + (endTime - beginTime));
         System.out.println("str：" +str);
 
-    }*/
+    }
 }
