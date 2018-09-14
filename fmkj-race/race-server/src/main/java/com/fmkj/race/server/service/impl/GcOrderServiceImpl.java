@@ -3,6 +3,7 @@ package com.fmkj.race.server.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
+import com.fmkj.race.client.HcAccountApi;
 import com.fmkj.race.dao.domain.*;
 import com.fmkj.race.dao.mapper.*;
 import com.fmkj.race.server.service.GcOrderService;
@@ -46,13 +47,14 @@ public class GcOrderServiceImpl extends BaseServiceImpl<GcOrderMapper, GcOrder> 
     GcActivitytypeMapper gcActivitytypeMapper;  //活动类型
 
     @Autowired
-    HcAccountMapper hcAccountMapper;  //用户mapper
-
-    @Autowired
     GcMessageMapper gcMessageMapper;//信息mapper
 
     @Autowired
     GcNoticeMapper gcNoticeMapper;//通知mapper
+
+
+    @Autowired
+    private HcAccountApi hcAccountApi;
 
 
     /**
@@ -124,19 +126,9 @@ public class GcOrderServiceImpl extends BaseServiceImpl<GcOrderMapper, GcOrder> 
             String type = gat.getType();
             /*******根据活动类型id获取活动类型名称*******/
 
-            //发放p能量奖励
-            HcAccount ha = new HcAccount();
-            ha.setId(startid);
-            HcAccount account = hcAccountMapper.selectOne(ha);
-            Double allP = null;
-            if(account!=null) {
-                Double myP = account.getMyP();
-                allP = myP+starterP;
-                HcAccount user = new HcAccount();
-                user.setId(account.getId());
-                user.setMyP(allP);
-                hcAccountMapper.updateById(user);
-            }
+
+            //调用户接口发放P能量
+            hcAccountApi.grantUserP(startid, starterP);
 
             /*********给活动发起者发送通知*********/
             CalendarTime clt = new CalendarTime();

@@ -173,7 +173,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
 
 
     @ApiOperation(value="查询最新一条中奖用户信息", notes="查询最新一条中奖用户信息")
-    @UserLog(module= LogConstant.Gc_Activity, actionDesc = "查询最新一条中奖用户信息")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "查询最新一条中奖用户信息")
     @PutMapping("/queryOneNewNotice")
     public BaseResult queryOneNewNotice(){
         try {
@@ -184,6 +184,69 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         }
     }
 
+
+    //更改用户p能量
+    @ApiOperation(value="更改用户p能量", notes="更改用户p能量")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "更改用户p能量")
+    @PostMapping("/updateUserP")
+    public Boolean updateUserP(Integer id, double par){
+
+        return false;
+    }
+
+    @ApiOperation(value="发放p能量", notes="发放p能量")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "发放p能量")
+    @PostMapping("/grantUserP")
+    public Boolean grantUserP(Integer id, double par){
+        return false;
+
+    }
+
+    /*//发放p能量奖励
+    HcAccount ha = new HcAccount();
+            ha.setId(startid);
+    HcAccount account = hcAccountMapper.selectOne(ha);
+    Double allP = null;
+            if(account!=null) {
+        Double myP = account.getMyP();
+        allP = myP+starterP;
+        HcAccount user = new HcAccount();
+        user.setId(account.getId());
+        user.setMyP(allP);
+        hcAccountMapper.updateById(user);
+    }*/
+
+    @ApiOperation(value="更改用户p能量", notes="更改用户p能量")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "更改用户p能量")
+    @PostMapping("/getAccountById")
+    public HcAccount getAccountById(Integer id){
+
+        return null;
+
+    }
+
+
+
+
+    /*HcAccount hcAccount = new HcAccount();
+            hcAccount.setId(joins.getUid());
+    HcAccount hcAccount1 = hcAccountMapper.selectOne(hcAccount);//获取用户原有p能量
+            if (Double.doubleToLongBits(hcAccount1.getMyP()) < Double.doubleToLongBits(par)){
+        System.err.println("你拥有的p能量不够");
+        return false;
+    }
+    double newMyp = hcAccount1.getMyP() - par;//用户新的p能量
+            hcAccount.setMyP(newMyp);
+    Integer res = 0;
+            try {
+        res = hcAccountMapper.updateById(hcAccount);
+    } catch (Exception e) {
+        throw new RuntimeException("7用户参加活动更新p能量异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
+    }
+            if (res<=0){
+        System.err.println("用户参加活动更新p能量失败");
+        return false;
+    }*/
 
 
 }

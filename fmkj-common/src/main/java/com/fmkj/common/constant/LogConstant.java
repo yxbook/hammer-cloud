@@ -7,7 +7,7 @@ package com.fmkj.common.constant;
  */
 public class LogConstant {
 
-    public static final String HC_ACCOUNT = "竞锤用户";
+    public static final String HC_ACCOUNT = "用户用户";
 
     public static final String HC_PRODUCT = "商品接口";
 

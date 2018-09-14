@@ -6,6 +6,7 @@ import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
+import com.fmkj.race.client.BmListApi;
 import com.fmkj.race.dao.domain.*;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
@@ -42,12 +43,9 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @Autowired
     private GcActivityService gcActivityService;//活动接口
 
-    //session接口
+    //用户黑白名单接口
     @Autowired
-    private HcSessionService hcSessionService; //session接口
-
-    @Autowired
-    private BmListService bmListService;//用户黑白名单接口
+    private BmListApi bmListApi;
 
     @Autowired
     private GcPimageService gcPimageService;//活动图片接口
@@ -84,13 +82,11 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         String type = (String) map.get("type");//活动类型
 
         //判断用户是否黑名单
-        BmList bl = new BmList();
-        bl.setStatus(2);
-        bl.setUid(startid);
-        EntityWrapper<BmList> wrapper = new EntityWrapper<BmList>();
-        wrapper.setEntity(bl);
-        List<BmList> list = bmListService.selectList(wrapper);
-        if(list.size()>0) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("uid", startid);
+        params.put("status", 2);
+        boolean isBlack = bmListApi.isActivityBlack(params);
+        if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
         }
 

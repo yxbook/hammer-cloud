@@ -3,6 +3,7 @@ package com.fmkj.race.server.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
+import com.fmkj.race.client.HcAccountApi;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.mapper.GcActivityMapper;
 import com.fmkj.race.dao.mapper.GcJoinactivityrecordMapper;
@@ -12,6 +13,7 @@ import com.fmkj.race.server.hammer.contracts.PuzzleHammer.puzzle.Person;
 import com.fmkj.race.server.hammer.contracts.PuzzleHammer.puzzle.State;
 import com.fmkj.race.server.service.GcJoinactivityrecordService;
 import com.fmkj.race.server.util.CalendarTime;
+import com.fmkj.user.dao.domain.HcAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +42,10 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
     private GcJoinactivityrecordMapper gcJoinactivityrecordMapper;
 
     @Autowired
-    private HcAccountMapper hcAccountMapper;
+    private GcActivityMapper gcActivityMapper;
 
     @Autowired
-    private GcActivityMapper gcActivityMapper;
+    private HcAccountApi hcAccountApi;
 
 
 
@@ -69,28 +71,9 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
         } catch (Exception e) {
             throw new RuntimeException("插入参与记录异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
         }
-
         //更改用户p能量
         if (result>0){
-            HcAccount hcAccount = new HcAccount();
-            hcAccount.setId(joins.getUid());
-            HcAccount hcAccount1 = hcAccountMapper.selectOne(hcAccount);//获取用户原有p能量
-            if (Double.doubleToLongBits(hcAccount1.getMyP()) < Double.doubleToLongBits(par)){
-                System.err.println("你拥有的p能量不够");
-                return false;
-            }
-            double newMyp = hcAccount1.getMyP() - par;//用户新的p能量
-            hcAccount.setMyP(newMyp);
-            Integer res = 0;
-            try {
-                res = hcAccountMapper.updateById(hcAccount);
-            } catch (Exception e) {
-                throw new RuntimeException("7用户参加活动更新p能量异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
-            }
-            if (res<=0){
-                System.err.println("用户参加活动更新p能量失败");
-                return false;
-            }
+            hcAccountApi.updateUserP(joins.getUid(), par);
             return true;
         }
         return false;
@@ -153,9 +136,8 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
             }
 
             helper.changeStage(State.participate);
-            HcAccount ha = new HcAccount();
-            ha.setId(uid);
-            HcAccount user = hcAccountMapper.selectOne(ha);// 获取参与活动的用户信息
+
+            HcAccount user = hcAccountApi.selectHcAccountById(uid);// 获取参与活动的用户信息
 
             System.err.println("用户:"+uid + "参与活动:" + aid);
 
