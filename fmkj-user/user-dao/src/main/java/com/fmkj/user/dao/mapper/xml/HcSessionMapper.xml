@@ -18,7 +18,7 @@
     </select>-->
 
     <!--更新session表-->
-    <update id="updateHcSession"  parameterType="com.fmkj.race.dao.domain.HcSession">
+    <update id="updateHcSession"  parameterType="com.fmkj.user.dao.domain.HcSession">
         update hc_session set
                 token = #{token},
                 btime = #{btime},
