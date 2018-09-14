@@ -10,6 +10,7 @@ import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
+import com.fmkj.common.util.StringUtils;
 import com.fmkj.common.validator.LengthValidator;
 import com.fmkj.common.validator.NotNullValidator;
 import com.fmkj.user.dao.domain.HcAccount;
@@ -37,18 +38,10 @@ import java.util.UUID;
 @Api(tags ={ "用户信息"},description = "用户信息接口-网关路径/api-user")
 public class HcAccountController extends BaseController<HcAccount, HcAccountService> implements BaseApiService<HcAccount> {
 
-
-//    使用快捷键CTRL+K,就会弹出提交的界面，点击Commit and Push即可
-//    点击快捷键Ctrl+T，就会弹出更新的界面，点击OK即可
-//    在idea中添加try/catch的快捷键  ctrl+alt+t
-    // 切换大小写  ctrl+sh+u
-    //IDEA中自动生成get/set的方式:快捷键为：alt+insert
-
     //用户表接口
     @Autowired
     private HcAccountService hcAccountService;
 
-    //session接口
     @Autowired
     private HcSessionService hcSessionService;
 
@@ -186,62 +179,41 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
 
 
     //更改用户p能量
-    @ApiOperation(value="更改用户p能量", notes="更改用户p能量")
-    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "更改用户p能量")
+    @ApiOperation(value = "更改用户p能量", notes = "更改用户p能量")
+    @UserLog(module = LogConstant.HC_ACCOUNT, actionDesc = "更改用户p能量")
     @PostMapping("/updateUserP")
-    public Boolean updateUserP(Integer id, double par){
-
-        return false;
+    public Boolean updateUserP(Integer id, double par) {
+        HcAccount account = hcAccountService.selectById(id);
+        if (Double.doubleToLongBits(account.getMyP()) < Double.doubleToLongBits(par)) {
+            return false;
+        }
+        double newMyp = account.getMyP() - par;//用户新的p能量
+        account.setMyP(newMyp);
+        boolean result = hcAccountService.updateById(account);
+        return result;
     }
 
     @ApiOperation(value="发放p能量", notes="发放p能量")
     @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "发放p能量")
     @PostMapping("/grantUserP")
-    public Boolean grantUserP(Integer id, double par){
-       /* HcAccount ha = new HcAccount();
-        ha.setId(startid);
-        HcAccount account = hcAccountMapper.selectOne(ha);
+    public Boolean grantUserP(Integer id, double starterP) {
+        HcAccount account = hcAccountService.selectById(id);
         Double allP = null;
-        if(account!=null) {
+        if (account != null) {
             Double myP = account.getMyP();
-            allP = myP+starterP;
-            HcAccount user = new HcAccount();
-            user.setId(account.getId());
-            user.setMyP(allP);
-            hcAccountMapper.updateById(user);*/
+            allP = myP + starterP;
+            account.setMyP(allP);
+            hcAccountService.updateById(account);
+            return true;
+        }
         return false;
     }
 
     @ApiOperation(value="根据ID获取用户", notes="根据ID获取用户")
-    @PostMapping("/getAccountById")
+    @GetMapping("/getAccountById")
     public HcAccount getAccountById(Integer id){
         HcAccount hc = hcAccountService.selectById(id);
         return hc;
 
     }
-
-
-
-
-    /*HcAccount hcAccount = new HcAccount();
-            hcAccount.setId(joins.getUid());
-    HcAccount hcAccount1 = hcAccountMapper.selectOne(hcAccount);//获取用户原有p能量
-            if (Double.doubleToLongBits(hcAccount1.getMyP()) < Double.doubleToLongBits(par)){
-        System.err.println("你拥有的p能量不够");
-        return false;
-    }
-    double newMyp = hcAccount1.getMyP() - par;//用户新的p能量
-            hcAccount.setMyP(newMyp);
-    Integer res = 0;
-            try {
-        res = hcAccountMapper.updateById(hcAccount);
-    } catch (Exception e) {
-        throw new RuntimeException("7用户参加活动更新p能量异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
-    }
-            if (res<=0){
-        System.err.println("用户参加活动更新p能量失败");
-        return false;
-    }*/
-
-
 }
