@@ -38,9 +38,6 @@ public class AccessTokenFilter extends ZuulFilter{
     // 每秒钟放置100个令牌
     private  static final RateLimiter RATE_LIMITER = RateLimiter.create(100);
 
-    @Autowired
-    private UserApi userApi;
-
     @Override
     public String filterType() {
         return PRE_TYPE;
