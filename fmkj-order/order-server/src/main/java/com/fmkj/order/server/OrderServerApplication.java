@@ -9,7 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringCloudApplication
 @ComponentScan(basePackages = {"com.fmkj.order.server", "com.fmkj.order.dao.domain", "com.fmkj.order.client"})
-@EnableFeignClients/*(basePackages = "com.fmkj.order.client")*/
+@EnableFeignClients
 @MapperScan("com.fmkj.order.dao.*")
 @EnableSwagger2
 public class OrderServerApplication {

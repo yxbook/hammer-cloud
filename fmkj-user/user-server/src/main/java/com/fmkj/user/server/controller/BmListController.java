@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -34,11 +35,11 @@ public class BmListController {
      * 判断用户是否黑名单
      */
     @PostMapping(value = "isBlacker")
-    public Boolean isBlacker(@RequestBody BmList bmList) {
-
-        EntityWrapper<BmList> wrapper = new EntityWrapper<BmList>(bmList);
-
-        List<BmList> list = bmListService.selectList(wrapper);
+    public Boolean isBlacker(Integer uid, Integer status) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("uid", uid);
+        params.put("status", status);
+        List<BmList> list = bmListService.selectByMap(params);
         if (list.size() > 0) {
             return true;
         }

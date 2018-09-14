@@ -1,7 +1,10 @@
 package com.fmkj.gateway.filter;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
+import com.fmkj.gateway.api.HcPermissApi;
 import com.google.common.util.concurrent.RateLimiter;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -13,6 +16,7 @@ import org.springframework.util.StreamUtils;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +41,9 @@ public class AccessTokenFilter extends ZuulFilter{
 
     // 每秒钟放置100个令牌
     private  static final RateLimiter RATE_LIMITER = RateLimiter.create(100);
+
+    @Autowired
+    private HcPermissApi hcPermissApi;
 
     @Override
     public String filterType() {
@@ -70,9 +77,10 @@ public class AccessTokenFilter extends ZuulFilter{
             InputStream in  = request.getInputStream();
 
             String body = StreamUtils.copyToString(in, Charset.forName("UTF-8"));
-
-            System.out.println("BODY:" + body);
+            JSONObject jsonBody = JSON.parseObject(body);
+            String token = (String) jsonBody.get("token");
             final byte[] reqBodyBytes = body.getBytes();
+            boolean isPass = hcPermissApi.queryToken(token);
             context.setRequest(new HttpServletRequestWrapper(getCurrentContext().getRequest()) {
                 @Override
                 public ServletInputStream getInputStream() throws IOException {
@@ -89,16 +97,17 @@ public class AccessTokenFilter extends ZuulFilter{
                     return reqBodyBytes.length;
                 }
             });
-           /* context.setSendZuulResponse(false);// 过滤该请求，不对其进行路由
-            BaseResult<Boolean> result = new BaseResult<Boolean>(BaseResultEnum.NOACCESS, false);
-            context.setResponseBody(JSON.toJSONString(result));// 返回错误内容
-            HttpServletResponse response = context.getResponse();
-            response.addHeader("Access-Control-Allow-Origin", "*");
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("text/html;charset=UTF-8");
-            response.setLocale(new java.util.Locale("zh","CN"));*/
-
+            if(!isPass){
+                context.setSendZuulResponse(false);// 过滤该请求，不对其进行路由
+                BaseResult<Boolean> result = new BaseResult<Boolean>(BaseResultEnum.TOKEN_INVALID, isPass);
+                context.setResponseBody(JSON.toJSONString(result));// 返回错误内容
+                HttpServletResponse response = context.getResponse();
+                response.addHeader("Access-Control-Allow-Origin", "*");
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/html;charset=UTF-8");
+                response.setLocale(new java.util.Locale("zh","CN"));
+            }
         } catch (IOException e) {
             rethrowRuntimeException(e);
         }

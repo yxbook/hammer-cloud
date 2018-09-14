@@ -84,9 +84,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
 
         //判断用户是否黑名单
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("uid", startid);
-        params.put("status", 2);
-        boolean isBlack = bmListApi.isActivityBlack(params);
+        boolean isBlack = bmListApi.isActivityBlack(startid, 2);
         if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
         }
