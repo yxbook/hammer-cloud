@@ -107,6 +107,13 @@
 		</dependency>
 
 
+		<dependency>
+			<groupId>com.fmkj</groupId>
+			<artifactId>user-dao</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+
 
 		<!-- thmleaf模板依赖. -->
 		<dependency>
@@ -136,17 +143,6 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>RELEASE</version>
         </dependency>
-		<dependency>
-			<groupId>com.fmkj</groupId>
-			<artifactId>race-client</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.fmkj</groupId>
-			<artifactId>user-dao</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
 
 
 	</dependencies>

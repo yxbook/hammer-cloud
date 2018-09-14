@@ -13,7 +13,7 @@ import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.*;
 import com.fmkj.race.server.util.CalendarTime;
 import com.fmkj.race.server.util.GlobalConstants;
-import com.fmkj.race.server.util.SensitiveWordTest;
+import com.fmkj.race.server.util.SensitiveWordUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +92,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
 
         //判断活动名称是否包含敏感词汇
         if(name.trim()!=null && !"".equals(name.trim())) {
-            String wordIsOk= SensitiveWordTest.replaceBadWord(name.trim(),2,"*");
+            String wordIsOk= SensitiveWordUtil.replaceBadWord(name.trim(),2,"*");
             System.err.println("name="+name);
             System.err.println("wordIsOk="+wordIsOk);
             if(!name.trim().equals(wordIsOk.trim())) {
@@ -102,7 +102,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
 
         //判断产品的描述详情是否包含敏感词汇
         if(pdescribe!=null && !"".equals(pdescribe)) {
-            String wordIsOk= SensitiveWordTest.replaceBadWord(pdescribe.trim(),2,"*");
+            String wordIsOk= SensitiveWordUtil.replaceBadWord(pdescribe.trim(),2,"*");
             if(!pdescribe.equals(wordIsOk.trim())) {
                 return new BaseResult(BaseResultEnum.ERROR.status, "产品的描述详情含有敏感词汇，请重新写一个吧!",null);
             }
@@ -110,7 +110,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
 
         //判断产品名称是否包含敏感词汇
         if(pname!=null && !"".equals(pname)) {
-            String wordIsOk= SensitiveWordTest.replaceBadWord(pname.trim(),2,"*");
+            String wordIsOk= SensitiveWordUtil.replaceBadWord(pname.trim(),2,"*");
             if(!pname.equals(wordIsOk.trim())) {
                 return new BaseResult(BaseResultEnum.ERROR.status, "产品名称含有敏感词汇，请重新写一个吧!",null);
             }
