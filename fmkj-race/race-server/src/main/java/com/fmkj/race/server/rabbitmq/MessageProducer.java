@@ -29,7 +29,7 @@ public class MessageProducer {
 		GcJoinactivityrecord joins = (GcJoinactivityrecord) message;
 		try {
 			//加入队列
-			amqpTemplate.convertAndSend("workqueue", joins);
+			this.amqpTemplate.convertAndSend("workqueue", joins);
 		} catch (AmqpException e) {
 			map.put("message", "请求消息已满,请稍后提交!");
 			return map;

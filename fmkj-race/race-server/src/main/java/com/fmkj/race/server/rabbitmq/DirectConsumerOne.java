@@ -24,14 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @time 2018年8月7日 下午7:55:30
  * @developers 费马科技
  */
-@Service
-@Transactional
+/*@Service
+@Transactional*/
 @Component
-@EnableScheduling
-@RabbitListener(queues = "workqueue", containerFactory = "rabbitListenerContainerFactory")
-public class DirectConsumerOne implements MessageListener{
+/*@EnableScheduling*/
+@RabbitListener(queues = "workqueue")
+public class DirectConsumerOne  { //implements MessageListener{
 
-
+//, containerFactory = "rabbitListenerContainerFactory"
 	@Autowired
 	private GcActivityService gcActivityService;
 
@@ -39,6 +39,14 @@ public class DirectConsumerOne implements MessageListener{
 	private GcJoinactivityrecordService gcJoinactivityrecordService;
 
 	@RabbitHandler
+	public void ssss(){
+		System.err.println("message="+111111);
+	}
+	/*public void onMessage(Message message){
+		System.err.println("message="+message);
+	}*/
+
+	/*@RabbitHandler
 	public void onMessage(Message message) {
 
 		byte[] body = message.getBody();//获取GcJoinactivityrecord对象
@@ -117,6 +125,6 @@ public class DirectConsumerOne implements MessageListener{
 		}
 		return ;
 	}
-	
+	*/
 	
 }

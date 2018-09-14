@@ -15,7 +15,9 @@ public class MqSendMsg {
     AmqpTemplate amqpTemplate;
 
     public void send(){
+
         amqpTemplate.convertAndSend("myQueue", "msg内容");
+
     }
 
     public void sendOrder(){
