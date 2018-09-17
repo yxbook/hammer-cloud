@@ -11,3 +11,6 @@ ALTER TABLE `hammerchain`.`hc_userimage`
 --hc_account表变更
 ALTER TABLE `hammerchain`.`hc_account`
 ADD COLUMN `realnam_info` VARCHAR (500) NULL COMMENT '实名认证未通过的原因信息'
+
+ALTER TABLE `hammerchain`.`hc_account`
+ADD COLUMN `cnt` DOUBLE (18, 10) NULL COMMENT '用户拥有cnt'

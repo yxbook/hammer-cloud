@@ -55,6 +55,16 @@ public class HcAccount extends Model<HcAccount> implements Serializable{
 	
 	private Long cdbid;//锤多宝id
 
+	private Double cnt;
+
+	public Double getCnt() {
+		return cnt;
+	}
+
+	public void setCnt(Double cnt) {
+		this.cnt = cnt;
+	}
+
 	public String getRealnamInfo() {
 		return realnamInfo;
 	}

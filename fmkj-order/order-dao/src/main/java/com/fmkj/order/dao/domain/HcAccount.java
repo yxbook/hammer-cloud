@@ -50,6 +50,7 @@ public class HcAccount extends Model<HcAccount> {
     private String cardnum;
     private Integer authlock;
     private Integer rid;
+    private Double cnt;
     /**
      * 权重：用户等级越高权重越大，主要决定了用户月亮井能量生产得快慢
      */
@@ -83,6 +84,13 @@ public class HcAccount extends Model<HcAccount> {
      */
     private Long cdbid;
 
+    public Double getCnt() {
+        return cnt;
+    }
+
+    public void setCnt(Double cnt) {
+        this.cnt = cnt;
+    }
 
     public Integer getId() {
         return id;

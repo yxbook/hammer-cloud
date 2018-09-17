@@ -18,6 +18,7 @@
 		<result column="rid" jdbcType="INTEGER" property="rid" />
 		<result column="make_Weight" jdbcType="INTEGER" property="makeWeight" />
 		<result column="my_p" jdbcType="DOUBLE" property="myP" />
+		<result column="cnt" jdbcType="DOUBLE" property="cnt" />
 		<result column="grade_id" jdbcType="INTEGER" property="gradeId" />
 		<result column="score" jdbcType="INTEGER" property="score" />
 		<result column="card_status" jdbcType="INTEGER" property="cardStatus" />

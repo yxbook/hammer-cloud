@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmkj.user.dao.mapper.HcPointsRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fmkj.user.dao.domain.HcPointsRecord">
+        <id column="Id" property="Id" />
+        <result column="uid" property="uid" />
+        <result column="points_id" property="pointsId" />
+        <result column="points_num" property="pointsNum" />
+        <result column="time" property="time" />
+    </resultMap>
+
+    <!-- 查询用户今天有没有签到过 -->
+    <select id="getHcPointsRecord" resultType="com.fmkj.user.dao.domain.HcPointsRecord">
+		select * from hc_points_record where uid=#{uid} and points_id=1 and
+		to_days(time)=to_days(now())
+	</select>
+
+    <!-- 查询邀请人来注册获得的总积分 -->
+    <select id="queryPoints"  parameterType="Integer"  resultType="Integer">
+		select Sum(points_num) from hc_points_record where uid=#{uid} and points_id=6
+	</select>
+
+</mapper>

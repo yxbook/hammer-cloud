@@ -1,19 +1,16 @@
-package com.fmkj.race.server.util;
+package com.fmkj.common.util;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 /**
  * @ Author     ：yangshengbin
  * @ Date       ：11:37 2018/8/31 0031
  * @ Description：获取敏感词汇
  */
+
 /**参考DFA算法demo:http://blog.csdn.net/chenssy/article/details/26961957*/
 public class SensitiveWordUtil {
 
