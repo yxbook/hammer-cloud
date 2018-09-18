@@ -79,7 +79,7 @@ public class AccessTokenFilter extends ZuulFilter{
             String body = StreamUtils.copyToString(in, Charset.forName("UTF-8"));
             JSONObject jsonBody = JSON.parseObject(body);
             String token = (String) jsonBody.get("token");
-            final byte[] reqBodyBytes = body.getBytes();
+            final byte[] reqBodyBytes = body.getBytes("UTF-8");
             boolean isPass = hcPermissApi.queryToken(token);
             context.setRequest(new HttpServletRequestWrapper(getCurrentContext().getRequest()) {
                 @Override
