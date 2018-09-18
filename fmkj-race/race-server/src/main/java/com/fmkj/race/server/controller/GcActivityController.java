@@ -10,11 +10,11 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.SensitiveWordUtil;
 import com.fmkj.common.util.StringUtils;
-import com.fmkj.race.client.BmListApi;
 import com.fmkj.race.dao.domain.*;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
+import com.fmkj.race.server.api.BmListApi;
 import com.fmkj.race.server.service.*;
 import com.fmkj.race.server.util.CalendarTime;
 import io.swagger.annotations.Api;
@@ -82,7 +82,10 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         String type = "";//活动类型
 
         //判断用户是否黑名单
-        boolean isBlack = bmListApi.isActivityBlack(startid, 2);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("uid", startid);
+        params.put("status", 2);
+        boolean isBlack = bmListApi.isActivityBlack(params);
         if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
         }

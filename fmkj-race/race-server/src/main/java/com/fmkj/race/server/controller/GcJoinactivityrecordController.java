@@ -1,5 +1,6 @@
 package com.fmkj.race.server.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
@@ -42,13 +43,9 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
     @ApiOperation(value="用户参加活动 ", notes="用户参加活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户参加活动")
     @PostMapping("/ActivityRabbitMQ")
-    public BaseResult<HashMap<String, Object>> ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord){
-
-        HashMap<String, Object> map = new HashMap<String, Object>();
-
-        map=messageProducer.send(gcJoinactivityrecord);//生产消息
-
-        return new BaseResult(BaseResultEnum.SUCCESS,map);
+    public BaseResult ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord){
+        messageProducer.send(JSON.toJSONString(gcJoinactivityrecord));//生产消息
+        return new BaseResult(BaseResultEnum.SUCCESS, true);
 
     }
 

@@ -1,6 +1,7 @@
 package com.fmkj.race.server.rabbitmq;
  
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
@@ -38,9 +39,11 @@ public class DirectConsumerOne  { //implements MessageListener{
 	private GcJoinactivityrecordService gcJoinactivityrecordService;
 
 	@RabbitHandler
-	public void onMessage(Message message) {
+	public void onMessage(String message) {
 
-		System.err.println("aaa="+1111111);
+		GcJoinactivityrecord gcJoinactivityrecord = (GcJoinactivityrecord) JSON.parse(message);
+
+		System.err.println("aaa="+gcJoinactivityrecord.toString());
 
 		/*byte[] body = message.getBody();//获取GcJoinactivityrecord对象
 		
