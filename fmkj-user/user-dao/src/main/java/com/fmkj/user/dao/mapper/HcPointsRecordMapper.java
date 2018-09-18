@@ -1,8 +1,11 @@
 package com.fmkj.user.dao.mapper;
 
-import com.fmkj.user.dao.domain.HcPointsRecord;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.fmkj.user.dao.domain.BaseBean;
+import com.fmkj.user.dao.domain.HcPointsRecord;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,5 +21,7 @@ public interface HcPointsRecordMapper extends BaseMapper<HcPointsRecord> {
 
     Integer queryPoints(Integer uid);
 
+    List<BaseBean> queryInvitingFriendsRankWeek(@Param("peopleNum")int peopleNum, @Param("dataNum")int dataNum);
 
+    Integer queryUserScoresByUid(Integer uid);
 }

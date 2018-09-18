@@ -7,6 +7,7 @@ import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.DateUtil;
+import com.fmkj.common.util.Sendmail;
 import com.fmkj.common.util.SensitiveWordUtil;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.user.dao.domain.*;
@@ -366,9 +367,10 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
      *
      * @return
      */
-    @ApiOperation(value="查询邀请好友（推广）周排行榜", notes="参数：id, cardnum， name")
+    @ApiOperation(value="查询邀请好友（推广）周排行榜", notes="参数：id")
     @PutMapping("/queryRankInWeek")
     public BaseResult queryRankInWeek(@RequestBody HcAccount hc) {
+        HashMap<String, Object> result = new HashMap<String, Object>();
         if(StringUtils.isNull(hc) || StringUtils.isNull(hc.getId())){
             return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空!", false);
         }
@@ -389,45 +391,99 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         // 查询邀请人来注册获得的总能量
         HcAccount hcAccount = new HcAccount();
         hcAccount.setRid(hc.getId());
-        /*
-        List<HcAccount> queryUserByExample = hcaccountService.queryUserByExample(hcAccount);
+        EntityWrapper<HcAccount> hcWrapper = new EntityWrapper<>(hcAccount);
+        List<HcAccount> queryUserByExample = hcAccountService.selectList(hcWrapper);
+
         // 每邀请到一个人得到1P，getPs就是获得的总能量
         Integer getAllP = queryUserByExample.size() * 1;
         HashMap<String, Object> hashMap = new HashMap<String, Object>();
-        hashMap.put("points", points);
+        hashMap.put("points", pointNum);
         hashMap.put("getAllP", getAllP);
         hashMap.put("getAllUser", queryUserByExample.size());
         hashMap.put("reode", rcode);
+
+        int accountNum = hcAccountService.selectCount(new EntityWrapper<>());
         // 查询用户的排名(邀请人数大于0)
-        List<BaseBean> queryInvitingFriendsRankWeek1 = hcpointsrecordService.queryInvitingFriendsRankWeek(0,hcaccountService.queryAccountNum());
-        if (queryInvitingFriendsRankWeek1 == null || queryInvitingFriendsRankWeek1.size() == 0) {//
-            hashMap.put("position", "你本周未邀请人");// 你本周未邀请人
+        List<BaseBean> rankWeek = hcPointsRecordService.queryInvitingFriendsRankWeek(0,accountNum);
+        if (StringUtils.isEmpty(rankWeek)) {
+            hashMap.put("position", "你本周未邀请人");
         }
-        for (int i = 0; i < queryInvitingFriendsRankWeek1.size(); i++) {
-            BaseBean BaseBean = queryInvitingFriendsRankWeek1.get(i);
+        for (int i = 0; i < rankWeek.size(); i++) {
+            BaseBean BaseBean = rankWeek.get(i);
             if (BaseBean.getUid() == hc.getId()) {
                 hashMap.put("position", i + 1);
                 break;
             }
-            if (i == queryInvitingFriendsRankWeek1.size() - 1) {
+            if (i == rankWeek.size() - 1) {
                 hashMap.put("position", "你本周未邀请人");
             }
         }
-
         // ·榜
-        List<BaseBean> queryInvitingFriendsRankWeek = hcpointsrecordService.queryInvitingFriendsRankWeek(0,10);
-
-        System.out.println("rank=="+queryInvitingFriendsRankWeek);
-        HashMap<String, Object> hashMap2 = new HashMap<String, Object>();
-        hashMap2.put("rankCode", "200");
-        hashMap2.put("rankMsg", queryInvitingFriendsRankWeek);
-        map.put("rank", hashMap2);
-
-        HashMap<String, Object> hashMap3 = new HashMap<String, Object>();
-        hashMap3.put("myDataCode", "200");
-        hashMap3.put("myDataMsg", hashMap);
-        map.put("myData", hashMap3);*/
-        return null;
+        List<BaseBean> friendsRankWeek = hcPointsRecordService.queryInvitingFriendsRankWeek(0,10);
+        result.put("rank", friendsRankWeek);
+        result.put("myData", hashMap);
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", result);
     }
+
+    /**
+     * 邮箱绑定,传入用户id及用户邮箱
+     */
+    @ApiOperation(value="邮箱绑定,传入用户id及用户邮箱", notes="参数：id, email")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "邮箱绑定")
+    @PostMapping("/bindEmail")
+    public BaseResult bindEmail(@RequestBody HcAccount ha) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        if (StringUtils.isNull(ha.getId())) {
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空!", false);
+        }
+        String email = ha.getEmail();
+        if (StringUtils.isEmpty(email)) {
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户传入邮箱信息错误!", false);
+        }
+        //绑定邮箱给予积分奖励
+        boolean isUpdate = hcAccountService.bindEmail(ha);
+        Sendmail.sendMail(email);
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "邮箱绑定成功!", true);
+    }
+
+    /**
+     * 首次进入任务中心查询接口
+     */
+    @ApiOperation(value="首次进入任务中心查询接口", notes="参数：id")
+    @PutMapping("/queryUserTaskMessage")
+    public BaseResult queryUserTaskMessage(@RequestBody HcAccount hcAccount) {
+        HashMap<String, Object> result = new HashMap<>();
+        Integer uid = hcAccount.getId();
+        if (StringUtils.isNull(uid)) {
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空!", false);
+        }
+        HcAccount user = hcAccountService.queryUserTaskMessage(uid);
+        //查询用户是否签到过
+        HcPointsRecord hcPointsRecord = hcPointsRecordService.getHcPointsRecord(uid);
+        if(StringUtils.isNull(hcPointsRecord)) {
+            result.put("singnStatus", "0");
+        }else {
+            result.put("singnStatus", "1");
+        }
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功!", result);
+    }
+
+    /**
+     * 查询用户的总积分（成长值）
+     *
+     * @return
+     */
+    @ApiOperation(value="查询用户的总积分（成长值）", notes="参数：id")
+    @PutMapping("/queryUserScoresByUid")
+    public  BaseResult queryUserScoresByUid(@RequestBody HcAccount hcAccount) {
+        HashMap<String, Object> result = new HashMap<String, Object>();
+        if (StringUtils.isNull(hcAccount.getId())) {
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空!", false);
+        }
+        int pointsNum = hcPointsRecordService.queryUserScoresByUid(hcAccount.getId());
+        result.put("scores", pointsNum);
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功!", result);
+    }
+
 
 }

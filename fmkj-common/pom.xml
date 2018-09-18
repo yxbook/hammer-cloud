@@ -46,11 +46,21 @@
         <fluent-validator-version>1.0.9</fluent-validator-version>
         <dom4j-version>1.6.1</dom4j-version>
         <swagger2-version>2.8.0</swagger2-version>
+        <mail-version>1.4.7</mail-version>
 
 
     </properties>
 
     <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${mail-version}</version>
+        </dependency>
+        <!-- 这个依赖提供了spring mail封装的各接口, -->
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-context-support -->
 
         <dependency>
             <groupId>org.mybatis</groupId>

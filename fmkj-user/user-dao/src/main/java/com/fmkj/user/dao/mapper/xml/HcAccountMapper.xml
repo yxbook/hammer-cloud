@@ -38,4 +38,13 @@
 		limit 0,1
 	</select>
 
+	<!-- 查询单个用户信息，包括用户总积分 -->
+	<select id="queryUserTaskMessage" resultType="com.fmkj.user.dao.domain.HcAccount">
+		select ha.id,ha.telephone,ha.logo,ha.nickname,ha.email,ha.rid,ha.my_p as myP,ha.grade_id as gradeId,ha.card_status as cardStatus,
+       		ha.isboong,ha.cdbid,ha.password,sum(hp.points_num) as score
+        	from hc_account ha
+        	left join hc_points_record hp on ha.id = hp.uid
+          	where ha.id=#{uid}
+	</select>
+
 </mapper>

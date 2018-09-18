@@ -3,6 +3,7 @@ package com.fmkj.user.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fmkj.user.dao.domain.HcAccount;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +20,6 @@ public interface HcAccountMapper extends BaseMapper<HcAccount> {
      * @return
     */
     List<Map<String,Object>> queryOneNewNotice();
+
+    HcAccount queryUserTaskMessage(@Param("uid") Integer uid);
 }

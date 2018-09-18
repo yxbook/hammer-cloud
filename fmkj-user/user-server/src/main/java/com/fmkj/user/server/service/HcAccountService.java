@@ -1,6 +1,7 @@
 package com.fmkj.user.server.service;
 
 import com.fmkj.common.base.BaseService;
+import com.fmkj.user.dao.domain.BaseBean;
 import com.fmkj.user.dao.domain.HcAccount;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public interface HcAccountService extends BaseService<HcAccount> {
     */
     public List<Map<String, Object>> queryOneNewNotice();
 
+    public boolean bindEmail(HcAccount ha);
+
+    public HcAccount queryUserTaskMessage(Integer uid);
 }

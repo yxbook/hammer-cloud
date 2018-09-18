@@ -30,7 +30,6 @@ public class BmListController {
      */
     @GetMapping("/isBlacker")
     public Boolean isBlacker(@RequestParam HashMap<String, Object> params) {
-        LOGGER.info("判断黑名单参数：" + params);
         List<BmList> list = bmListService.selectByMap(params);
         if (list.size() > 0) {
             return true;

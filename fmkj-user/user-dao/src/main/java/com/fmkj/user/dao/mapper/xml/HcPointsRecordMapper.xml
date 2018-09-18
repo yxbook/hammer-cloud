@@ -11,6 +11,17 @@
         <result column="time" property="time" />
     </resultMap>
 
+    <resultMap id="RankWeekMap"
+               type="com.fmkj.user.dao.domain.BaseBean">
+        <id column="Id" jdbcType="INTEGER" property="id" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="nickname" jdbcType="INTEGER" property="nickname" />
+        <result column="invitingNum" jdbcType="INTEGER" property="invitingNum" />
+        <result column="points" jdbcType="DOUBLE" property="points" />
+        <result column="logo" jdbcType="VARCHAR" property="logo" />
+        <result column="time" jdbcType="TIMESTAMP" property="time" />
+    </resultMap>
+
     <!-- 查询用户今天有没有签到过 -->
     <select id="getHcPointsRecord" resultType="com.fmkj.user.dao.domain.HcPointsRecord">
 		select * from hc_points_record where uid=#{uid} and points_id=1 and
@@ -20,6 +31,24 @@
     <!-- 查询邀请人来注册获得的总积分 -->
     <select id="queryPoints"  parameterType="Integer"  resultType="Integer">
 		select Sum(points_num) from hc_points_record where uid=#{uid} and points_id=6
+	</select>
+
+    <!-- 查询用户获得的各种积分总和 -->
+    <select id="queryUserScoresByUid"  parameterType="Integer"  resultType="Integer">
+		select Sum(points_num) from hc_points_record where uid=#{uid}
+	</select>
+
+    <!-- 差选用户邀请人数得周榜单(本周至当前得数据) -->
+    <select id="queryInvitingFriendsRankWeek" resultMap="RankWeekMap">
+		select tab.uid,tab.nickname,tab.invitingNum,tab.points,tab.time,tab.logo
+  		from (
+           select hpr.uid as uid,hc.nickname as nickname, count(hpr.uid) as invitingNum,count(hpr.uid)*5 as points,hpr.time as time,hc.logo as logo
+      	 	      from  hc_points_record as hpr
+                  left join hc_account as  hc on hpr.uid=hc.id
+      		      where points_id=6 and YEARWEEK(date_format(time,'%Y-%m-%d')) = YEARWEEK(now()) and hpr.uid>1
+       		      group by hc.id
+        	      order by points desc,time asc) tab
+  		where tab.invitingNum>#{peopleNum} limit 0,#{dataNum}
 	</select>
 
 </mapper>

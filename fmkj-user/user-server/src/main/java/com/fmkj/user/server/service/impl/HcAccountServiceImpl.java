@@ -3,7 +3,9 @@ package com.fmkj.user.server.service.impl;
 
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.user.dao.domain.HcAccount;
+import com.fmkj.user.dao.domain.HcPointsRecord;
 import com.fmkj.user.dao.mapper.HcAccountMapper;
+import com.fmkj.user.dao.mapper.HcPointsRecordMapper;
 import com.fmkj.user.server.service.HcAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,9 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
     @Autowired
     private HcAccountMapper hcAccountMapper;
 
+    @Autowired
+    private HcPointsRecordMapper hcPointsRecordMapper;
+
     /**
      * @author yangshengbin
      * @Description：查询最新一条中奖用户信息
@@ -37,6 +42,25 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
      */
     public List<Map<String, Object>> queryOneNewNotice() {
         return hcAccountMapper.queryOneNewNotice();
+    }
+
+    @Override
+    public boolean bindEmail(HcAccount ha) {
+        int result = hcAccountMapper.updateById(ha);
+        if(result > 0){
+            HcPointsRecord hcp = new HcPointsRecord();
+            hcp.setUid(ha.getId());
+            hcp.setPointsId(9);
+            hcp.setPointsNum(10d);
+            hcPointsRecordMapper.insert(hcp);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public HcAccount queryUserTaskMessage(Integer uid) {
+        return hcAccountMapper.queryUserTaskMessage(uid);
     }
 
 }
