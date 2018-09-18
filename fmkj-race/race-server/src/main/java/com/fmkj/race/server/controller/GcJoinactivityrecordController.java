@@ -45,7 +45,9 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
     public BaseResult<HashMap<String, Object>> ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord){
 
         HashMap<String, Object> map = new HashMap<String, Object>();
+
         map=messageProducer.send(gcJoinactivityrecord);//生产消息
+
         return new BaseResult(BaseResultEnum.SUCCESS,map);
 
     }

@@ -18,14 +18,12 @@ import org.springframework.stereotype.Service;
 @Component
 public class MessageProducer {
 
-	/*@Resource(name="amqpTemplate")*/
 	@Autowired
 	private AmqpTemplate amqpTemplate;
 
 	public HashMap<String, Object> send(Object message) {
 		
 		HashMap<String, Object> map =  new HashMap<String, Object>();
-
 		GcJoinactivityrecord joins = (GcJoinactivityrecord) message;
 		try {
 			//加入队列

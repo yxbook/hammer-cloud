@@ -24,10 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @time 2018年8月7日 下午7:55:30
  * @developers 费马科技
  */
-/*@Service
-@Transactional*/
+@Service
+@Transactional
 @Component
-/*@EnableScheduling*/
 @RabbitListener(queues = "workqueue")
 public class DirectConsumerOne  { //implements MessageListener{
 
@@ -39,17 +38,11 @@ public class DirectConsumerOne  { //implements MessageListener{
 	private GcJoinactivityrecordService gcJoinactivityrecordService;
 
 	@RabbitHandler
-	public void ssss(){
-		System.err.println("message="+111111);
-	}
-	/*public void onMessage(Message message){
-		System.err.println("message="+message);
-	}*/
-
-	/*@RabbitHandler
 	public void onMessage(Message message) {
 
-		byte[] body = message.getBody();//获取GcJoinactivityrecord对象
+		System.err.println("aaa="+1111111);
+
+		/*byte[] body = message.getBody();//获取GcJoinactivityrecord对象
 		
 		//转换对象
 		GcJoinactivityrecord joins =(GcJoinactivityrecord) SerializationUtils.deserialize(body);
@@ -74,10 +67,10 @@ public class DirectConsumerOne  { //implements MessageListener{
 		GcJoinactivityrecord gcJoinactivityrecord = new GcJoinactivityrecord();
 		gcJoinactivityrecord.setAid(aid);
 		EntityWrapper<GcJoinactivityrecord> entityWrapper = new EntityWrapper<GcJoinactivityrecord>();
-		entityWrapper.setEntity(gcJoinactivityrecord);
+		entityWrapper.setEntity(gcJoinactivityrecord);*/
 
 
-		//活动需要人数
+		/*//活动需要人数
 		int num = gcActivity1.getNum();
 
 		double par = gcActivity1.getPar();//活动需要的P能量
@@ -122,9 +115,8 @@ public class DirectConsumerOne  { //implements MessageListener{
 				System.err.println("初始化合约或加载合约失败");
         		return;
 			}
-		}
+		}*/
 		return ;
 	}
-	*/
-	
+
 }

@@ -1,5 +1,6 @@
 package com.fmkj.race.server.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fmkj.common.base.BaseApiService;
@@ -48,13 +49,15 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
     @PostMapping("/insertNewAddress")
     public BaseResult insertNewAddress(@RequestBody GcAddress gcAddress) {
         try {
-            if(StringUtils.isNull(gcAddress) || gcAddress.getUid() == null){
+            if(StringUtils.isNull(gcAddress) || StringUtils.isNull(gcAddress.getUid())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "UID不能为空", "UID不能为空");
             }
             gcAddress.setStatus(0);
             gcAddress.setLock(0);
-            return super.insert(gcAddress);
-        } catch (Exception e) {
+            gcAddressService.insert(gcAddress);
+            return new BaseResult(BaseResultEnum.SUCCESS,"数据添加成功");
+        }
+        catch (Exception e) {
             throw new RuntimeException("新增异常：" + e.getMessage());
         }
     }
@@ -76,7 +79,6 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
             if( gcAddress.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
             }
-            System.err.println("id="+gcAddress.getId());
             gcAddressService.deleteById(gcAddress.getId());
             return new BaseResult(BaseResultEnum.SUCCESS,"数据删除成功");
         } catch (Exception e) {
@@ -123,7 +125,6 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
                 throw new RuntimeException("修改异常：" + e.getMessage());
             }
             /***********将用户所有地址重置为0************/
-
 
             //修改默认地址为1
             gcAddress.setStatus(1);

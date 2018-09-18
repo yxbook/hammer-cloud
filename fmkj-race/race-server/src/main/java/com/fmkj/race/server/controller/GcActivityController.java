@@ -64,9 +64,9 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
     @PostMapping(value = "/startActivityByExample")
-    public  BaseResult<Map<String,Object>> startActivityByExample(@RequestBody GcActivity gcActivity,HttpServletRequest request) throws IOException {
+    public  BaseResult<Map<String,Object>> startActivityByExample( GcActivity gcActivity,HttpServletRequest request) throws IOException {
 
-        List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
+       List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
 
         //获取参数列表
         Integer startid = gcActivity.getStartid(); //活动发起人id
@@ -167,7 +167,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         gcNoticeService.insert(gn);
 
         //上传活动的文件
-        if(files.size()> 0) {
+       if(files.size()> 0) {
             EntityWrapper wrapper2 = new EntityWrapper();
             wrapper2.setEntity(ga);
             GcActivity activity2 = gcActivityService.selectOne(wrapper2);

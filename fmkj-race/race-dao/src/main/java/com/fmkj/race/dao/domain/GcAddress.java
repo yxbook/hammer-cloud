@@ -45,7 +45,9 @@ public class GcAddress extends Model<GcAddress> {
      * 区
      */
     private String county;
+
     private Integer lock;
+
     private Integer status;
     /**
      * 收货人详细地址
@@ -138,19 +140,4 @@ public class GcAddress extends Model<GcAddress> {
         return this.Id;
     }
 
-    @Override
-    public String toString() {
-        return "GcAddress{" +
-        "Id=" + Id +
-        ", uid=" + uid +
-        ", name=" + name +
-        ", telephone=" + telephone +
-        ", province=" + province +
-        ", city=" + city +
-        ", county=" + county +
-        ", lock=" + lock +
-        ", status=" + status +
-        ", address=" + address +
-        "}";
-    }
 }

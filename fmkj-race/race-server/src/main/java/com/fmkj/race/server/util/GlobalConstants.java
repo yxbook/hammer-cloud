@@ -47,7 +47,8 @@ public class GlobalConstants {
             String originalFilename =uuid.toString().replaceAll("-", "");
             System.err.println("originalFilename="+originalFilename);
             Long time = new Date().getTime();//获取当前时间为标识
-            String newFileName = time.toString()+originalFilename+ "." + prefix;;//新的文件名
+            //String newFileName = time.toString()+originalFilename+ "." + prefix;//新的文件名
+            String newFileName = time.toString()+originalFilename;//新的文件名
             File targetFile = new File(url,newFileName); //封装上传文件位置的全路径
             file.transferTo(targetFile);//把本地文件上传到 封装上传文件位置的全路径 下
             return newFileName;//返回新的文件路径名+文件名
