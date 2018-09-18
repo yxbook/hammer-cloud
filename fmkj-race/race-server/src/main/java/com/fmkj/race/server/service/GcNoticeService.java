@@ -40,4 +40,10 @@ public interface GcNoticeService extends BaseService<GcNotice> {
     List<Map<String,Object>> queryOneNewNotice();
 
 
+    /**
+     * 发起活动插入信息
+     * @param startid
+     * @return
+     */
+    boolean addNoticeAndMessage(Integer startid,Integer typeid);
 }

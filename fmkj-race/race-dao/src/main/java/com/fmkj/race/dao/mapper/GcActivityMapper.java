@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @param gcBaseModel
      * @return
     */
-    List<HashMap<String,Object>> queryMyJoinActivityByUid(GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyJoinActivityByUid(Pagination page,@Param("gbm") GcBaseModel gcBaseModel);
 
 
 
@@ -58,7 +59,7 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @param gcBaseModel
      * @return
     */
-    List<HashMap<String,Object>> queryMyStartActivityByUid(GcBaseModel gcBaseModel);
+    List<GcActivityDto>  queryMyStartActivityByUid(Pagination page,@Param("gbm") GcBaseModel gcBaseModel);
 
 
 }

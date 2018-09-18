@@ -26,7 +26,6 @@ public class SpringContextHandler implements ApplicationContextAware {
         return applicationContext;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T getBean(String beanName) {
         assertApplicationContext();
         return (T) applicationContext.getBean(beanName);
@@ -39,7 +38,7 @@ public class SpringContextHandler implements ApplicationContextAware {
 
     private static void assertApplicationContext() {
         if (SpringContextHandler.applicationContext == null) {
-            throw new RuntimeException("applicaitonContext属性为null,请检查是否注入了SpringContextHolder!");
+            throw new RuntimeException("race-applicaitonContext属性为null,请检查是否注入了SpringContextHolder!");
         }
     }
 

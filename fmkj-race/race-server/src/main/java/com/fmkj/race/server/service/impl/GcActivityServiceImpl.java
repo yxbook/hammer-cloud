@@ -60,8 +60,8 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @param gcBaseModel
      * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
     */
-    public List<HashMap<String, Object>> queryMyJoinActivityByUid(GcBaseModel gcBaseModel) {
-        return gcActivityMapper.queryMyJoinActivityByUid(gcBaseModel);
+    public  List<GcActivityDto> queryMyJoinActivityByUid(Pagination page, GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryMyJoinActivityByUid(page,gcBaseModel);
     }
 
 
@@ -74,7 +74,23 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @param gcBaseModel
      * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
     */
-    public List<HashMap<String, Object>> queryMyStartActivityByUid(GcBaseModel gcBaseModel) {
-        return null;
+    public List<GcActivityDto> queryMyStartActivityByUid(Pagination page, GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryMyStartActivityByUid(page,gcBaseModel);
+    }
+
+
+    /**
+     * 插入发起活动
+     * @param ga
+     * @return
+     */
+    @Override
+    public boolean addGcActivity(GcActivity ga) {
+        try {
+            gcActivityMapper.insert(ga);
+        } catch (Exception e) {
+            throw new RuntimeException("插入发起活动异常，uid"+ga.getStartid()+"" + e.getMessage());
+        }
+        return true;
     }
 }

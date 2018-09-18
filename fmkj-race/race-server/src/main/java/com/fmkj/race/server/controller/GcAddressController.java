@@ -95,7 +95,8 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
             if( gcAddress.getId() == null){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
             }
-            return super.updateById(gcAddress);
+            gcAddressService.updateById(gcAddress);
+            return new BaseResult(BaseResultEnum.SUCCESS,"数据修改成功");
         } catch (Exception e) {
             throw new RuntimeException("修改异常：" + e.getMessage());
         }
@@ -104,35 +105,22 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
 
 
     @ApiOperation(value="修改默认地址", notes="修改默认地址")
-    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "修改默认地址")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "修改默认地址，参数：id,uid")
     @PostMapping("/updateAddressByStatus")
     public BaseResult updateAddressByStatus(@RequestBody GcAddress gcAddress){
         try {
-            if( gcAddress.getId() == null){
+            if(StringUtils.isNull(gcAddress.getId())&&StringUtils.isNull(gcAddress.getUid())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
             }
-            /***********将用户所有地址重置为0************/
-            GcAddress gcAddress1 = new GcAddress();
-            gcAddress1.setStatus(0);
-            EntityWrapper<GcAddress> wrapper = new EntityWrapper<GcAddress>();
-            GcAddress gcAddress2 = new GcAddress();
-            gcAddress2.setStatus(gcAddress.getUid());
-            wrapper.setEntity(gcAddress2);
-            try {
-                gcAddressService.update(gcAddress1,wrapper);
-            } catch (Exception e) {
-                throw new RuntimeException("修改异常：" + e.getMessage());
+            boolean flag = gcAddressService.updateAddressByStatus(gcAddress);
+            if (!flag){
+                return new BaseResult(BaseResultEnum.ERROR,"数据修改失败");
             }
-            /***********将用户所有地址重置为0************/
-
-            //修改默认地址为1
-            gcAddress.setStatus(1);
-            return super.updateById(gcAddress);
-
-
+            return new BaseResult(BaseResultEnum.SUCCESS,"数据修改成功");
         } catch (Exception e) {
             throw new RuntimeException("修改异常：" + e.getMessage());
         }
+
     }
 
 
@@ -147,7 +135,7 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
      * @return
      */
     @ApiOperation(value="查询用户所有收货地址", notes="查询用户所有收货地址")
-    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "查询用户所有收货地址")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "查询用户所有收货地址，参数：uid")
     @PutMapping("/queryAllAddressByUid")
     public BaseResult<Page<GcAddress>> queryAllAddressByUid(@RequestBody GcAddress gcAddress){
         try {

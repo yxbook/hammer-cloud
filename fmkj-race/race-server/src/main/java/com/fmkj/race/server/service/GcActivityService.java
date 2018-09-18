@@ -48,7 +48,7 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @param gcBaseModel
      * @return
     */
-    List<HashMap<String,Object>> queryMyJoinActivityByUid(GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyJoinActivityByUid(Pagination page, GcBaseModel gcBaseModel);
 
     
     /**
@@ -58,7 +58,13 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @param gcBaseModel
      * @return 
     */
-    List<HashMap<String,Object>> queryMyStartActivityByUid(GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyStartActivityByUid(Pagination page, GcBaseModel gcBaseModel);
 
 
+    /**
+     * 插入发起活动信息
+     * @param ga
+     * @return
+     */
+    boolean addGcActivity(GcActivity ga);
 }

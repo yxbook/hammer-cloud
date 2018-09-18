@@ -10,18 +10,12 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.SensitiveWordUtil;
 import com.fmkj.common.util.StringUtils;
-import com.fmkj.race.dao.domain.GcActivity;
-import com.fmkj.race.dao.domain.GcMessage;
-import com.fmkj.race.dao.domain.GcNotice;
-import com.fmkj.race.dao.domain.GcPimage;
+import com.fmkj.race.client.BmListApi;
+import com.fmkj.race.dao.domain.*;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
-import com.fmkj.race.server.api.BmListApi;
-import com.fmkj.race.server.service.GcActivityService;
-import com.fmkj.race.server.service.GcMessageService;
-import com.fmkj.race.server.service.GcNoticeService;
-import com.fmkj.race.server.service.GcPimageService;
+import com.fmkj.race.server.service.*;
 import com.fmkj.race.server.util.CalendarTime;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -72,7 +66,8 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @PostMapping(value = "/startActivityByExample")
     public  BaseResult<Map<String,Object>> startActivityByExample( GcActivity gcActivity,HttpServletRequest request) throws IOException {
 
-       List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
+      // List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
+
         //获取参数列表
         Integer startid = gcActivity.getStartid(); //活动发起人id
         String name = gcActivity.getName();//活动名称
@@ -85,17 +80,15 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         Integer typeid = gcActivity.getTypeid();//对应活动类型
         double premium = gcActivity.getPremium();//产品的溢价率
         String type = "";//活动类型
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("uid", startid);
-        params.put("status", 2);
+
         //判断用户是否黑名单
-        boolean isBlack = bmListApi.isActivityBlack(params);
+        boolean isBlack = bmListApi.isActivityBlack(startid, 2);
         if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
         }
 
         //判断活动名称是否包含敏感词汇
-        if(name.trim()!=null && !"".equals(name.trim())) {
+        if(StringUtils.isNull(name.trim())) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(name.trim(),2,"*");
             if(!name.trim().equals(wordIsOk.trim())) {
                 return new BaseResult(BaseResultEnum.ERROR.status, "活动名称含有敏感词汇，请重新写一个吧!",null);
@@ -103,7 +96,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         }
 
         //判断产品的描述详情是否包含敏感词汇
-        if(pdescribe!=null && !"".equals(pdescribe)) {
+        if(StringUtils.isNull(pdescribe.trim())) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(pdescribe.trim(),2,"*");
             if(!pdescribe.equals(wordIsOk.trim())) {
                 return new BaseResult(BaseResultEnum.ERROR.status, "产品的描述详情含有敏感词汇，请重新写一个吧!",null);
@@ -111,7 +104,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         }
 
         //判断产品名称是否包含敏感词汇
-        if(pname!=null && !"".equals(pname)) {
+        if(StringUtils.isNull(pname.trim())) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(pname.trim(),2,"*");
             if(!pname.equals(wordIsOk.trim())) {
                 return new BaseResult(BaseResultEnum.ERROR.status, "产品名称含有敏感词汇，请重新写一个吧!",null);
@@ -129,7 +122,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         EntityWrapper wrapper1 = new EntityWrapper();
         wrapper1.setEntity(ga);
         GcActivity activity1 = gcActivityService.selectOne(wrapper1);//判断相同活动是否存在
-        if(activity1 != null) {
+        if(StringUtils.isNotNull(activity1)) {
             return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，该活动已存在!",null);
         }
 
@@ -143,30 +136,20 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setNum(num);
         ga.setCollectgoodstatus(0);
         ga.setPar(par);
-        boolean result = gcActivityService.insert(ga);
-        if(!result) {
+        boolean result = gcActivityService.addGcActivity(ga);
+        if(result==false) {
             return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，填入信息格式有误!",null);
         }
 
         //插入信息
-        GcMessage gcMessage = new GcMessage();
-        gcMessage.setTime(btime);
-        gcMessage.setMessage("您已发起了"+type+"溢价活动，系统审核通过后，活动完成系统将扣除相应手续费后的资产包发送到您的账户，详情请查询活动发起规则。");
-        gcMessage.setType(0);
-        gcMessageService.insert(gcMessage);
 
-        //插入通知表
-        EntityWrapper wrapper3= new EntityWrapper();
-        wrapper3.setEntity(gcMessage);
-        GcMessage gcMessage1 = gcMessageService.selectOne(wrapper3);
-        GcNotice gn = new GcNotice();
-        gn.setFlag(1);
-        gn.setUid(startid);
-        gn.setMid(gcMessage1.getId());
-        gcNoticeService.insert(gn);
+        boolean flag = gcNoticeService.addNoticeAndMessage(startid,typeid);
+        if (flag==false){
+            return new BaseResult(BaseResultEnum.ERROR.status, "插入通知信息失败!",null);
+        }
 
         //上传活动的文件
-       if(files.size()> 0) {
+      /* if(files.size()> 0) {
             EntityWrapper wrapper2 = new EntityWrapper();
             wrapper2.setEntity(ga);
             GcActivity activity2 = gcActivityService.selectOne(wrapper2);
@@ -184,7 +167,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                 gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
                 gcPimageService.insert(gp);
             }
-        }
+        }*/
         return new BaseResult(BaseResultEnum.SUCCESS.status, "活动发起成功!",null);
     }
 
@@ -231,6 +214,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入活动id查询活动产品的所有图片")
     @PutMapping("/queryActivityImageById")
     public BaseResult queryActivityImageById(@RequestBody GcBaseModel gcBaseModel){
+
         List<GcPimage> list = gcPimageService.queryActivityImageById(gcBaseModel);
         return new BaseResult(BaseResultEnum.SUCCESS,list);
 
@@ -240,12 +224,24 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
 
 
     //传入uid查询用户参与的活动    status：1进行中  2已锤到的  3.已结束
-    @ApiOperation(value="传入uid查询用户参与的活动", notes="传入uid查询用户参与的活动")
-    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入uid查询用户参与的活动")
+    @ApiOperation(value="查询用户参与的活动，参数：pageSize,status（二级菜单编号）,uid", notes="查询用户参与的活动")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "查询用户参与的活动")
     @PutMapping("/queryMyJoinActivityByUid")
     public BaseResult queryMyJoinActivityByUid(@RequestBody GcBaseModel gcBaseModel){
-        List<HashMap<String, Object>> list = gcActivityService.queryMyJoinActivityByUid(gcBaseModel);
-        return new BaseResult(BaseResultEnum.SUCCESS,list);
+        try {
+            if(StringUtils.isNull(gcBaseModel) || StringUtils.isNull(gcBaseModel.getUid())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
+            Page<GcActivityDto> tPage = buildPage(gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryMyJoinActivityByUid(tPage, gcBaseModel);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
+        } catch (Exception e) {
+            throw new RuntimeException("查询用户参与的活动异常：" + e.getMessage());
+        }
 
     }
 
@@ -255,12 +251,24 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     /**
      *  传入uid查询用户发起的活动    status：0:待审核 1:驳回 2:活动中 3：已结束 4：活动异常 5：活动失败
      */
-    @ApiOperation(value="传入uid查询用户发起的活动 ", notes="传入uid查询用户发起的活动 ")
+    @ApiOperation(value="传入uid查询用户发起的活动，参数：pageSize，status，uid", notes="传入uid查询用户发起的活动 ")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入uid查询用户发起的活动 ")
     @PutMapping("/queryMyStartActivityByUid")
     public BaseResult queryMyStartActivityByUid(@RequestBody GcBaseModel gcBaseModel){
-        List<HashMap<String, Object>> list = gcActivityService.queryMyStartActivityByUid(gcBaseModel);
-        return new BaseResult(BaseResultEnum.SUCCESS,list);
+        try {
+            if(StringUtils.isNull(gcBaseModel) || StringUtils.isNull(gcBaseModel.getUid())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
+            Page<GcActivityDto> tPage = buildPage(gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryMyStartActivityByUid(tPage, gcBaseModel);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
+        } catch (Exception e) {
+            throw new RuntimeException("查询用户发起的活动活动异常：" + e.getMessage());
+        }
 
     }
 
