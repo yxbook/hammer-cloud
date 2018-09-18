@@ -15,7 +15,6 @@ import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.enmu.OrderEnum;
 import com.fmkj.order.server.enmu.PayEnum;
 import com.fmkj.order.server.service.OrderService;
-import com.fmkj.order.server.service.ProductService;
 import com.fmkj.order.server.util.MakeOrderNumUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,9 +40,6 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private ProductService productService;
 
     @ApiOperation(value="分页查询订单列表", notes="分页查询订单列表")
     @PutMapping("/getOrderPage")
@@ -320,7 +316,6 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
 
     /**
      * 构建查询条件
-     * @param productQueryVo
      */
     private EntityWrapper<OrderInfo> transWrapper(OrderQueryVo orderQueryVo) {
         EntityWrapper<OrderInfo> entityWrapper = new EntityWrapper<OrderInfo>();

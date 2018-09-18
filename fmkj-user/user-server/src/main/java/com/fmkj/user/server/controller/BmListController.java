@@ -1,26 +1,20 @@
 package com.fmkj.user.server.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.fmkj.common.base.BaseResult;
-import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.user.dao.domain.BmList;
-import com.fmkj.user.dao.domain.HcAccount;
-import com.fmkj.user.dao.domain.HcSession;
 import com.fmkj.user.server.service.BmListService;
-import com.fmkj.user.server.service.HcAccountService;
-import com.fmkj.user.server.service.HcSessionService;
-import com.fmkj.user.server.util.CalendarTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 /**
- *  权限、token接口写在这里
+ *  黑名单
  */
 @RestController
 @RequestMapping("/bmList")
@@ -34,11 +28,9 @@ public class BmListController {
     /**
      * 判断用户是否黑名单
      */
-    @GetMapping(value = "/isBlacker")
-    public Boolean isBlacker(Integer uid,Integer status) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("uid", uid);
-        params.put("status", status);
+    @GetMapping("/isBlacker")
+    public Boolean isBlacker(@RequestParam HashMap<String, Object> params) {
+        LOGGER.info("判断黑名单参数：" + params);
         List<BmList> list = bmListService.selectByMap(params);
         if (list.size() > 0) {
             return true;

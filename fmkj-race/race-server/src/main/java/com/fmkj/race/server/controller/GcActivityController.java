@@ -10,12 +10,18 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.SensitiveWordUtil;
 import com.fmkj.common.util.StringUtils;
-import com.fmkj.race.client.BmListApi;
-import com.fmkj.race.dao.domain.*;
+import com.fmkj.race.dao.domain.GcActivity;
+import com.fmkj.race.dao.domain.GcMessage;
+import com.fmkj.race.dao.domain.GcNotice;
+import com.fmkj.race.dao.domain.GcPimage;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
-import com.fmkj.race.server.service.*;
+import com.fmkj.race.server.api.BmListApi;
+import com.fmkj.race.server.service.GcActivityService;
+import com.fmkj.race.server.service.GcMessageService;
+import com.fmkj.race.server.service.GcNoticeService;
+import com.fmkj.race.server.service.GcPimageService;
 import com.fmkj.race.server.util.CalendarTime;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,7 +73,6 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     public  BaseResult<Map<String,Object>> startActivityByExample( GcActivity gcActivity,HttpServletRequest request) throws IOException {
 
        List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
-
         //获取参数列表
         Integer startid = gcActivity.getStartid(); //活动发起人id
         String name = gcActivity.getName();//活动名称
@@ -80,9 +85,11 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         Integer typeid = gcActivity.getTypeid();//对应活动类型
         double premium = gcActivity.getPremium();//产品的溢价率
         String type = "";//活动类型
-
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("uid", startid);
+        params.put("status", 2);
         //判断用户是否黑名单
-        boolean isBlack = bmListApi.isActivityBlack(startid, 2);
+        boolean isBlack = bmListApi.isActivityBlack(params);
         if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
         }
@@ -224,7 +231,6 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入活动id查询活动产品的所有图片")
     @PutMapping("/queryActivityImageById")
     public BaseResult queryActivityImageById(@RequestBody GcBaseModel gcBaseModel){
-
         List<GcPimage> list = gcPimageService.queryActivityImageById(gcBaseModel);
         return new BaseResult(BaseResultEnum.SUCCESS,list);
 
