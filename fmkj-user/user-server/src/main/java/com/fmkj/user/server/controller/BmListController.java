@@ -34,8 +34,8 @@ public class BmListController {
     /**
      * 判断用户是否黑名单
      */
-    @PostMapping(value = "isBlacker")
-    public Boolean isBlacker(Integer uid, Integer status) {
+    @GetMapping(value = "/isBlacker")
+    public Boolean isBlacker(Integer uid,Integer status) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("uid", uid);
         params.put("status", status);

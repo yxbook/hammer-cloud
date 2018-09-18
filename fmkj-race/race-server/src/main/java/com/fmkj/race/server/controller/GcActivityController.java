@@ -60,7 +60,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     private GcNoticeService gcNoticeService;//通知接口  ,@RequestParam MultipartFile[] file   @RequestParam Map<String,Object> map,
 
 
-//, method = RequestMethod.POST, produces = "application/json;charset=UTF-8"
+
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
     @PostMapping(value = "/startActivityByExample")
@@ -80,24 +80,16 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         Integer typeid = gcActivity.getTypeid();//对应活动类型
         double premium = gcActivity.getPremium();//产品的溢价率
         String type = "";//活动类型
-        System.err.println("name="+name);
-        System.err.println("pname="+pname);
-        System.err.println("pdescribe="+pdescribe);
 
         //判断用户是否黑名单
-       /* HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("uid", startid);
-        params.put("status", 2);
-        boolean isBlack = bmListApi.isActivityBlack(params);
+        boolean isBlack = bmListApi.isActivityBlack(startid, 2);
         if(isBlack) {
             return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",null);
-        }*/
+        }
 
         //判断活动名称是否包含敏感词汇
         if(name.trim()!=null && !"".equals(name.trim())) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(name.trim(),2,"*");
-            System.err.println("name="+name);
-            System.err.println("wordIsOk="+wordIsOk);
             if(!name.trim().equals(wordIsOk.trim())) {
                 return new BaseResult(BaseResultEnum.ERROR.status, "活动名称含有敏感词汇，请重新写一个吧!",null);
             }
