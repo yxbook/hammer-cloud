@@ -7,6 +7,7 @@ import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
+import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.SensitiveWordUtil;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.race.client.BmListApi;
@@ -16,7 +17,6 @@ import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.*;
 import com.fmkj.race.server.util.CalendarTime;
-import com.fmkj.race.server.util.GlobalConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,18 +172,17 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
             wrapper2.setEntity(ga);
             GcActivity activity2 = gcActivityService.selectOne(wrapper2);
             Integer aid = activity2.getId();
-            GlobalConstants globalConstants = new GlobalConstants();
-            String url = globalConstants.getInterfaceUrl("activityImagePath");
+            String url = PropertiesUtil.getInstance("interface_url").get("activityImagePath");
 
             int i = 1;
             MultipartFile file = null;
             for (int j=0;j<files.size();j++){
                 file = files.get(j);
-                String fileName = globalConstants.uploadImage(file, url);
+                String fileName = PropertiesUtil.uploadImage(file, url);
                 GcPimage gp = new GcPimage();
                 gp.setAid(aid);
                 gp.setFlag(i++);
-                gp.setImageurl(globalConstants.getInterfaceUrl("activityImageIpPath")+fileName);
+                gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
                 gcPimageService.insert(gp);
             }
         }
