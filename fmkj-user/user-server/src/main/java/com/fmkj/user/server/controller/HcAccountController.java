@@ -381,9 +381,9 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
             return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户没有邀请码!", false);
         }
         // 查询邀请人来注册获得的总积分
-        Integer points = hcPointsRecordService.queryPoints(hc.getId());
-        if (points == null) {
-            points = 0;
+        Integer pointNum = hcPointsRecordService.queryPoints(hc.getId());
+        if (pointNum == null) {
+            pointNum = 0;
         }
 
         // 查询邀请人来注册获得的总能量
