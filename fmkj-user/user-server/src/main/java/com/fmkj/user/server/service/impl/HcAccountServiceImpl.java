@@ -63,4 +63,9 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
         return hcAccountMapper.queryUserTaskMessage(uid);
     }
 
+    @Override
+    public List<HcAccount> queryAllFriends(Integer accountId) {
+        return hcAccountMapper.selectAllFriends(accountId);
+    }
+
 }

@@ -22,9 +22,11 @@ public interface HcAccountService extends BaseService<HcAccount> {
      * @param
      * @return 
     */
-    public List<Map<String, Object>> queryOneNewNotice();
+    List<Map<String, Object>> queryOneNewNotice();
 
-    public boolean bindEmail(HcAccount ha);
+    boolean bindEmail(HcAccount ha);
 
-    public HcAccount queryUserTaskMessage(Integer uid);
+    HcAccount queryUserTaskMessage(Integer uid);
+
+    List<HcAccount> queryAllFriends(Integer accountId);
 }

@@ -22,4 +22,6 @@ public interface HcAccountMapper extends BaseMapper<HcAccount> {
     List<Map<String,Object>> queryOneNewNotice();
 
     HcAccount queryUserTaskMessage(@Param("uid") Integer uid);
+
+    List<HcAccount> selectAllFriends(@Param("uid") Integer accountId);
 }

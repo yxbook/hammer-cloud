@@ -1,5 +1,7 @@
 package com.fmkj.user.server.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
@@ -27,7 +29,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.websocket.server.PathParam;
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
@@ -66,7 +71,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         String pwd = hcAccount.getPassword();
         String telephone = hcAccount.getTelephone();
         if (StringUtils.isEmpty(pwd) || StringUtils.isEmpty(telephone)) {
-            return new BaseResult(BaseResultEnum.ERROR.status,"用户名或密码为空!",null);
+            return new BaseResult(BaseResultEnum.BLANK.status,"用户名或密码为空!",false);
         }
         pwd = DigestUtils.md5Hex(pwd);
         //判断用户电话号码和密码是否匹配
@@ -76,7 +81,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         map.put("password",pwd);
         List<HcAccount> account = hcAccountService.selectByMap(map);
         if (account.size()<=0 || StringUtils.isNull(account)) {
-            return new BaseResult(BaseResultEnum.ERROR.status,"用户名或密码错误!",null);
+            return new BaseResult(BaseResultEnum.ERROR.status,"用户名或密码错误!",false);
         }
 
         //创建token及生存时间
@@ -209,7 +214,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
 
 
     /**
-     * 用户通过电话号码和短信动态码进行登录 - hsy
+     * 用户通过电话号码和短信动态码进行登录
      *
      * @param req
      * @return
@@ -271,23 +276,26 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     }
 
     /**
-     * 通过传入的用户字段和用户唯一id修改用户信息 - hsy
+     * 通过传入的用户字段和用户唯一id修改用户信息
      */
-    @ApiOperation(value="修改昵称", notes="参数：id， nickname")
-    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "修改昵称")
+    @ApiOperation(value="修改用户信息-昵称-设置密码-姓名", notes="参数：id， 修改字段，比如nickname")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "传入id及需要修改的字段")
     @PostMapping("/updateAccoutById")
     public BaseResult updateAccoutById(@RequestBody HcAccount ha) {
         if (StringUtils.isNull(ha) || StringUtils.isNull(ha.getId())) {
             return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", false);
         }
         String nickname = ha.getNickname();
-        if (StringUtils.isNull(nickname)) {
-            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "昵称不能为空", false);
+        if (StringUtils.isNotEmpty(nickname)) {
+            String wordIsOk= SensitiveWordUtil.replaceBadWord(nickname.trim(),2,"*");
+            if(!nickname.equals(wordIsOk.trim())) {
+                return new BaseResult(BaseResultEnum.ERROR.getStatus(), "昵称含有敏感词汇，请重新写一个吧!", false);
+            }
         }
-        String wordIsOk= SensitiveWordUtil.replaceBadWord(nickname.trim(),2,"*");
-        if(!nickname.equals(wordIsOk.trim())) {
-            return new BaseResult(BaseResultEnum.ERROR.getStatus(), "昵称含有敏感词汇，请重新写一个吧!", false);
+        if(StringUtils.isNotEmpty(ha.getPassword())){
+            ha.setPassword(DigestUtils.md5Hex(ha.getPassword()));
         }
+
         hcAccountService.updateById(ha);
         return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "修改成功!", true);
     }
@@ -297,17 +305,20 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
      *
      * @throws IOException
      */
-    @ApiOperation(value="用户头像上传", notes="参数：id， nickname")
+    @ApiOperation(value="用户头像上传", notes="参数：body数组")
     @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "用户头像上传")
     @PostMapping("/uploadUserHead")
-    public BaseResult uploadUserHead(@RequestBody HcUserhead hcUserhead){
+    public BaseResult uploadUserHead(@PathParam(value = "id") String id,
+                                     @RequestParam MultipartFile[] file){
+
+
 
 
         return null;
     }
 
     /**
-     * 用户身份证号码与姓名验证 -hsy
+     * 用户身份证号码与姓名验证
      */
     @ApiOperation(value="用户身份证号码与姓名验证", notes="参数：id, cardnum， name")
     @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "用户身份证号码与姓名验证")

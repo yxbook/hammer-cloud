@@ -7,7 +7,7 @@ package com.fmkj.common.constant;
  */
 public class LogConstant {
 
-    public static final String HC_ACCOUNT = "用户用户";
+    public static final String HC_ACCOUNT = "用户接口";
 
     public static final String HC_PRODUCT = "商品接口";
 
@@ -23,6 +23,7 @@ public class LogConstant {
 
     public static final String Gc_Join_Activity_Record = "活动参与记录";
 
+    public static final String HC_FRIEND = "好友接口";
 
 
 }
