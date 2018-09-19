@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -64,12 +65,32 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
     @PostMapping(value = "/startActivityByExample")
-    public  BaseResult<Map<String,Object>> startActivityByExample( GcActivity gcActivity,HttpServletRequest request) throws IOException {
+    public  BaseResult<Map<String,Object>> startActivityByExample(@PathParam(value = "name") String name,
+                                                                  @PathParam(value = "startid") Integer startid,
+                                                                  @PathParam(value = "typeid") Integer typeid,
+                                                                  @PathParam(value = "pnumber") Integer pnumber,
+                                                                  @PathParam(value = "pname") String pname,
+                                                                  @PathParam(value = "price") Double price,
+                                                                  @PathParam(value = "premium") Double premium,
+                                                                  @PathParam(value = "pdescribe") String pdescribe,
+                                                                  @PathParam(value = "minnum") Integer minnum,
+                                                                  @PathParam(value = "type") String type,
+                                                                  @RequestParam MultipartFile[] file){
 
-      // List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
+        System.out.println("发起活动输入参数=================");
+
+
+        System.out.println("name:" + name);
+        System.out.println("文件:" + file);
+
+
+
+        System.out.println("发起活动输入参数=================END");
+
+
 
         //获取参数列表
-        Integer startid = gcActivity.getStartid(); //活动发起人id
+        /*Integer startid = gcActivity.getStartid(); //活动发起人id
         String name = gcActivity.getName();//活动名称
         String pname = gcActivity.getPname();//产品的名称
         String pdescribe = gcActivity.getPdescribe();//产品的描述详情
@@ -80,7 +101,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         Integer typeid = gcActivity.getTypeid();//对应活动类型
         double premium = gcActivity.getPremium();//产品的溢价率
         String type = "";//活动类型
-
+*/
         //判断用户是否黑名单
         HashMap<String, Object> params = new HashMap<>();
         params.put("uid", startid);
@@ -136,9 +157,9 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setTime(btime);
         ga.setStatus(0);
         ga.setDelivergoodstatus(0);
-        ga.setNum(num);
+        //ga.setNum(num);
         ga.setCollectgoodstatus(0);
-        ga.setPar(par);
+        //ga.setPar(par);
         boolean result = gcActivityService.addGcActivity(ga);
         if(result==false) {
             return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，填入信息格式有误!",null);
