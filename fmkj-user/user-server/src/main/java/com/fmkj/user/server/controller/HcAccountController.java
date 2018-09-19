@@ -344,7 +344,8 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
             return new BaseResult(BaseResultEnum.BLANK.getStatus(), "姓名不能为空!", false);
         }
 
-        boolean updateUser = hcAccountService.updateById(ha);boolean result = JDWXUtil.cardRealName(ha);
+        boolean updateUser = hcAccountService.updateById(ha);
+        boolean result = JDWXUtil.cardRealName(ha);
         if(!result) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "身份认证失败!", false);
         }

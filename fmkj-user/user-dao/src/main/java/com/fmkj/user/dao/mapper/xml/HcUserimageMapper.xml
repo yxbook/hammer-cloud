@@ -15,6 +15,7 @@
         <result column="alipay_photo" property="alipayPhoto" />
         <result column="wechat_account" property="wechatAccount" />
         <result column="wechat_photo" property="wechatPhoto" />
+        <result column="pay_cert_time" property="payCertTime" />
     </resultMap>
 
 </mapper>
