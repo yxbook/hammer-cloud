@@ -44,6 +44,7 @@ public class GcJoinactivityrecordController  extends BaseController<GcJoinactivi
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户参加活动")
     @PostMapping("/ActivityRabbitMQ")
     public BaseResult ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord){
+
         messageProducer.send(JSON.toJSONString(gcJoinactivityrecord));//生产消息
         return new BaseResult(BaseResultEnum.SUCCESS, true);
 

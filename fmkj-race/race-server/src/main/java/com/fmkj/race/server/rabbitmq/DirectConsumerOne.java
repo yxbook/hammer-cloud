@@ -41,7 +41,7 @@ public class DirectConsumerOne  { //implements MessageListener{
 	@RabbitHandler
 	public void onMessage(String message) {
 
-		GcJoinactivityrecord gcJoinactivityrecord = (GcJoinactivityrecord) JSON.parse(message);
+		GcJoinactivityrecord gcJoinactivityrecord = JSON.parseObject(message, GcJoinactivityrecord.class);
 
 		System.err.println("aaa="+gcJoinactivityrecord.toString());
 

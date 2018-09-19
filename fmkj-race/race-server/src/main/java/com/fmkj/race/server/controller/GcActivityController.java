@@ -64,10 +64,11 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
     @PostMapping(value = "/startActivityByExample")
+    @ResponseBody
     public  BaseResult<Map<String,Object>> startActivityByExample( GcActivity gcActivity,HttpServletRequest request) throws IOException {
 
-      // List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
-
+       List<MultipartFile> files =((MultipartHttpServletRequest)request).getFiles("file");//获取文件
+        System.err.println("files="+files);
         //获取参数列表
         Integer startid = gcActivity.getStartid(); //活动发起人id
         String name = gcActivity.getName();//活动名称
