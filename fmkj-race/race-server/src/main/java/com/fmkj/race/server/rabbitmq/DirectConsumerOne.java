@@ -3,6 +3,7 @@ package com.fmkj.race.server.rabbitmq;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.fmkj.common.util.StringUtils;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
 import com.fmkj.race.server.service.GcActivityService;
@@ -29,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Component
 @RabbitListener(queues = "workqueue")
-public class DirectConsumerOne  { //implements MessageListener{
+public class DirectConsumerOne  {   //implements MessageListener{
 
 //, containerFactory = "rabbitListenerContainerFactory"
 	@Autowired
@@ -38,17 +39,17 @@ public class DirectConsumerOne  { //implements MessageListener{
 	@Autowired
 	private GcJoinactivityrecordService gcJoinactivityrecordService;
 
-	@RabbitHandler
+
+    @RabbitHandler
 	public void onMessage(String message) {
 
-		GcJoinactivityrecord gcJoinactivityrecord = (GcJoinactivityrecord) JSON.parse(message);
 
-		System.err.println("aaa="+gcJoinactivityrecord.toString());
+        GcJoinactivityrecord joins = JSON.parseObject(message, GcJoinactivityrecord.class);
 
-		/*byte[] body = message.getBody();//获取GcJoinactivityrecord对象
-		
-		//转换对象
-		GcJoinactivityrecord joins =(GcJoinactivityrecord) SerializationUtils.deserialize(body);
+		System.err.println("aid="+joins.getAid());
+		System.err.println("uid="+joins.getUid());
+		System.err.println("aaa="+joins.toString());
+
 		
 		Integer aid = joins.getAid();// 获取活动id
 		Integer uid = joins.getUid();// 获取用户id
@@ -56,8 +57,7 @@ public class DirectConsumerOne  { //implements MessageListener{
 		GcActivity gcActivity = new GcActivity();
 		//是否存在该活动或活动已经结束
 		GcActivity gcActivity1 = gcActivityService.selectById(joins.getAid());
-
-		if (gcActivity1==null) {
+		/*if (gcActivity1==null) {
 			System.err.println("没有该活动");
 			return ;
 		}
@@ -65,15 +65,16 @@ public class DirectConsumerOne  { //implements MessageListener{
 			System.err.println("活动已结束");
 			return ;
 		}
+            */
 
 		//获取当前参与人数
 		GcJoinactivityrecord gcJoinactivityrecord = new GcJoinactivityrecord();
 		gcJoinactivityrecord.setAid(aid);
 		EntityWrapper<GcJoinactivityrecord> entityWrapper = new EntityWrapper<GcJoinactivityrecord>();
-		entityWrapper.setEntity(gcJoinactivityrecord);*/
+		entityWrapper.setEntity(gcJoinactivityrecord);
 
 
-		/*//活动需要人数
+		//活动需要人数
 		int num = gcActivity1.getNum();
 
 		double par = gcActivity1.getPar();//活动需要的P能量
@@ -98,7 +99,7 @@ public class DirectConsumerOne  { //implements MessageListener{
 
 		//查询活动信息获取合约地址参与合约
 		String contract = gcJoinactivityrecordService.queryGcActivityByContract(aid);
-		if (contract==null) {
+		if (StringUtils.isNull(contract)) {
 			System.err.println("用户合约地址获取失败");
 			return ;
 		}
@@ -118,7 +119,7 @@ public class DirectConsumerOne  { //implements MessageListener{
 				System.err.println("初始化合约或加载合约失败");
         		return;
 			}
-		}*/
+		}
 		return ;
 	}
 

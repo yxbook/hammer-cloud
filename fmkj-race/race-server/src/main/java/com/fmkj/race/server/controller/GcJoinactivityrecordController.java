@@ -6,8 +6,11 @@ import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
+import com.fmkj.common.util.StringUtils;
+import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
 import com.fmkj.race.server.annotation.RaceLog;
+import com.fmkj.race.server.service.GcActivityService;
 import com.fmkj.race.server.service.GcJoinactivityrecordService;
 import com.fmkj.race.server.rabbitmq.MessageProducer;
 import io.swagger.annotations.Api;
@@ -31,20 +34,36 @@ import java.util.Map;
 @Api(tags ={ "用户参加活动服务"},description = "用户参加活动接口-网关路径/api-race")
 public class GcJoinactivityrecordController  extends BaseController<GcJoinactivityrecord,GcJoinactivityrecordService> implements BaseApiService<GcJoinactivityrecord> {
 
+    @Autowired
+    private GcActivityService gcActivityService;
 
     @Autowired
     private MessageProducer messageProducer;
+
     @Autowired
     private GcJoinactivityrecordService gcJoinactivityrecordService;
 
     /**
      *  用户参加活动
      */
-    @ApiOperation(value="用户参加活动 ", notes="用户参加活动")
+    @ApiOperation(value="用户参加活动，参数：aid,uid ", notes="用户参加活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户参加活动")
     @PostMapping("/ActivityRabbitMQ")
     public BaseResult ActivityRabbitMQ(@RequestBody GcJoinactivityrecord gcJoinactivityrecord){
+
+        //是否存在该活动或活动已经结束
+        GcActivity gcActivity = gcActivityService.selectById(gcJoinactivityrecord.getAid());
+
+        if (StringUtils.isNull(gcActivity)) {
+            System.err.println("没有该活动");
+            return new BaseResult(BaseResultEnum.ERROR, "没有该活动");
+        }
+        if (gcActivity.getStatus().equals(3)||gcActivity.getStatus().equals(4)||gcActivity.getStatus().equals(5)) {
+            System.err.println("活动已结束");
+            return new BaseResult(BaseResultEnum.ERROR, "活动已结束");
+        }
         messageProducer.send(JSON.toJSONString(gcJoinactivityrecord));//生产消息
+
         return new BaseResult(BaseResultEnum.SUCCESS, true);
 
     }

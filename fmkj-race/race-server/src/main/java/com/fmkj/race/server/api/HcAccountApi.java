@@ -3,33 +3,29 @@ package com.fmkj.race.server.api;
 import com.fmkj.user.dao.domain.HcAccount;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name="FMKJ-USER", fallback = HcAccountApi.HcAccountApiFallBack.class)
 public interface HcAccountApi {
 
     @PostMapping("/hcAccount/updateUserP")
-    public Boolean updateUserP(@RequestParam("id") Integer id, @RequestParam("par") double par);
+    public Boolean updateUserP(@RequestBody HcAccount hc);
 
     @PostMapping("/hcAccount/grantUserP")
-    public Boolean grantUserP(@RequestParam("id") Integer id, @RequestParam("par") double par);
+    public Boolean grantUserP(@RequestBody HcAccount hc);
 
-    @PutMapping("/hcAccount/getAccountById")
+    @GetMapping("/hcAccount/getAccountById")
     public HcAccount selectHcAccountById(@RequestParam("id") Integer id);
 
     @Component
     public static class HcAccountApiFallBack implements HcAccountApi {
-
-
         @Override
-        public Boolean updateUserP(Integer id,  double par) {
+        public Boolean updateUserP(HcAccount hc) {
             return null;
         }
 
         @Override
-        public Boolean grantUserP(Integer id, double par) {
+        public Boolean grantUserP(HcAccount hc) {
             return null;
         }
 
@@ -37,5 +33,6 @@ public interface HcAccountApi {
         public HcAccount selectHcAccountById(Integer id) {
             return null;
         }
+
     }
 }
