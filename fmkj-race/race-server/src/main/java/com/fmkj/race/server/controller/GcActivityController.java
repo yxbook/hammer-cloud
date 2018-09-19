@@ -75,13 +75,16 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                   @PathParam(value = "pdescribe") String pdescribe,
                   @PathParam(value = "num") Integer num,
                   @PathParam(value = "type") String type,
-                  @PathParam(value = "par") Integer par,
+                  @PathParam(value = "par") String par,
                   @RequestParam MultipartFile[] file){
 
         System.out.println("发起活动输入参数=================");
         System.out.println("name:" + name);
         System.out.println("文件:" + file);
         System.out.println("发起活动输入参数=================END");
+
+
+        double piaozhi = Double.parseDouble(par);
 
         //判断用户是否黑名单
         HashMap<String, Object> params = new HashMap<>();
@@ -140,7 +143,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setDelivergoodstatus(0);
         ga.setNum(num);
         ga.setCollectgoodstatus(0);
-        ga.setPar(par);
+        ga.setPar(piaozhi);
         boolean result = gcActivityService.addGcActivity(ga);
         if(result==false) {
             return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，填入信息格式有误!",null);
@@ -287,7 +290,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
             tPage.setRecords(list);
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
-            throw new RuntimeException("查询用户发起的活动活动异常：" + e.getMessage());
+            throw new RuntimeException("查询用户发起的活动异常：" + e.getMessage());
         }
 
     }

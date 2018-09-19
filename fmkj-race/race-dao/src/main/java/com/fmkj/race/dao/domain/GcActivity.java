@@ -120,7 +120,7 @@ public class GcActivity extends Model<GcActivity> implements Serializable{
     /**
      * 票面值
      */
-    private Integer par;
+    private Double par;
 
 
     public Integer getId() {
@@ -283,11 +283,11 @@ public class GcActivity extends Model<GcActivity> implements Serializable{
         this.num = num;
     }
 
-    public Integer getPar() {
+    public Double getPar() {
         return par;
     }
 
-    public void setPar(Integer par) {
+    public void setPar(Double par) {
         this.par = par;
     }
 

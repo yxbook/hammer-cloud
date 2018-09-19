@@ -22,7 +22,7 @@
         <result column="endtime" jdbcType="TIMESTAMP" property="endtime" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="num" jdbcType="INTEGER" property="num" />
-        <result column="par" jdbcType="INTEGER" property="par" />
+        <result column="par"  property="par" />
         <result column="type" property="type" />
         <result column="imageurl" property="imageurl" />
 
