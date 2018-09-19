@@ -151,22 +151,32 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     @ApiOperation(value = "更改用户p能量", notes = "更改用户p能量")
     @UserLog(module = LogConstant.HC_ACCOUNT, actionDesc = "更改用户p能量")
     @PostMapping("/updateUserP")
-    public Boolean updateUserP(Integer id, double par) {
-        HcAccount account = hcAccountService.selectById(id);
-        if (Double.doubleToLongBits(account.getMyP()) < Double.doubleToLongBits(par)) {
+    public Boolean updateUserP(@RequestBody HcAccount hc) {
+        double par = hc.getMyP();
+        HcAccount account = hcAccountService.selectById(hc.getId());
+       if (Double.doubleToLongBits(account.getMyP()) < Double.doubleToLongBits(par)) {
+           System.err.println("用户能量不足");
             return false;
         }
         double newMyp = account.getMyP() - par;//用户新的p能量
         account.setMyP(newMyp);
-        boolean result = hcAccountService.updateById(account);
+        boolean result = false;
+        try {
+            result = hcAccountService.updateById(account);
+        } catch (Exception e) {
+            throw new RuntimeException("更改用户p能量异常" + e.getMessage());
+        }
         return result;
     }
+
+
 
     @ApiOperation(value="发放p能量", notes="发放p能量")
     @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "发放p能量")
     @PostMapping("/grantUserP")
-    public Boolean grantUserP(Integer id, double starterP) {
-        HcAccount account = hcAccountService.selectById(id);
+    public Boolean grantUserP(@RequestBody HcAccount hc) {
+        Double starterP = hc.getMyP();
+        HcAccount account = hcAccountService.selectById(hc.getId());
         Double allP = null;
         if (account != null) {
             Double myP = account.getMyP();
@@ -211,7 +221,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     /**
      * 用户通过电话号码和短信动态码进行登录 - hsy
      *
-     * @param req
+     * @param
      * @return
      */
     @ApiOperation(value="用户通过电话号码和短信动态码进行登录", notes="参数：telephone， dycode")

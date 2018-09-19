@@ -1,5 +1,6 @@
 package com.fmkj.race.dao.domain;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.enums.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -33,7 +34,7 @@ public class GcJoinactivityrecord extends Model<GcJoinactivityrecord> {
     /**
      * 是否上链
      */
-    private Integer isChain;
+    private Integer ischain;
     /**
      * 参与活动的时间
      */
@@ -64,12 +65,12 @@ public class GcJoinactivityrecord extends Model<GcJoinactivityrecord> {
         this.aid = aid;
     }
 
-    public Integer getIsChain() {
-        return isChain;
+    public Integer getIschain() {
+        return ischain;
     }
 
-    public void setIsChain(Integer isChain) {
-        this.isChain = isChain;
+    public void setIschain(Integer ischain) {
+        this.ischain = ischain;
     }
 
     public Date getTime() {
@@ -91,7 +92,7 @@ public class GcJoinactivityrecord extends Model<GcJoinactivityrecord> {
         "Id=" + Id +
         ", uid=" + uid +
         ", aid=" + aid +
-        ", isChain=" + isChain +
+        ", ischain=" + ischain +
         ", time=" + time +
         "}";
     }

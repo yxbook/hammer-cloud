@@ -10,6 +10,7 @@ import com.fmkj.race.server.service.GcOrderService;
 import com.fmkj.race.server.util.CalendarTime;
 import com.fmkj.race.server.util.PoundageUtil;
 import com.fmkj.race.server.util.SpringContextHandler;
+import com.fmkj.user.dao.domain.HcAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,10 @@ public class GcOrderServiceImpl extends BaseServiceImpl<GcOrderMapper, GcOrder> 
 
 
             //调用户接口发放P能量
-            hcAccountApi.grantUserP(startid, starterP);
+            HcAccount hc = new HcAccount();
+            hc.setId(startid);
+            hc.setMyP(starterP);
+            hcAccountApi.grantUserP(hc);
 
             /*********给活动发起者发送通知*********/
             CalendarTime clt = new CalendarTime();

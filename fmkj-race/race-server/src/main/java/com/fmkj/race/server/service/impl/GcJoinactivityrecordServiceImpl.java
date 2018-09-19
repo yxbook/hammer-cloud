@@ -58,30 +58,35 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
      * @param par
      * @return boolean
     */
+    @Override
     public boolean addGcJoinactivityrecordAndUpAccount(Integer aid, GcJoinactivityrecord joins, double par) {
 
         //插入参与记录
         CalendarTime clt = new CalendarTime();
         Timestamp btime = clt.thisDate();//获取当前时间
         joins.setTime(btime);
-        joins.setIsChain(0);
-        Integer result = 0;
-        try {
-            result = gcJoinactivityrecordMapper.insert(joins);
-        } catch (Exception e) {
-            throw new RuntimeException("插入参与记录异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
-        }
+        joins.setIschain(0);
         //更改用户p能量
-        if (result>0){
-            hcAccountApi.updateUserP(joins.getUid(), par);
+        boolean flag = false;
+        try {
+            HcAccount hc = new HcAccount();
+            hc.setId(joins.getUid());
+            hc.setMyP(par);
+            flag = hcAccountApi.updateUserP(hc);
+        } catch (Exception e1) {
+            throw new RuntimeException("更改用户p能量异常，活动aid:"+aid+",用户:"+joins.getUid()+"," + e1.getMessage());
+        }
+        if (flag==true){
+            Integer row = 0;
+            try {
+                row = gcJoinactivityrecordMapper.insert(joins);
+            } catch (Exception e) {
+                throw new RuntimeException("插入参与记录异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
+            }
             return true;
         }
         return false;
     }
-
-
-
-
 
 
     /**
@@ -147,7 +152,7 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
 
             //将用户上链记录改为1
             GcJoinactivityrecord gcJoinactivityrecord = new GcJoinactivityrecord();
-            gcJoinactivityrecord.setIsChain(1);
+            gcJoinactivityrecord.setIschain(1);
             GcJoinactivityrecord gcJoinactivityrecord1 = new GcJoinactivityrecord();
             gcJoinactivityrecord1.setUid(uid);
             EntityWrapper<GcJoinactivityrecord> entityWrapper = new EntityWrapper<GcJoinactivityrecord>();

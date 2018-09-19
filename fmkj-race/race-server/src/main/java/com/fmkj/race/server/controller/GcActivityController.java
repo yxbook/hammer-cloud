@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -64,27 +65,24 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
     @PostMapping(value = "/startActivityByExample")
-    public  BaseResult<Map<String,Object>> startActivityByExample( GcActivity gcActivity,HttpServletRequest request) throws IOException {
+    public  BaseResult startActivityByExample(@PathParam(value = "name") String name,
+                  @PathParam(value = "startid") Integer startid,
+                  @PathParam(value = "typeid") Integer typeid,
+                  @PathParam(value = "pnumber") Integer pnumber,
+                  @PathParam(value = "pname") String pname,
+                  @PathParam(value = "price") Double price,
+                  @PathParam(value = "premium") Double premium,
+                  @PathParam(value = "pdescribe") String pdescribe,
+                  @PathParam(value = "num") Integer num,
+                  @PathParam(value = "type") String type,
+                  @PathParam(value = "par") Integer par,
+                  @RequestParam MultipartFile[] file){
 
-
-
+        System.out.println("发起活动输入参数=================");
+        System.out.println("name:" + name);
+        System.out.println("文件:" + file);
         System.out.println("发起活动输入参数=================END");
 
-
-
-        //获取参数列表
-        /*Integer startid = gcActivity.getStartid(); //活动发起人id
-        String name = gcActivity.getName();//活动名称
-        String pname = gcActivity.getPname();//产品的名称
-        String pdescribe = gcActivity.getPdescribe();//产品的描述详情
-        Integer pnumber = gcActivity.getPnumber();//产品的数量
-        double price = gcActivity.getPrice();//产品价格
-        Integer num = gcActivity.getNum();//参与活动人数
-        Integer par = gcActivity.getPar();//票面值
-        Integer typeid = gcActivity.getTypeid();//对应活动类型
-        double premium = gcActivity.getPremium();//产品的溢价率
-        String type = "";//活动类型
-*/
         //判断用户是否黑名单
         HashMap<String, Object> params = new HashMap<>();
         params.put("uid", startid);
@@ -140,9 +138,9 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setTime(btime);
         ga.setStatus(0);
         ga.setDelivergoodstatus(0);
-        //ga.setNum(num);
+        ga.setNum(num);
         ga.setCollectgoodstatus(0);
-        //ga.setPar(par);
+        ga.setPar(par);
         boolean result = gcActivityService.addGcActivity(ga);
         if(result==false) {
             return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，填入信息格式有误!",null);
@@ -156,14 +154,28 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         }
 
         //上传活动的文件
-      /* if(files.size()> 0) {
+       if(StringUtils.isNotNull(file)&&file.length>0) {
             EntityWrapper wrapper2 = new EntityWrapper();
             wrapper2.setEntity(ga);
             GcActivity activity2 = gcActivityService.selectOne(wrapper2);
             Integer aid = activity2.getId();
             String url = PropertiesUtil.getInstance("interface_url").get("activityImagePath");
-
             int i = 1;
+           for (MultipartFile multipartFile : file) {
+               String fileName = null;
+               try {
+                   fileName = PropertiesUtil.uploadImage(multipartFile, url);
+               } catch (IOException e) {
+                   throw new RuntimeException("上传活动图片异常：" + e.getMessage());
+               }
+               GcPimage gp = new GcPimage();
+               gp.setAid(aid);
+               gp.setFlag(i++);
+               gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
+               gcPimageService.insert(gp);
+           }
+
+            /*
             MultipartFile file = null;
             for (int j=0;j<files.size();j++){
                 file = files.get(j);
@@ -173,10 +185,11 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                 gp.setFlag(i++);
                 gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
                 gcPimageService.insert(gp);
-            }
-        }*/
+            }*/
+        }
         return new BaseResult(BaseResultEnum.SUCCESS.status, "活动发起成功!",null);
     }
+
 
 
 
