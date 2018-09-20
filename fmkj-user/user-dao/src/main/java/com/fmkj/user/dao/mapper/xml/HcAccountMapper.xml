@@ -75,6 +75,11 @@
 		  ha.cdbid,
 		  ha.password,
 		  (SELECT
+			SUM(hp.points_num)
+		  FROM
+			hc_points_record hp
+		  WHERE hp.uid = #{uid}) AS score,
+		  (SELECT
 			COUNT(1)
 		  FROM
 			hc_account ha

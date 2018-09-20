@@ -7,6 +7,7 @@ import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
+import com.fmkj.common.comenum.PointEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.*;
 import com.fmkj.user.dao.domain.*;
@@ -401,7 +402,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         if(!result) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "身份认证失败!", false);
         }
-        ha.setCardStatus(1);
+        //ha.setCardStatus(1);
         if (!updateUser) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "系统错误，请重试!", false);
         }
@@ -425,8 +426,8 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         if (StringUtils.isNull(hcPointsRecord)) {
             // 如果不存在今天签到的记录，那么就可以签到，插入签到记录
             HcPointsRecord record = new HcPointsRecord();
-            record.setPointsId(1);
-            record.setPointsNum(1D);
+            record.setPointsId(PointEnum.SIGN_IN.pointId);
+            record.setPointsNum(PointEnum.SIGN_IN.pointNum);
             record.setUid(hcAccount.getId());
             record.setTime(DateUtil.getNowInMillis(0L));
             hcPointsRecordService.insert(record);

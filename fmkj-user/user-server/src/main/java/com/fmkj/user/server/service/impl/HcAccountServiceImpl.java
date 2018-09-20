@@ -2,6 +2,8 @@ package com.fmkj.user.server.service.impl;
 
 
 import com.fmkj.common.base.BaseServiceImpl;
+import com.fmkj.common.comenum.PointEnum;
+import com.fmkj.common.util.DateUtil;
 import com.fmkj.user.dao.domain.HcAccount;
 import com.fmkj.user.dao.domain.HcPointsRecord;
 import com.fmkj.user.dao.domain.HcUserhead;
@@ -57,8 +59,8 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
         if(result > 0){
             HcPointsRecord hcp = new HcPointsRecord();
             hcp.setUid(ha.getId());
-            hcp.setPointsId(9);
-            hcp.setPointsNum(10d);
+            hcp.setPointsId(PointEnum.BIND_EMAIL.pointId);
+            hcp.setPointsNum(PointEnum.BIND_EMAIL.pointNum);
             hcPointsRecordMapper.insert(hcp);
             return true;
         }
@@ -84,7 +86,15 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
             hcUserhead.setUrl(path);
             hcUserhead.setUid(hcAccount.getId());
             hcUserhead.setTime(new Date());
-            hcUserheadMapper.insert(hcUserhead);
+            int row = hcUserheadMapper.insert(hcUserhead);
+            if(row > 0){
+                HcPointsRecord record = new HcPointsRecord();
+                record.setPointsId(PointEnum.UPLOAD_HEAD.pointId);
+                record.setPointsNum(PointEnum.UPLOAD_HEAD.pointNum);
+                record.setUid(hcAccount.getId());
+                record.setTime(DateUtil.getNowInMillis(0L));
+                hcPointsRecordMapper.insert(record);
+            }
         }
     }
 
