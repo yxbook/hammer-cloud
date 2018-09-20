@@ -3,6 +3,7 @@ package com.fmkj.user.server.service;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.user.dao.domain.BaseBean;
 import com.fmkj.user.dao.domain.HcAccount;
+import com.fmkj.user.dao.dto.HcAccountDto;
 
 import java.util.List;
 import java.util.Map;
@@ -29,4 +30,8 @@ public interface HcAccountService extends BaseService<HcAccount> {
     HcAccount queryUserTaskMessage(Integer uid);
 
     List<HcAccount> queryAllFriends(Integer accountId);
+
+    void uploadUserHead(HcAccount hcAccount, String fileName, String path);
+
+    HcAccountDto selectAccountById(Integer id);
 }

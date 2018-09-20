@@ -100,7 +100,6 @@ public class PropertiesUtil {
             String prefix=filename.substring(filename.lastIndexOf(".")+1);
 
             String originalFilename =uuid.toString().replaceAll("-", "");
-            System.err.println("originalFilename="+originalFilename);
             Long time = new Date().getTime();//获取当前时间为标识
             //String newFileName = time.toString()+originalFilename+ "." + prefix;//新的文件名
             String newFileName = time.toString()+originalFilename;//新的文件名
