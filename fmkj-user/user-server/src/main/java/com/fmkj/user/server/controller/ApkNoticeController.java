@@ -1,6 +1,7 @@
 package com.fmkj.user.server.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.fmkj.common.base.BaseResult;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.Date;
 import java.util.List;
 
@@ -80,7 +82,7 @@ public class ApkNoticeController {
     @PostMapping("/addfeedbackInfo")
     public BaseResult addfeedbackInfo (@RequestBody HcFeedback feedback){
 
-        LOGGER.debug("发布反馈消息");
+        LOGGER.debug("发布反馈消息的参数："+ JSON.toJSONString(feedback));
 
         if(StringUtils.isNull(feedback.getUid())){
             return new BaseResult(BaseResultEnum.ERROR.getStatus(),"发布者的id不能为空",false);
@@ -91,22 +93,22 @@ public class ApkNoticeController {
         feedback.setTime(new Date());
         boolean result = hcFeedbackService.insert(feedback);
 
-        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", result);
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "发布反馈消息成功", result);
     }
 
 
     @ApiOperation(value="查询发布反馈消息",notes="查询自己发布反馈消息,参数：uid")
     @UserLog(module= LogConstant.FEEDBACK_INFO, actionDesc = "查询自己发布反馈消息")
-    @PostMapping("/queryfeedbackInfo")
-    public BaseResult queryfeedbackInfo (@RequestBody Integer uid){
+    @PutMapping("/queryfeedbackInfo")
+    public BaseResult queryfeedbackInfo (@RequestBody HcFeedback fk){
 
         LOGGER.debug("查询自己发布反馈消息");
 
-        if(StringUtils.isNull(uid)){
+        if(StringUtils.isNull(fk.getUid())){
             return new BaseResult(BaseResultEnum.ERROR.getStatus(),"用户的id不能为空",false);
         }
         HcFeedback feedback = new HcFeedback();
-        feedback.setUid(uid);
+        feedback.setUid(fk.getUid());
         EntityWrapper<HcFeedback> wrapper = new EntityWrapper<>();
         wrapper.orderBy("time",false);
         List<HcFeedback> feedbacks = hcFeedbackService.selectList(wrapper);
