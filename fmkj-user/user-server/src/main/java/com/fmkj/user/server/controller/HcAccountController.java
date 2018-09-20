@@ -8,10 +8,7 @@ import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
-import com.fmkj.common.util.DateUtil;
-import com.fmkj.common.util.Sendmail;
-import com.fmkj.common.util.SensitiveWordUtil;
-import com.fmkj.common.util.StringUtils;
+import com.fmkj.common.util.*;
 import com.fmkj.user.dao.domain.*;
 import com.fmkj.user.server.annotation.UserLog;
 import com.fmkj.user.server.service.HcAccountService;
@@ -24,16 +21,26 @@ import com.fmkj.user.server.util.JDWXUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.nio.ch.IOUtil;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -57,6 +64,9 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
 
     @Autowired
     private HcRcodeService hcRcodeService;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     private static HashMap<String, String> codeMap = new HashMap<String, String>();
 
@@ -315,17 +325,40 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
      *
      * @throws IOException
      */
-    @ApiOperation(value="用户头像上传", notes="参数：body数组")
+    @ApiOperation(value="用户头像上传", notes="参数：id")
     @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "用户头像上传")
     @PostMapping("/uploadUserHead")
-    public BaseResult uploadUserHead(@PathParam(value = "id") String id,
-                                     @RequestParam MultipartFile[] file){
-
-
-
-
-        return null;
+    public BaseResult uploadUserHead(@PathParam(value = "id") Integer id,
+                                     @RequestParam MultipartFile file){
+        try {
+            if(StringUtils.isNull(id)){
+                return new BaseResult(BaseResultEnum.BLANK.status, "用户ID不能为空!", false);
+            }
+            String path = PropertiesUtil.getInstance("user").get("userHeadImagePath");
+            String logo =PropertiesUtil.uploadImage(file,path);
+            HcAccount hcAccount = new HcAccount();
+            hcAccount.setId(id);
+            hcAccount.setLogo(logo);
+            hcAccountService.updateById(hcAccount);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new BaseResult(BaseResultEnum.SUCCESS.status, "头像上传成功!", true);
     }
+
+
+    @GetMapping(value = "/showUserHead", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity showUserHead(@RequestParam Integer id) throws FileNotFoundException {
+        String path = PropertiesUtil.getInstance("user").get("userHeadImagePath");
+        HcAccount hc = hcAccountService.selectById(id);
+        String logo = hc.getLogo();
+        InputStream in = new FileInputStream(new File(path + logo));
+        InputStreamResource resource = new InputStreamResource(in);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        return new ResponseEntity(resource, httpHeaders, HttpStatus.OK);
+    }
+
+
 
     /**
      * 用户身份证号码与姓名验证
@@ -344,7 +377,8 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
             return new BaseResult(BaseResultEnum.BLANK.getStatus(), "姓名不能为空!", false);
         }
 
-        boolean updateUser = hcAccountService.updateById(ha);boolean result = JDWXUtil.cardRealName(ha);
+        boolean updateUser = hcAccountService.updateById(ha);
+        boolean result = JDWXUtil.cardRealName(ha);
         if(!result) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "身份认证失败!", false);
         }

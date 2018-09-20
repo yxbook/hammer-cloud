@@ -39,11 +39,11 @@ public class HcUserimage extends Model<HcUserimage> {
     @TableField("reverse_photo")
     private String reversePhoto;
     /**
-     * 存储时间
+     * 身份认证时间
      */
     private Date time;
     /**
-     * 审核状态--0.未审核 1.通过 2.未通过3.实名认证未通过
+     * 0、未支付认证；1、已支付认证
      */
     private Integer status;
     /**
@@ -66,6 +66,11 @@ public class HcUserimage extends Model<HcUserimage> {
      */
     @TableField("wechat_photo")
     private String wechatPhoto;
+    /**
+     * 支付认证时间
+     */
+    @TableField("pay_cert_time")
+    private Date payCertTime;
 
 
     public Integer getId() {
@@ -156,6 +161,14 @@ public class HcUserimage extends Model<HcUserimage> {
         this.wechatPhoto = wechatPhoto;
     }
 
+    public Date getPayCertTime() {
+        return payCertTime;
+    }
+
+    public void setPayCertTime(Date payCertTime) {
+        this.payCertTime = payCertTime;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.Id;
@@ -175,6 +188,7 @@ public class HcUserimage extends Model<HcUserimage> {
         ", alipayPhoto=" + alipayPhoto +
         ", wechatAccount=" + wechatAccount +
         ", wechatPhoto=" + wechatPhoto +
+        ", payCertTime=" + payCertTime +
         "}";
     }
 }

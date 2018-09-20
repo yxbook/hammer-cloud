@@ -25,5 +25,8 @@ public class LogConstant {
 
     public static final String HC_FRIEND = "好友接口";
 
+    public static final String HC_CERT = "认证接口";
+
+
 
 }
