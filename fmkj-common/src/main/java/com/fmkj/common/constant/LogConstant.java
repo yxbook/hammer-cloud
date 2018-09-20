@@ -27,6 +27,10 @@ public class LogConstant {
 
     public static final String HC_CERT = "认证接口";
 
+    public static final String NOTICE_INFO = "公告和版本信息接口";
+
+    public static final String FEEDBACK_INFO = "公告和版本信息接口";
+
 
 
 }
