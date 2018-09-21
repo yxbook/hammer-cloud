@@ -7,9 +7,11 @@ import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
+import com.fmkj.common.comenum.PointEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.*;
 import com.fmkj.user.dao.domain.*;
+import com.fmkj.user.dao.dto.HcAccountDto;
 import com.fmkj.user.server.annotation.UserLog;
 import com.fmkj.user.server.service.HcAccountService;
 import com.fmkj.user.server.service.HcPointsRecordService;
@@ -203,7 +205,18 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         return false;
     }
 
-    @ApiOperation(value="根据ID获取用户", notes="根据ID获取用户")
+    @ApiOperation(value="根据ID获取用户-App调用", notes="根据ID获取用户")
+    @PutMapping("/selectAccountById")
+    public BaseResult selectAccountById(@RequestBody HcAccount hcAccount){
+        if(StringUtils.isNull(hcAccount.getId())){
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+        }
+        HcAccountDto hcAccountDto = hcAccountService.selectAccountById(hcAccount.getId());
+        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", hcAccountDto);
+
+    }
+
+    @ApiOperation(value="根据ID获取用户-竞锤服务调用", notes="根据ID获取用户")
     @GetMapping("/getAccountById")
     public HcAccount getAccountById(Integer id){
         HcAccount hc = hcAccountService.selectById(id);
@@ -335,11 +348,12 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
                 return new BaseResult(BaseResultEnum.BLANK.status, "用户ID不能为空!", false);
             }
             String path = PropertiesUtil.getInstance("user").get("userHeadImagePath");
-            String logo =PropertiesUtil.uploadImage(file,path);
+            String fileName =PropertiesUtil.uploadImage(file,path);
+            String logo = PropertiesUtil.getInstance("user").get("userHeadImageIpPath") + fileName;
             HcAccount hcAccount = new HcAccount();
             hcAccount.setId(id);
             hcAccount.setLogo(logo);
-            hcAccountService.updateById(hcAccount);
+            hcAccountService.uploadUserHead(hcAccount, fileName, path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -347,6 +361,12 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     }
 
 
+    /**
+     * 这种方式实现在线预览文件
+     * @param id
+     * @return
+     * @throws FileNotFoundException
+     */
     @GetMapping(value = "/showUserHead", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity showUserHead(@RequestParam Integer id) throws FileNotFoundException {
         String path = PropertiesUtil.getInstance("user").get("userHeadImagePath");
@@ -382,7 +402,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         if(!result) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "身份认证失败!", false);
         }
-        ha.setCardStatus(1);
+        //ha.setCardStatus(1);
         if (!updateUser) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "系统错误，请重试!", false);
         }
@@ -396,7 +416,7 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
      * @param ha
      */
     @ApiOperation(value="用户签到", notes="参数：id")
-    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "用户签到")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "用户签到、成功签到、用户得到1飞羽（成长值）")
     @PostMapping("/signIn")
     public BaseResult signIn(@RequestBody HcAccount hcAccount) {
         if(StringUtils.isNull(hcAccount) || StringUtils.isNull(hcAccount.getId())){
@@ -406,8 +426,8 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         if (StringUtils.isNull(hcPointsRecord)) {
             // 如果不存在今天签到的记录，那么就可以签到，插入签到记录
             HcPointsRecord record = new HcPointsRecord();
-            record.setPointsId(1);
-            record.setPointsNum(1D);
+            record.setPointsId(PointEnum.SIGN_IN.pointId);
+            record.setPointsNum(PointEnum.SIGN_IN.pointNum);
             record.setUid(hcAccount.getId());
             record.setTime(DateUtil.getNowInMillis(0L));
             hcPointsRecordService.insert(record);

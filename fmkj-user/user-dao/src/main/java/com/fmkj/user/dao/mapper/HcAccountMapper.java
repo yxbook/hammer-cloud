@@ -3,6 +3,7 @@ package com.fmkj.user.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.fmkj.user.dao.domain.HcAccount;
+import com.fmkj.user.dao.dto.HcAccountDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface HcAccountMapper extends BaseMapper<HcAccount> {
     HcAccount queryUserTaskMessage(@Param("uid") Integer uid);
 
     List<HcAccount> selectAllFriends(@Param("uid") Integer accountId);
+
+    HcAccountDto selectAccountById(@Param("uid") Integer id);
 }

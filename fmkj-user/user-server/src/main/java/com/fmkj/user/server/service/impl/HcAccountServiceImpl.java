@@ -2,10 +2,15 @@ package com.fmkj.user.server.service.impl;
 
 
 import com.fmkj.common.base.BaseServiceImpl;
+import com.fmkj.common.comenum.PointEnum;
+import com.fmkj.common.util.DateUtil;
 import com.fmkj.user.dao.domain.HcAccount;
 import com.fmkj.user.dao.domain.HcPointsRecord;
+import com.fmkj.user.dao.domain.HcUserhead;
+import com.fmkj.user.dao.dto.HcAccountDto;
 import com.fmkj.user.dao.mapper.HcAccountMapper;
 import com.fmkj.user.dao.mapper.HcPointsRecordMapper;
+import com.fmkj.user.dao.mapper.HcUserheadMapper;
 import com.fmkj.user.server.service.HcAccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +39,9 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
     @Autowired
     private HcPointsRecordMapper hcPointsRecordMapper;
 
+    @Autowired
+    private HcUserheadMapper hcUserheadMapper;
+
     /**
      * @author yangshengbin
      * @Description：查询最新一条中奖用户信息
@@ -50,8 +59,8 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
         if(result > 0){
             HcPointsRecord hcp = new HcPointsRecord();
             hcp.setUid(ha.getId());
-            hcp.setPointsId(9);
-            hcp.setPointsNum(10d);
+            hcp.setPointsId(PointEnum.BIND_EMAIL.pointId);
+            hcp.setPointsNum(PointEnum.BIND_EMAIL.pointNum);
             hcPointsRecordMapper.insert(hcp);
             return true;
         }
@@ -66,6 +75,32 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
     @Override
     public List<HcAccount> queryAllFriends(Integer accountId) {
         return hcAccountMapper.selectAllFriends(accountId);
+    }
+
+    @Override
+    public void uploadUserHead(HcAccount hcAccount, String fileName, String path) {
+        int update = hcAccountMapper.updateById(hcAccount);
+        if(update > 0){
+            HcUserhead hcUserhead = new HcUserhead();
+            hcUserhead.setName(fileName);
+            hcUserhead.setUrl(path);
+            hcUserhead.setUid(hcAccount.getId());
+            hcUserhead.setTime(new Date());
+            int row = hcUserheadMapper.insert(hcUserhead);
+            if(row > 0){
+                HcPointsRecord record = new HcPointsRecord();
+                record.setPointsId(PointEnum.UPLOAD_HEAD.pointId);
+                record.setPointsNum(PointEnum.UPLOAD_HEAD.pointNum);
+                record.setUid(hcAccount.getId());
+                record.setTime(DateUtil.getNowInMillis(0L));
+                hcPointsRecordMapper.insert(record);
+            }
+        }
+    }
+
+    @Override
+    public HcAccountDto selectAccountById(Integer id) {
+        return hcAccountMapper.selectAccountById(id);
     }
 
 }

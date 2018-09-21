@@ -60,4 +60,38 @@
 
 	</select>
 
+	<select id="selectAccountById" resultType="com.fmkj.user.dao.dto.HcAccountDto">
+		SELECT
+		  ha.id,
+		  ha.telephone,
+		  ha.logo,
+		  ha.nickname,
+		  ha.email,
+		  ha.rid,
+		  ha.my_p AS myP,
+		  ha.grade_id AS gradeId,
+		  ha.card_status AS cardStatus,
+		  ha.isboong,
+		  ha.cdbid,
+		  ha.password,
+		  (SELECT
+			SUM(hp.points_num)
+		  FROM
+			hc_points_record hp
+		  WHERE hp.uid = #{uid}) AS score,
+		  (SELECT
+			COUNT(1)
+		  FROM
+			hc_account ha
+			LEFT JOIN hc_friend hf
+			  ON hf.friend_id = ha.id
+			LEFT JOIN hc_points_record hp
+			  ON hp.uid = ha.id
+		  WHERE hf.pass = 1
+			AND hf.account_id = #{uid}) AS frirendNum
+		FROM
+		  hc_account ha
+		WHERE ha.id = #{uid}
+	</select>
+
 </mapper>
