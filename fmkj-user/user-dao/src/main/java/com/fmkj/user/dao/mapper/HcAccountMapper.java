@@ -14,7 +14,7 @@ public interface HcAccountMapper extends BaseMapper<HcAccount> {
 
 
     /**
-     * @author yangshengbin
+     * @author yangshengbin`
      * @Description：查询最新一条中奖用户信息
      * @date 2018/9/4 0004 12:08
      * @param
