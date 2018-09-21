@@ -159,7 +159,7 @@ public class HcAccountServiceImpl extends BaseServiceImpl<HcAccountMapper, HcAcc
                             HcPointsRecord hcPointsRecord = new HcPointsRecord();
                             hcPointsRecord.setPointsId(PointEnum.INVIT_REGISTER.pointId);
                             hcPointsRecord.setPointsNum(PointEnum.INVIT_REGISTER.pointNum);
-                            hcPointsRecord.setUid(resultHc.getId());
+                            hcPointsRecord.setUid(uid);
                             hcPointsRecord.setTime(DateUtil.getNowInMillis(0L));
                             int invit = hcPointsRecordMapper.insert(hcPointsRecord);
                             if(invit > 0){
