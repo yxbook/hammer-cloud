@@ -1,7 +1,5 @@
 package com.fmkj.user.server.controller;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.fmkj.common.base.BaseApiService;
 import com.fmkj.common.base.BaseController;
@@ -12,6 +10,7 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.*;
 import com.fmkj.user.dao.domain.*;
 import com.fmkj.user.dao.dto.HcAccountDto;
+import com.fmkj.user.dao.dto.Recode;
 import com.fmkj.user.server.annotation.UserLog;
 import com.fmkj.user.server.service.HcAccountService;
 import com.fmkj.user.server.service.HcPointsRecordService;
@@ -23,14 +22,11 @@ import com.fmkj.user.server.util.JDWXUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,9 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sun.nio.ch.IOUtil;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.websocket.server.PathParam;
 import java.io.*;
 import java.sql.Timestamp;
@@ -245,7 +239,6 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "验证码发送成功!", true);
     }
 
-
     /**
      * 用户通过电话号码和短信动态码进行登录
      *
@@ -258,11 +251,11 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     public BaseResult loginByTelephone(@RequestBody HcAccount ha) {
         String telephone = ha.getTelephone();
         if (StringUtils.isEmpty(telephone)) {
-            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "请填写正确的电话号码！", false);
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "电话号码不能为空！", false);
         }
         String dycode = ha.getDycode();
         if (StringUtils.isEmpty(dycode)) {
-            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "请填写正确的验证码！", false);
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "验证码不能为空！", false);
         }
         String code = codeMap.get(telephone + "code");
         if (StringUtils.isEmpty(code) || !code.equals(ha.getDycode())) {
@@ -271,7 +264,6 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         String codetime = codeMap.get(telephone + "time");
         long time = (new Date().getTime() - Long.parseLong(codetime)) / 1000;
         if (time >= 90) {
-            System.gc();
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "验证码已过期，请重新获取！", false);
         }
         // 获取该电话号码的用户
@@ -279,34 +271,68 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         params.put("telephone", telephone);
         List<HcAccount> list = hcAccountService.selectByMap(params);
         if (list == null || list.size() == 0) {
-            return new BaseResult(BaseResultEnum.ERROR.getStatus(), "验证码正确，电话号码不存在！", false);
+            return new BaseResult(BaseResultEnum.LOGIN_STATUS.getStatus(), "验证码正确，用户首次登陆，需要邀请码登陆！", true);
         }
-        // 获取token
-        String token = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-        Timestamp btime = DateUtil.getNowInMillis(0L);// 获取当前时间戳
-        Timestamp etime = DateUtil.getNowInMillis(24L * 3600L * 1000L * 30L);// 获取30天后的时间戳
-        Timestamp ltime = DateUtil.getNowInMillis(0L);//
-        HcSession hcSession = new HcSession();
-        hcSession.setToken(token);
-        hcSession.setBtime(btime);
-        hcSession.setEtime(etime);
-        hcSession.setLtime(ltime);
-        hcSession.setUid(list.get(0).getId());
-        // 更新hc_session表
-        EntityWrapper<HcSession> wra = new EntityWrapper<HcSession>(hcSession);
-        boolean isupdate = hcSessionService.update(hcSession, wra);
-        // 登录成功把用户的登录状态字段改为authlock=1
-        HcAccount hcAccount = list.get(0);
-        hcAccount.setAuthlock(true);
-        boolean flg = hcAccountService.updateById(hcAccount);
-        if (!isupdate || !flg) {
-            LOGGER.error("error:hc_session表更新失败或用户状态更改失败");
-            return new BaseResult(BaseResultEnum.ERROR.getStatus(), "系统错误，请重新登录!", false);
 
+        boolean result = hcAccountService.loginByTelephone(ha.getId());
+        if (!result) {
+            return new BaseResult(BaseResultEnum.ERROR.getStatus(), "系统错误，请重新登录!", false);
         }
-        System.gc();
         return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "登录成功!", true);
     }
+
+
+
+    /**
+     * 获取用户填写的邀请码并注册登录,需传入手机号
+     */
+    @ApiOperation(value="用户通过电话号码和短信动态码进行登录", notes="参数：telephone， dycode")
+    @UserLog(module= LogConstant.HC_ACCOUNT, actionDesc = "用户通过电话号码和短信动态码进行登录")
+    @PostMapping("/loginByRcodeAndPhone")
+    public BaseResult loginByRcodeAndPhone(@RequestBody Recode recode) {
+        if (StringUtils.isEmpty(recode.getTelephone())) {
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "电话号码不能为空！", false);
+        }
+        if (StringUtils.isEmpty(recode.getRcode())) {
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "验证码不能为空！", false);
+        }
+        HcRcode hcRcode = new HcRcode();
+        hcRcode.setCode(recode.getRcode());
+        EntityWrapper<HcRcode> wrapper = new EntityWrapper<>(hcRcode);
+        HcRcode hc = hcRcodeService.selectOne(wrapper);
+        if (StringUtils.isNull(hc)) {
+            return new BaseResult(BaseResultEnum.ERROR.getStatus(), "该邀请码比对失败,返回登录界面!", false);
+        }
+
+        HcAccount ha = new HcAccount();
+        ha.setTelephone(recode.getTelephone());
+        EntityWrapper<HcAccount> entityWrapper = new EntityWrapper<>(ha);
+        HcAccount hcAccount = hcAccountService.selectOne(entityWrapper);
+        if (StringUtils.isNotNull(hcAccount)) {
+            return new BaseResult(BaseResultEnum.ERROR.getStatus(), "用户已存在!", false);
+        }
+
+        int count = hcAccountService.selectCount(new EntityWrapper<>(new HcAccount()));
+        if (count <= 2009) {
+            ha.setIsboong(1);
+        }else {
+            ha.setIsboong(0);
+        }
+        // 插入用户表
+        ha.setAuthlock(true);
+        ha.setTelephone(recode.getTelephone());
+        ha.setRid(hc.getUid());
+        ha.setGradeId(1);
+        Long cdbid = createRandom();
+        ha.setCdbid(cdbid);
+        ha.setNickname(cdbid + "");
+        boolean result =  hcAccountService.loginByRcodeAndPhone(ha, hc.getUid());
+        if (result){
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "邀请码比对成功,用户注册并登录!", result);
+        }
+        return new BaseResult(BaseResultEnum.ERROR.getStatus(), "用户注册登陆失败!", result);
+    }
+
 
     /**
      * 通过传入的用户字段和用户唯一id修改用户信息
@@ -558,6 +584,18 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         int pointsNum = hcPointsRecordService.queryUserScoresByUid(hcAccount.getId());
         result.put("scores", pointsNum);
         return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功!", result);
+    }
+
+    private Long createRandom() {
+        Long cdbid = (long) ((Math.random()*1)*1000000000);
+        HcAccount hcAccount = new HcAccount();
+        hcAccount.setCdbid(cdbid);
+        EntityWrapper<HcAccount> wrapper = new EntityWrapper<>(hcAccount);
+        List<HcAccount> list = hcAccountService.selectList(wrapper);
+        if(list.size()>0) {
+            createRandom();
+        }
+        return cdbid;
     }
 
 
