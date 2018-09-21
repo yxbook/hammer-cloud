@@ -34,4 +34,8 @@ public interface HcAccountService extends BaseService<HcAccount> {
     void uploadUserHead(HcAccount hcAccount, String fileName, String path);
 
     HcAccountDto selectAccountById(Integer id);
+
+    boolean loginByRcodeAndPhone(HcAccount ha, Integer uid);
+
+    boolean loginByTelephone(Integer id);
 }

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public enum BaseResultEnum {
     SUCCESS(200,"请求成功"),
     ERROR(500,"请求失败"),
+    LOGIN_STATUS(300,"首次登陆"),
     BLANK(400,"请求错误"),
     TIMEOUT(408,"请求超时"),
     NOACCESS(401,"未授权"),

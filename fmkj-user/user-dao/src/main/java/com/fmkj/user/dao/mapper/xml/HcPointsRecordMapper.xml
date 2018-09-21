@@ -51,4 +51,21 @@
   		where tab.invitingNum>#{peopleNum} limit 0,#{dataNum}
 	</select>
 
+    <!-- 传入uid查询用户积分记录次数 -->
+    <select id="selectGrandByUid" resultType="com.fmkj.user.dao.dto.GradeDto">
+		select
+		sum(case points_id when '1' then 1 else 0 end) as num1,
+		sum(case points_id when '2' then 1 else 0 end) as num2,
+		sum(case points_id when '3' then 1 else 0 end) as num3,
+		sum(case points_id when '4' then 1 else 0 end) as num4,
+		sum(case points_id when '5' then 1 else 0 end) as num5,
+		sum(case points_id when '6' then 1 else 0 end) as num6,
+		sum(case points_id when '7' then 1 else 0 end) as num7,
+		sum(case points_id when '8' then 1 else 0 end) as num8,
+		sum(case points_id when '9' then 1 else 0 end) as num9,
+		sum(case points_id when '10' then 1 else 0 end) as num10
+		from hc_points_record
+		where uid=#{uid}
+	</select>
+
 </mapper>
