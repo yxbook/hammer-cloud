@@ -21,6 +21,27 @@ public class HcUserimage extends Model<HcUserimage> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 代表正面照
+     */
+    public static final Integer TYPE_FULL=1;
+    /**
+     * 代表反面照
+     */
+    public static final Integer TYPE_REVERSE=2;
+    /**
+     * 绑定微信
+     */
+    public static final Integer TYPE_WECHAT=3;
+    /**
+     * 绑定支付宝
+     */
+    public static final Integer TYPE_ALIPAY=4;
+    /**
+     * 同时绑定微信和支付宝
+     */
+    public static final Integer TYPE_ALIPAYANDWECHAT=5;
+
     @TableId(value = "Id", type = IdType.AUTO)
     private Integer Id;
     private Integer uid;

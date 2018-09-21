@@ -84,7 +84,7 @@ public class HcAssetsController extends BaseController<HcAssets,HcAssetsService>
 		if(result){
 			return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "保存用户的资产信息成功!", true);
 		}else {
-			return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "保存用户的资产信息失败!", false);
+			return new BaseResult(BaseResultEnum.ERROR.getStatus(), "保存用户的资产信息失败!", false);
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class HcAssetsController extends BaseController<HcAssets,HcAssetsService>
 		if(result){
 			return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "更新资产信息成功!", true);
 		}else {
-			return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "更新资产信息失败!", false);
+			return new BaseResult(BaseResultEnum.ERROR.getStatus(), "更新资产信息失败!", false);
 		}
 	}
 	
@@ -133,7 +133,7 @@ public class HcAssetsController extends BaseController<HcAssets,HcAssetsService>
 		if(result){
 			return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "删除用户的资产信息成功!", true);
 		}else {
-			return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "删除用户的资产信息失败!", false);
+			return new BaseResult(BaseResultEnum.ERROR.getStatus(), "删除用户的资产信息失败!", false);
 		}
 	}
 }
