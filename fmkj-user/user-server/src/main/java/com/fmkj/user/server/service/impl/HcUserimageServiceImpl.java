@@ -79,7 +79,6 @@ public class HcUserimageServiceImpl extends BaseServiceImpl<HcUserimageMapper, H
         try{
             HcUserimage imagePay = new HcUserimage();
             imagePay.setUid(uid);
-            //EntityWrapper<HcUserimage> wrapper = new EntityWrapper<>(imagePay);
             HcUserimage hcUserimage = hcUserimageMapper.selectOne(imagePay);
             boolean result = false;
             if(StringUtils.isNull(hcUserimage)){
@@ -88,6 +87,7 @@ public class HcUserimageServiceImpl extends BaseServiceImpl<HcUserimageMapper, H
                 hcUserimage.setAlipayAccount(alipayAccount);
                 hcUserimage.setWechatAccount(wechatAccount);
                 hcUserimage.setPayCertTime(new Date());
+                hcUserimage.setStatus(1);
                 result = hcUserimageMapper.updateById(hcUserimage) >0 ?true:false;
             }
             if(result){

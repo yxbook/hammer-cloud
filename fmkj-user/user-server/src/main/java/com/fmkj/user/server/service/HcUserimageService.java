@@ -28,6 +28,7 @@ public interface HcUserimageService extends BaseService<HcUserimage> {
      * @param uid
      * @param alipayAccount
      * @param wechatAccount
+     * @param type
      * @return
      */
     BaseResult saveUserAccountInfo(Integer uid, String alipayAccount, String wechatAccount,Integer type);

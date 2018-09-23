@@ -10,6 +10,7 @@ import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.user.dao.domain.HcUserimage;
 import com.fmkj.user.server.annotation.UserLog;
+import com.fmkj.user.server.enmu.ImageEnum;
 import com.fmkj.user.server.service.HcUserimageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,9 +77,9 @@ public class HcUserimageController extends BaseController<HcUserimage, HcUserima
             String url=PropertiesUtil.getInstance("user").get("userCodeImagePath");
 
             String newFileName=PropertiesUtil.uploadImage(file,url);
-            if(status == HcUserimage.TYPE_FULL){
+            if(status == ImageEnum.TYPE_FULL.status){
                 userimage.setFullPhoto(PropertiesUtil.getInstance("user").get("userCodeImageIpPath")+newFileName);
-            }else if(status == HcUserimage.TYPE_REVERSE){
+            }else if(status == ImageEnum.TYPE_REVERSE.status){
                 userimage.setReversePhoto(PropertiesUtil.getInstance("user").get("userCodeImageIpPath")+newFileName);
             }
 
@@ -126,9 +127,9 @@ public class HcUserimageController extends BaseController<HcUserimage, HcUserima
             String url=PropertiesUtil.getInstance("user").get("userPayImagePath");
 
             String newFileName=PropertiesUtil.uploadImage(file,url);
-            if(status == HcUserimage.TYPE_WECHAT){
+            if(status == ImageEnum.TYPE_WECHAT.status){
                 userimage.setWechatPhoto(PropertiesUtil.getInstance("user").get("userPayImageIpPath")+newFileName);
-            }else if(status == HcUserimage.TYPE_ALIPAY){
+            }else if(status == ImageEnum.TYPE_ALIPAY.status){
                 userimage.setAlipayPhoto(PropertiesUtil.getInstance("user").get("userPayImageIpPath")+newFileName);
             }
 
@@ -168,14 +169,14 @@ public class HcUserimageController extends BaseController<HcUserimage, HcUserima
         if(StringUtils.isNull(type)){
             return  new BaseResult(BaseResultEnum.BLANK.status, "绑定的支付类型不能为空", false);
         }
-        if(type == HcUserimage.TYPE_ALIPAY && StringUtils.isNull(alipayAccount)){
+        if(type == ImageEnum.TYPE_ALIPAY.status && StringUtils.isNull(alipayAccount)){
             return  new BaseResult(BaseResultEnum.BLANK.status, "支付宝账号不能为空", false);
         }
-        if(type == HcUserimage.TYPE_WECHAT && StringUtils.isNull(wechatAccount)){
+        if(type == ImageEnum.TYPE_WECHAT.status && StringUtils.isNull(wechatAccount)){
             return  new BaseResult(BaseResultEnum.BLANK.status, "微信账号不能为空", false);
         }
-        if(type == HcUserimage.TYPE_ALIPAYANDWECHAT && StringUtils.isNull(alipayAccount) || StringUtils.isNull(wechatAccount)){
-            return  new BaseResult(BaseResultEnum.BLANK.status, "支付宝账号和微信账号不能为空", false);
+        if(type == ImageEnum.TYPE_ALIPAYANDWECHAT.status && (StringUtils.isNull(alipayAccount) || StringUtils.isNull(wechatAccount))){
+            return  new BaseResult(BaseResultEnum.BLANK.status, "支付宝账号和微信账号都不能为空", false);
         }
         return hcUserimageService.saveUserAccountInfo(uid,alipayAccount,wechatAccount,type);
     }
