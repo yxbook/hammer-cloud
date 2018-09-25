@@ -5,6 +5,7 @@ import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.base.BaseServiceImpl;
+import com.fmkj.common.comenum.PointEnum;
 import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.user.dao.domain.HcAccount;
@@ -93,21 +94,24 @@ public class HcUserimageServiceImpl extends BaseServiceImpl<HcUserimageMapper, H
             if(result){
                 HcPointsRecord pointsRecord = new HcPointsRecord();
                 pointsRecord.setUid(uid);
-                pointsRecord.setPointsNum(15.0);
                 pointsRecord.setTime(new Date());
                 switch(type){
                     case 3:
-                        pointsRecord.setPointsId(12);
+                        pointsRecord.setPointsId(PointEnum.BIND_WEBCHAT_PAY.pointId);
+                        pointsRecord.setPointsNum(PointEnum.BIND_WEBCHAT_PAY.pointNum);
                         pointsRecordMapper.insert(pointsRecord);
                         break;
                     case 4:
-                        pointsRecord.setPointsId(13);
+                        pointsRecord.setPointsId(PointEnum.BIND_ALIPAY.pointId);
+                        pointsRecord.setPointsNum(PointEnum.BIND_ALIPAY.pointNum);
                         pointsRecordMapper.insert(pointsRecord);
                         break;
                     case 5:
-                        pointsRecord.setPointsId(12);
+                        pointsRecord.setPointsId(PointEnum.BIND_WEBCHAT_PAY.pointId);
+                        pointsRecord.setPointsNum(PointEnum.BIND_WEBCHAT_PAY.pointNum);
                         pointsRecordMapper.insert(pointsRecord);
-                        pointsRecord.setPointsId(13);
+                        pointsRecord.setPointsId(PointEnum.BIND_ALIPAY.pointId);
+                        pointsRecord.setPointsNum(PointEnum.BIND_ALIPAY.pointNum);
                         pointsRecordMapper.insert(pointsRecord);
                         break;
                     default :
