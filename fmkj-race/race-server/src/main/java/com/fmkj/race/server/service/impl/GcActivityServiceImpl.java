@@ -93,4 +93,27 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
         }
         return true;
     }
+
+
+    /**
+     * 查询中奖人信息
+     * @param gcActivity
+     * @return
+     */
+    @Override
+    public HashMap<String, Object> queryActivityByUserId(GcActivity gcActivity) {
+        return gcActivityMapper.queryActivityByUserId(gcActivity);
+    }
+
+
+    /**
+     * 传入uid查询用户未处理的活动
+     * @param tPage
+     * @param gcBaseModel
+     * @return
+     */
+    @Override
+    public List<GcActivityDto> queryMyUntreatedActivityByUid(Pagination tPage, GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryMyUntreatedActivityByUid(tPage,gcBaseModel);
+    }
 }

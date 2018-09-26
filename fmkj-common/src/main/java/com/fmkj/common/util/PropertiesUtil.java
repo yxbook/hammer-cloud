@@ -93,6 +93,7 @@ public class PropertiesUtil {
     public static String uploadImage(MultipartFile file, String url) throws IOException {
 
         System.err.println("filesss="+file);
+
         System.err.println("url="+url);
         if (file != null && url != null) {
             new File(url).mkdirs();//创建文件夹(已存在则无效)
@@ -104,8 +105,8 @@ public class PropertiesUtil {
 
             String originalFilename =uuid.toString().replaceAll("-", "");
             Long time = new Date().getTime();//获取当前时间为标识
-            //String newFileName = time.toString()+originalFilename+ "." + prefix;//新的文件名
-            String newFileName = time.toString()+originalFilename;//新的文件名
+            String newFileName = time.toString()+originalFilename+ "." + prefix;//新的文件名
+            //String newFileName = time.toString()+originalFilename;//新的文件名
             File targetFile = null; //封装上传文件位置的全路径
             try {
                 targetFile = new File(url,newFileName);

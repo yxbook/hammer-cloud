@@ -1,12 +1,16 @@
 package com.fmkj.race.server.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
+import com.fmkj.race.dao.dto.JoinActivityDto;
 import com.fmkj.race.dao.mapper.GcActivityMapper;
 import com.fmkj.race.dao.mapper.GcJoinactivityrecordMapper;
+import com.fmkj.race.dao.queryVo.JoinActivityPage;
 import com.fmkj.race.server.api.HcAccountApi;
 import com.fmkj.race.server.hammer.contracts.PuzzleHammer.puzzle.Helper;
 import com.fmkj.race.server.hammer.contracts.PuzzleHammer.puzzle.Person;
@@ -22,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -61,11 +64,6 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
     @Override
     public boolean addGcJoinactivityrecordAndUpAccount(Integer aid, GcJoinactivityrecord joins, double par) {
 
-        //插入参与记录
-        CalendarTime clt = new CalendarTime();
-        Timestamp btime = clt.thisDate();//获取当前时间
-        joins.setTime(btime);
-        joins.setIschain(0);
         //更改用户p能量
         boolean flag = false;
         try {
@@ -76,16 +74,19 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
         } catch (Exception e1) {
             throw new RuntimeException("更改用户p能量异常，活动aid:"+aid+",用户:"+joins.getUid()+"," + e1.getMessage());
         }
-        if (flag==true){
+        if (!flag){
             Integer row = 0;
+            GcJoinactivityrecord gjr = new GcJoinactivityrecord();
+            gjr.setId(joins.getId());
+            gjr.setIschain(2);
             try {
-                row = gcJoinactivityrecordMapper.insert(joins);
+                row = gcJoinactivityrecordMapper.updateById(gjr);
             } catch (Exception e) {
-                throw new RuntimeException("插入参与记录异常,"+"活动aid:"+aid+",用户:"+joins.getUid()+"" + e.getMessage());
+                throw new RuntimeException("用户参与记录失败" + e.getMessage());
             }
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
 
@@ -126,8 +127,8 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
      * @param uid
      * @return boolean
     */
-    public boolean participateActivity(String contract, Integer aid, Integer uid) {
-        if (contract != null) {//  如果合约地址不为空。根据合约地址把参加活动的人上到对应链上
+    public boolean participateActivity(String contract, Integer aid, Integer uid,Integer gid) {
+        if (contract != null) {    //如果合约地址不为空。根据合约地址把参加活动的人上到对应链上
             Helper helper = new Helper();
             boolean init = helper.init();// 合约实例初始化
             if (!init) {
@@ -144,23 +145,24 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
 
             HcAccount user = hcAccountApi.selectHcAccountById(uid);// 获取参与活动的用户信息
 
-            System.err.println("用户:"+uid + "参与活动:" + aid);
-
             helper.particiPuzzle(new Person(user.getNickname(), BigInteger.valueOf(uid)));// 实例出合约用户，参与活动
-            System.err.println("参加活动结束");
-
 
             //将用户上链记录改为1
             GcJoinactivityrecord gcJoinactivityrecord = new GcJoinactivityrecord();
             gcJoinactivityrecord.setIschain(1);
             GcJoinactivityrecord gcJoinactivityrecord1 = new GcJoinactivityrecord();
             gcJoinactivityrecord1.setUid(uid);
+            gcJoinactivityrecord1.setId(gid);
             EntityWrapper<GcJoinactivityrecord> entityWrapper = new EntityWrapper<GcJoinactivityrecord>();
             entityWrapper.setEntity(gcJoinactivityrecord1);
 
+            GcJoinactivityrecord gjr = new GcJoinactivityrecord();
+            gjr.setId(gid);
+            gjr.setIschain(2);
             try {
                 Integer res = gcJoinactivityrecordMapper.update(gcJoinactivityrecord,entityWrapper);
             } catch (Exception e) {
+                gcJoinactivityrecordMapper.updateById(gjr);
                 throw new RuntimeException("更改用户上链记录为1异常" + e.getMessage());
             }
             helper.release();
@@ -227,7 +229,7 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
     public int updateGcJoinacTivityByStatus(Integer aid) {
         GcActivity gat = new GcActivity();
         gat.setId(aid);
-        gat.setStatus(5);
+        gat.setStatus(3);
         int res;
         try {
             res = gcActivityMapper.updateById(gat);
@@ -243,10 +245,11 @@ public class GcJoinactivityrecordServiceImpl extends BaseServiceImpl<GcJoinactiv
      * 活动参与记录
      * @author ru
      * @param aid
+     * @param page
      * @return
      */
-    public List<HashMap<String,Object>> queryJoinActivityByAid(Integer aid) {
-        return gcJoinactivityrecordMapper.queryJoinActivityByAid(aid);
+    public  List<JoinActivityDto>  queryJoinActivityByAid(Pagination page, JoinActivityPage joinActivityPage) {
+        return gcJoinactivityrecordMapper.queryJoinActivityByAid(page,joinActivityPage);
     }
 
 }

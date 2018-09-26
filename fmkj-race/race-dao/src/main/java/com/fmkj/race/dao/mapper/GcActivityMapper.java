@@ -62,4 +62,19 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
     List<GcActivityDto>  queryMyStartActivityByUid(Pagination page,@Param("gbm") GcBaseModel gcBaseModel);
 
 
+    /**
+     * 查询中奖人信息
+     * @param gcActivity
+     * @return
+     */
+    HashMap<String, Object> queryActivityByUserId(GcActivity gcActivity);
+
+
+    /**
+     * 传入uid查询用户未处理的活动
+     * @param tPage
+     * @param gcBaseModel
+     * @return
+     */
+    List<GcActivityDto> queryMyUntreatedActivityByUid(Pagination tPage,@Param("gbm") GcBaseModel gcBaseModel);
 }

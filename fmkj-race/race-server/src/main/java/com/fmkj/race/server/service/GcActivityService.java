@@ -67,4 +67,21 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @return
      */
     boolean addGcActivity(GcActivity ga);
+
+
+    /**
+     * 查询中奖人信息
+     * @param gcActivity
+     * @return
+     */
+    HashMap<String, Object> queryActivityByUserId(GcActivity gcActivity);
+
+
+    /**
+     * 传入uid查询用户未处理的活动
+     * @param tPage
+     * @param gcBaseModel
+     * @return
+     */
+    List<GcActivityDto> queryMyUntreatedActivityByUid(Pagination tPage, GcBaseModel gcBaseModel);
 }

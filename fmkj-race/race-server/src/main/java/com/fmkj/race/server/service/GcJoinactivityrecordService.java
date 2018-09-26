@@ -1,9 +1,12 @@
 package com.fmkj.race.server.service;
 
+
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
+import com.fmkj.race.dao.dto.JoinActivityDto;
+import com.fmkj.race.dao.queryVo.JoinActivityPage;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,7 +48,7 @@ public interface GcJoinactivityrecordService extends BaseService<GcJoinactivityr
      * @param
      * @return
     */
-    boolean participateActivity(String contract, Integer aid, Integer uid);
+    boolean participateActivity(String contract, Integer aid, Integer uid,Integer gid);
 
 
 
@@ -63,5 +66,5 @@ public interface GcJoinactivityrecordService extends BaseService<GcJoinactivityr
      * @author ru
      * @Description:获得活动参与记录
      */
-    List<HashMap<String,Object>> queryJoinActivityByAid(Integer aid);
+    List<JoinActivityDto>  queryJoinActivityByAid(Pagination page, JoinActivityPage joinActivityPage);
 }

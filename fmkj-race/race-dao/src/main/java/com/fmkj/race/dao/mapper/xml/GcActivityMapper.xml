@@ -52,7 +52,6 @@
         ga.startid,ga.getid,gat.type AS atype,gat.days,
         ha1.nickname AS starter,ha2.nickname AS winner,ga.status AS status
         FROM gc_activity ga
-        LEFT JOIN gc_joinactivityrecord gj ON ga.id=gj.aid
         LEFT JOIN gc_activitytype gat ON ga.typeid=gat.id
         LEFT JOIN hc_account ha1 ON ha1.id=ga.startid
         LEFT JOIN hc_account ha2 ON ha2.id=ga.getid
@@ -110,7 +109,7 @@
 
 
     <!-- 传入uid分页查询用户发起的活动 -->
-    <select id="queryMyStartActivityByUid" parameterType="com.fmkj.race.dao.queryVo.GcBaseModel" resultMap="BaseResultMap1">
+    <select id="queryMyStartActivityByUid" parameterType="com.fmkj.race.dao.queryVo.GcBaseModel" resultMap="BaseResultMap">
         SELECT
         ga.id,
         ga.startid,
@@ -156,6 +155,42 @@
             ORDER BY ga.endtime DESC
         </if>
     </select>
+
+
+    <!-- 传入id查询活动详情 -->
+    <select id="queryActivityByUserId" parameterType="com.fmkj.race.dao.domain.GcActivity" resultType="java.util.HashMap">
+        SELECT
+          ha.*,ga.name AS gname,ga.telephone AS telephone,ga.province AS province,ga.city AS city,ga.county AS county,ga.lock AS glock,ga.address AS address
+        FROM
+          gc_activity gc
+          LEFT JOIN hc_account ha
+            ON ha.id = gc.getid
+          LEFT JOIN gc_address ga
+            ON ga.uid = gc.getid
+        WHERE gc.getid IS NOT NULL
+          AND gc.status = 3
+          AND ga.status = 1
+          AND gc.Id = #{id}
+    </select>
+
+
+    <!--  传入uid查询用户参与的活动   status：1进行中  2已锤到的  3.已结束 -->
+    <select id="queryMyUntreatedActivityByUid" parameterType="com.fmkj.race.dao.queryVo.GcBaseModel" resultMap="BaseResultMap">
+        SELECT
+          gc.*,
+          gp.imageurl
+        FROM
+          gc_activity gc
+          LEFT JOIN gc_joinactivityrecord jr
+            ON jr.`aid` = gc.id
+          LEFT JOIN gc_pimage gp
+            ON gp.aid = gc.id
+        WHERE 1 = 1
+          AND jr.ischain = 0
+          AND jr.`uid` = #{gbm.uid}
+          ORDER BY gc.id DESC
+    </select>
+
 
 
 

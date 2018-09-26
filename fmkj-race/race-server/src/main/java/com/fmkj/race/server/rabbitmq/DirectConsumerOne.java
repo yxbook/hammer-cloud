@@ -8,13 +8,9 @@ import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.domain.GcJoinactivityrecord;
 import com.fmkj.race.server.service.GcActivityService;
 import com.fmkj.race.server.service.GcJoinactivityrecordService;
-import org.apache.commons.lang3.SerializationUtils;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +42,6 @@ public class DirectConsumerOne  {   //implements MessageListener{
 
         GcJoinactivityrecord joins = JSON.parseObject(message, GcJoinactivityrecord.class);
 
-		System.err.println("aid="+joins.getAid());
-		System.err.println("uid="+joins.getUid());
-		System.err.println("aaa="+joins.toString());
 
 		
 		Integer aid = joins.getAid();// 获取活动id
@@ -57,15 +50,7 @@ public class DirectConsumerOne  {   //implements MessageListener{
 		GcActivity gcActivity = new GcActivity();
 		//是否存在该活动或活动已经结束
 		GcActivity gcActivity1 = gcActivityService.selectById(joins.getAid());
-		/*if (gcActivity1==null) {
-			System.err.println("没有该活动");
-			return ;
-		}
-		if (gcActivity1.getStatus().equals(3)||gcActivity1.getStatus().equals(4)||gcActivity1.getStatus().equals(5)) {
-			System.err.println("活动已结束");
-			return ;
-		}
-            */
+
 
 		//获取当前参与人数
 		GcJoinactivityrecord gcJoinactivityrecord = new GcJoinactivityrecord();
@@ -83,9 +68,7 @@ public class DirectConsumerOne  {   //implements MessageListener{
 		boolean flag1=false;
 		int count = -1;
 		synchronized (this.getClass()) {
-
 			flag1 = gcJoinactivityrecordService.addGcJoinactivityrecordAndUpAccount(aid, joins,par);
-
 			count =  gcJoinactivityrecordService.selectCount(entityWrapper);//当前参与人数
 			if (count>=num){
 				System.err.println("活动人数已满");
@@ -96,7 +79,6 @@ public class DirectConsumerOne  {   //implements MessageListener{
 			return ;
 		}
 
-
 		//查询活动信息获取合约地址参与合约
 		String contract = gcJoinactivityrecordService.queryGcActivityByContract(aid);
 		if (StringUtils.isNull(contract)) {
@@ -105,7 +87,8 @@ public class DirectConsumerOne  {   //implements MessageListener{
 		}
 
 		//参加活动加载合约
-    	boolean b = gcJoinactivityrecordService.participateActivity(contract, aid, uid);
+		Integer gid = joins.getId();
+    	boolean b = gcJoinactivityrecordService.participateActivity(contract, aid, uid,gid);
     	if(!b) {
 			System.err.println("用户上链失败");
 			return ;

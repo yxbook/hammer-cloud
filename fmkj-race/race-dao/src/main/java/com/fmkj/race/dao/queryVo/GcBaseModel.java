@@ -19,7 +19,7 @@ public class GcBaseModel extends GcActivity{
 
     //实体属性
     private Integer id;//实体id
-    private Integer uid;//实体uid
+    private Integer uid;//用户uid
 
     //当前页码
     private int pageNo = 1;
