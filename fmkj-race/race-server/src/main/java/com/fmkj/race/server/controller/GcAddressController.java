@@ -131,19 +131,21 @@ public class GcAddressController extends BaseController<GcAddress,GcAddressServi
      * @author yangshengbin
      * @Description：查询用户地址
      * @date 2018/9/3 0003 14:16
-     * @param gcAddress
+     * @param gc
      * @return
      */
     @ApiOperation(value="查询用户所有收货地址", notes="查询用户所有收货地址")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "查询用户所有收货地址，参数：uid")
     @PutMapping("/queryAllAddressByUid")
-    public BaseResult<Page<GcAddress>> queryAllAddressByUid(@RequestBody GcAddress gcAddress){
+    public BaseResult<Page<GcAddress>> queryAllAddressByUid(@RequestBody GcAddress gc){
         try {
+            if(StringUtils.isNull(gc.getUid())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
             Page<GcAddress> tPage =new Page<GcAddress>();
-            GcAddress gcAddress1 = new GcAddress();
-            gcAddress1.setUid(gcAddress.getUid());
-            EntityWrapper<GcAddress> entityWrapper = new EntityWrapper<GcAddress>();
-            entityWrapper.setEntity(gcAddress1);
+            GcAddress gcAddress = new GcAddress();
+            gcAddress.setUid(gc.getUid());
+            EntityWrapper<GcAddress> entityWrapper = new EntityWrapper<GcAddress>(gcAddress);
             return new BaseResult(BaseResultEnum.SUCCESS,service.selectPage(tPage, entityWrapper));
         } catch (Exception e) {
             throw new RuntimeException("查询商品列表异常：" + e.getMessage());

@@ -1,11 +1,10 @@
 package com.fmkj.race.server.service;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +24,7 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @param gcBaseModel
      * @return
     */
-    List<GcActivityDto> queryAllActivityByPage(Pagination page, GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryAllActivityByPage(GcBaseModel gcBaseModel);
 
     
     
@@ -48,7 +47,7 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @param gcBaseModel
      * @return
     */
-    List<GcActivityDto> queryMyJoinActivityByUid(Pagination page, GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyJoinActivityByUid(GcBaseModel gcBaseModel);
 
     
     /**
@@ -58,7 +57,7 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @param gcBaseModel
      * @return 
     */
-    List<GcActivityDto> queryMyStartActivityByUid(Pagination page, GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyStartActivityByUid(GcBaseModel gcBaseModel);
 
 
     /**
@@ -66,7 +65,7 @@ public interface GcActivityService extends BaseService<GcActivity>{
      * @param ga
      * @return
      */
-    boolean addGcActivity(GcActivity ga);
+    boolean addGcActivity(GcActivity ga, MultipartFile[] file);
 
 
     /**
@@ -79,9 +78,8 @@ public interface GcActivityService extends BaseService<GcActivity>{
 
     /**
      * 传入uid查询用户未处理的活动
-     * @param tPage
      * @param gcBaseModel
      * @return
      */
-    List<GcActivityDto> queryMyUntreatedActivityByUid(Pagination tPage, GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyUntreatedActivityByUid(GcBaseModel gcBaseModel);
 }

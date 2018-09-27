@@ -1,6 +1,5 @@
 package com.fmkj.order.server.service;
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.order.dao.domain.OrderInfo;
 import com.fmkj.order.dao.dto.OrderDto;
@@ -15,7 +14,7 @@ import java.util.List;
 **/
 public interface OrderService extends BaseService<OrderInfo> {
 
-    List<OrderDto> getOrderPage(Pagination page, OrderQueryVo orderQueryVo);
+    List<OrderDto> getOrderPage(OrderQueryVo orderQueryVo);
 
     boolean sellerPayConfirm(OrderInfo orderInfo);
 
@@ -23,7 +22,7 @@ public interface OrderService extends BaseService<OrderInfo> {
 
     boolean updateOrder(OrderInfo orderInfo);
 
-    List<OrderDto> getOrderPageBySeller(Pagination page, OrderQueryVo orderQueryVo);
+    List<OrderDto> getOrderPageBySeller(OrderQueryVo orderQueryVo);
 
     boolean sellPToPublisher(OrderInfo orderInfo);
 }

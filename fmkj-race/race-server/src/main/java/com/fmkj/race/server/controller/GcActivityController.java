@@ -7,31 +7,29 @@ import com.fmkj.common.base.BaseController;
 import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
-import com.fmkj.common.util.PropertiesUtil;
 import com.fmkj.common.util.SensitiveWordUtil;
 import com.fmkj.common.util.StringUtils;
-import com.fmkj.race.dao.domain.*;
+import com.fmkj.race.dao.domain.GcActivity;
+import com.fmkj.race.dao.domain.GcPimage;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.api.BmListApi;
-import com.fmkj.race.server.service.*;
-import com.fmkj.race.server.util.CalendarTime;
+import com.fmkj.race.server.service.GcActivityService;
+import com.fmkj.race.server.service.GcMessageService;
+import com.fmkj.race.server.service.GcNoticeService;
+import com.fmkj.race.server.service.GcPimageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
-import java.io.IOException;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @ Author     ：yangshengbin
@@ -78,44 +76,36 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                   @PathParam(value = "par") Double par,
                   @RequestParam MultipartFile[] file){
 
-        System.out.println("发起活动输入参数=================");
-        System.out.println("name:" + name);
-        System.out.println("文件:" + file);
-        System.out.println("发起活动输入参数=================END");
-
-
-        //double piaozhi = Double.parseDouble(par);
-
         //判断用户是否黑名单
         HashMap<String, Object> params = new HashMap<>();
         params.put("uid", startid);
         params.put("status", 2);
         boolean isBlack = bmListApi.isActivityBlack(params);
         if(isBlack) {
-            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "您已被拉入黑名单,黑名单用户不可发起活动!",null);
+            return new BaseResult(BaseResultEnum.ERROR.status, "您已被拉入黑名单,黑名单用户不可发起活动!",false);
         }
 
         //判断活动名称是否包含敏感词汇
-        if(StringUtils.isNull(name.trim())) {
+        if(StringUtils.isEmpty(name)) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(name.trim(),2,"*");
             if(!name.trim().equals(wordIsOk.trim())) {
-                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "活动名称含有敏感词汇，请重新写一个吧!",null);
+                return new BaseResult(BaseResultEnum.ERROR.status, "活动名称含有敏感词汇，请重新写一个吧!",false);
             }
         }
 
         //判断产品的描述详情是否包含敏感词汇
-        if(StringUtils.isNull(pdescribe.trim())) {
+        if(StringUtils.isEmpty(pdescribe)) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(pdescribe.trim(),2,"*");
             if(!pdescribe.equals(wordIsOk.trim())) {
-                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "产品的描述详情含有敏感词汇，请重新写一个吧!",null);
+                return new BaseResult(BaseResultEnum.ERROR.status, "产品的描述详情含有敏感词汇，请重新写一个吧!",false);
             }
         }
 
         //判断产品名称是否包含敏感词汇
-        if(StringUtils.isNull(pname.trim())) {
+        if(StringUtils.isEmpty(pname)) {
             String wordIsOk= SensitiveWordUtil.replaceBadWord(pname.trim(),2,"*");
             if(!pname.equals(wordIsOk.trim())) {
-                return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "产品名称含有敏感词汇，请重新写一个吧!",null);
+                return new BaseResult(BaseResultEnum.ERROR.status, "产品名称含有敏感词汇，请重新写一个吧!",false);
             }
         }
 
@@ -127,68 +117,24 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setPnumber(pnumber);
         ga.setPrice(price);
         ga.setPremium(premium);
-        EntityWrapper wrapper1 = new EntityWrapper();
-        wrapper1.setEntity(ga);
-        GcActivity activity1 = gcActivityService.selectOne(wrapper1);//判断相同活动是否存在
-
-        if(StringUtils.isNotNull(activity1)) {
-            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "发起活动失败，该活动已存在!",null);
+        EntityWrapper wrapper = new EntityWrapper();
+        wrapper.setEntity(ga);
+        GcActivity gcActivity = gcActivityService.selectOne(wrapper);//判断相同活动是否存在
+        if(StringUtils.isNotNull(gcActivity)) {
+            return new BaseResult(BaseResultEnum.ERROR.status, "发起活动失败，该活动已存在!",false);
         }
-
-        System.err.println("-------------------------------------");
-        System.err.println("activity1="+activity1);
-        System.err.println("-------------------------------------");
-
-
-
-        CalendarTime clt = new CalendarTime();
-        Timestamp btime = clt.thisDate();//获取当前时间
-
         ga.setPdescribe(pdescribe);
-        ga.setTime(btime);
+        ga.setTime(new Date());
         ga.setStatus(0);
         ga.setDelivergoodstatus(0);
         ga.setNum(num);
         ga.setCollectgoodstatus(0);
         ga.setPar(par);
-        boolean result = gcActivityService.addGcActivity(ga);
-        if(result==false) {
-            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "发起活动失败，填入信息格式有误!",null);
-        }
+        boolean result = gcActivityService.addGcActivity(ga, file);
+        if(result)
+            return new BaseResult(BaseResultEnum.SUCCESS.status, "活动发起成功!",true);
+        return new BaseResult(BaseResultEnum.ERROR.status, "活动发起失败!",false);
 
-        //插入信息
-
-        boolean flag = gcNoticeService.addNoticeAndMessage(startid,typeid);
-        if (flag==false){
-            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "插入通知信息失败!",null);
-        }
-
-        //上传活动的文件
-       if(StringUtils.isNotNull(file)&&file.length>0) {
-            EntityWrapper wrapper2 = new EntityWrapper();
-            wrapper2.setEntity(ga);
-            GcActivity activity2 = gcActivityService.selectOne(wrapper2);
-            Integer aid = activity2.getId(); //获取活动aid
-            String url = PropertiesUtil.getInstance("interface_url").get("activityImagePath");
-           System.err.println("url="+url);
-            int i = 1;
-           for (MultipartFile multipartFile : file) {
-               String fileName = null;
-               try {
-                   fileName = PropertiesUtil.uploadImage(multipartFile, url);
-
-                   System.err.println("fileName="+fileName);
-               } catch (IOException e) {
-                   throw new RuntimeException("上传活动图片异常：" + e.getMessage());
-               }
-               GcPimage gp = new GcPimage();
-               gp.setAid(aid);
-               gp.setFlag(i++);
-               gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
-               gcPimageService.insert(gp);
-           }
-        }
-        return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "活动发起成功!",true);
     }
 
 
@@ -205,7 +151,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
             }
             Page<GcActivityDto> tPage = buildPage(gcBaseModel);
-            List<GcActivityDto> list = gcActivityService.queryAllActivityByPage(tPage, gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryAllActivityByPage(gcBaseModel);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }
@@ -254,7 +200,7 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
             }
             Page<GcActivityDto> tPage = buildPage(gcBaseModel);
-            List<GcActivityDto> list = gcActivityService.queryMyJoinActivityByUid(tPage, gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryMyJoinActivityByUid(gcBaseModel);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }
@@ -281,14 +227,50 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
             }
             Page<GcActivityDto> tPage = buildPage(gcBaseModel);
-            List<GcActivityDto> list = gcActivityService.queryMyStartActivityByUid(tPage, gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryMyStartActivityByUid(gcBaseModel);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }
             tPage.setRecords(list);
             return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
         } catch (Exception e) {
-            throw new RuntimeException("查询用户发起的活动异常：" + e.getMessage());
+            throw new RuntimeException("查询用户发起的活动活动异常：" + e.getMessage());
+        }
+
+    }
+
+    @ApiOperation(value="根据活动id查询活动中奖人,参数：id", notes="根据活动id查询活动中奖人")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "根据活动id查询活动中奖人")
+    @PutMapping("/queryActivityByUserId")
+    public BaseResult<HashMap<String,Object>> queryActivityByUserId(@RequestBody GcActivity gcActivity){
+        if(StringUtils.isNull(gcActivity) || StringUtils.isNull(gcActivity.getId())){
+            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "活动ID不能为空", false);
+        }
+        HashMap<String, Object> map = gcActivityService.queryActivityByUserId(gcActivity);
+        return new BaseResult(BaseResultEnum.SUCCESS,map);
+    }
+
+
+    /**
+     *  传入uid查询用户发起的活动    status：0:待审核 1:驳回 2:活动中 3：已结束 4：活动异常 5：活动失败
+     */
+    @ApiOperation(value="传入uid查询用户未处理的活动，参数：pageSize，uid", notes="传入uid查询用户未处理的活动")
+    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入uid查询用户未处理的活动，")
+    @PutMapping("/queryMyUntreatedActivityByUid")
+    public BaseResult queryMyUntreatedActivityByUid(@RequestBody GcBaseModel gcBaseModel){
+        try {
+            if(StringUtils.isNull(gcBaseModel) || StringUtils.isNull(gcBaseModel.getUid())){
+                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
+            }
+            Page<GcActivityDto> tPage = buildPage(gcBaseModel);
+            List<GcActivityDto> list = gcActivityService.queryMyUntreatedActivityByUid(gcBaseModel);
+            if(StringUtils.isNotEmpty(list)){
+                tPage.setTotal(list.size());
+            }
+            tPage.setRecords(list);
+            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
+        } catch (Exception e) {
+            throw new RuntimeException("查询用户未处理的活动：" + e.getMessage());
         }
 
     }
@@ -306,51 +288,6 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         }
         return tPage;
     }
-
-
-
-
-    @ApiOperation(value="根据活动id查询活动中奖人,参数：id", notes="根据活动id查询活动中奖人")
-    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "根据活动id查询活动中奖人")
-    @PutMapping("/queryActivityByUserId")
-    public BaseResult<HashMap<String,Object>> queryActivityByUserId(@RequestBody GcActivity gcActivity){
-        if(StringUtils.isNull(gcActivity) || StringUtils.isNull(gcActivity.getId())){
-            return new BaseResult(BaseResultEnum.BLANK.getStatus(), "活动ID不能为空", false);
-        }
-        HashMap<String, Object> map = gcActivityService.queryActivityByUserId(gcActivity);
-        return new BaseResult(BaseResultEnum.SUCCESS,map);
-    }
-
-
-
-
-
-    /**
-     *  传入uid查询用户发起的活动    status：0:待审核 1:驳回 2:活动中 3：已结束 4：活动异常 5：活动失败
-     */
-    @ApiOperation(value="传入uid查询用户未处理的活动，参数：pageSize，uid", notes="传入uid查询用户未处理的活动，")
-    @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "传入uid查询用户未处理的活动，")
-    @PutMapping("/queryMyUntreatedActivityByUid")
-    public BaseResult queryMyUntreatedActivityByUid(@RequestBody GcBaseModel gcBaseModel){
-        try {
-            if(StringUtils.isNull(gcBaseModel) || StringUtils.isNull(gcBaseModel.getUid())){
-                return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
-            }
-            Page<GcActivityDto> tPage = buildPage(gcBaseModel);
-            List<GcActivityDto> list = gcActivityService.queryMyUntreatedActivityByUid(tPage, gcBaseModel);
-            if(StringUtils.isNotEmpty(list)){
-                tPage.setTotal(list.size());
-            }
-            tPage.setRecords(list);
-            return new BaseResult(BaseResultEnum.SUCCESS.getStatus(), "查询成功", tPage);
-        } catch (Exception e) {
-            throw new RuntimeException("查询用户未处理的活动：" + e.getMessage());
-        }
-
-    }
-
-
-
 
 
 

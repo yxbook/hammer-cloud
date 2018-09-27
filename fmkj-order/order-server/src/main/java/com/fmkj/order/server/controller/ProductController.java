@@ -8,18 +8,14 @@ import com.fmkj.common.base.BaseResult;
 import com.fmkj.common.base.BaseResultEnum;
 import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
-import com.fmkj.order.dao.domain.HcAccount;
 import com.fmkj.order.dao.domain.ProductInfo;
 import com.fmkj.order.dao.dto.ProductDto;
 import com.fmkj.order.dao.queryVo.ProductQueryVo;
 import com.fmkj.order.server.annotation.OrderLog;
 import com.fmkj.order.server.enmu.ProductEnum;
-import com.fmkj.order.server.service.HcAccountService;
 import com.fmkj.order.server.service.ProductService;
 import com.fmkj.order.server.util.MakeOrderNumUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +47,7 @@ public class ProductController extends BaseController<ProductInfo, ProductServic
     public BaseResult<Page<ProductDto>> getProductPage(@RequestBody ProductQueryVo productQueryVo){
         try {
             Page<ProductDto> tPage = buildPage(productQueryVo);
-            List<ProductDto> list = productService.getProductPage(tPage, productQueryVo);
+            List<ProductDto> list = productService.getProductPage(productQueryVo);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }

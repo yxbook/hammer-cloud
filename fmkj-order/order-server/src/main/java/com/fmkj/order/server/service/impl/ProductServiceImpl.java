@@ -1,7 +1,6 @@
 package com.fmkj.order.server.service.impl;
 
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.order.dao.domain.HcAccount;
@@ -39,8 +38,8 @@ public class ProductServiceImpl extends BaseServiceImpl<ProductMapper, ProductIn
     private HcAccountMapper hcAccountMapper;
 
     @Override
-    public List<ProductDto> getProductPage(Pagination page, ProductQueryVo productQueryVo) {
-        List<ProductDto> result = productMapper.queryProductPage(page, productQueryVo);
+    public List<ProductDto> getProductPage(ProductQueryVo productQueryVo) {
+        List<ProductDto> result = productMapper.queryProductPage(productQueryVo);
         return result;
     }
 

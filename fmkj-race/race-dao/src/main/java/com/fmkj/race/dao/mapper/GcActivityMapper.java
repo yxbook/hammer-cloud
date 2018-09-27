@@ -1,8 +1,6 @@
 package com.fmkj.race.dao.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.race.dao.domain.GcActivity;
 import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
@@ -26,7 +24,7 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @param gcBaseModel
      * @return
     */
-    List<GcActivityDto> queryAllActivityByPage(Pagination page, GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryAllActivityByPage(GcBaseModel gcBaseModel);
 
 
 
@@ -48,7 +46,7 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @param gcBaseModel
      * @return
     */
-    List<GcActivityDto> queryMyJoinActivityByUid(Pagination page,@Param("gbm") GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyJoinActivityByUid(@Param("gbm") GcBaseModel gcBaseModel);
 
 
 
@@ -59,7 +57,7 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
      * @param gcBaseModel
      * @return
     */
-    List<GcActivityDto>  queryMyStartActivityByUid(Pagination page,@Param("gbm") GcBaseModel gcBaseModel);
+    List<GcActivityDto>  queryMyStartActivityByUid(@Param("gbm") GcBaseModel gcBaseModel);
 
 
     /**
@@ -72,9 +70,8 @@ public interface GcActivityMapper extends BaseMapper<GcActivity> {
 
     /**
      * 传入uid查询用户未处理的活动
-     * @param tPage
      * @param gcBaseModel
      * @return
      */
-    List<GcActivityDto> queryMyUntreatedActivityByUid(Pagination tPage,@Param("gbm") GcBaseModel gcBaseModel);
+    List<GcActivityDto> queryMyUntreatedActivityByUid(@Param("gbm") GcBaseModel gcBaseModel);
 }

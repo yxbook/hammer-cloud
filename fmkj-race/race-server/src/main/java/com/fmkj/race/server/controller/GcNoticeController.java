@@ -10,9 +10,7 @@ import com.fmkj.common.constant.LogConstant;
 import com.fmkj.common.util.StringUtils;
 import com.fmkj.race.dao.domain.GcMessage;
 import com.fmkj.race.dao.domain.GcNotice;
-import com.fmkj.race.dao.dto.GcActivityDto;
 import com.fmkj.race.dao.dto.NoticeQueryDto;
-import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.dao.queryVo.NoticeQueryPage;
 import com.fmkj.race.server.annotation.RaceLog;
 import com.fmkj.race.server.service.GcMessageService;
@@ -24,7 +22,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @ Author     ：yangshengbin
@@ -55,7 +52,7 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
     @PostMapping("/updateNoticeById")
     public BaseResult updateNoticeById(@RequestBody GcNotice gcNotice){
         try {
-            if( gcNotice.getId() == null){
+            if(StringUtils.isNull(gcNotice.getId())){
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "ID不能为空", "ID不能为空");
             }
             gcNotice.setFlag(0);
@@ -79,7 +76,7 @@ public class GcNoticeController extends BaseController<GcNotice,GcNoticeService>
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "用户ID不能为空", false);
             }
             Page<NoticeQueryDto> tPage = buildPage(noticeQueryPage);
-            List<NoticeQueryDto> list = gcNoticeService.queryGcNoticeByUid(tPage, noticeQueryPage);
+            List<NoticeQueryDto> list = gcNoticeService.queryGcNoticeByUid(noticeQueryPage);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }

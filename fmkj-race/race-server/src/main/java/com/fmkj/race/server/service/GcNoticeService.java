@@ -1,7 +1,5 @@
 package com.fmkj.race.server.service;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseService;
 import com.fmkj.race.dao.domain.GcNotice;
 import com.fmkj.race.dao.dto.NoticeQueryDto;
@@ -26,7 +24,7 @@ public interface GcNoticeService extends BaseService<GcNotice> {
      * @param
      * @return
     */
-    List<NoticeQueryDto> queryGcNoticeByUid(Pagination tPage, NoticeQueryPage noticeQueryPage);
+    List<NoticeQueryDto> queryGcNoticeByUid(NoticeQueryPage noticeQueryPage);
 
 
 
@@ -39,11 +37,4 @@ public interface GcNoticeService extends BaseService<GcNotice> {
     */
     List<Map<String,Object>> queryOneNewNotice();
 
-
-    /**
-     * 发起活动插入信息
-     * @param startid
-     * @return
-     */
-    boolean addNoticeAndMessage(Integer startid,Integer typeid);
 }

@@ -46,7 +46,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
     public BaseResult<Page<OrderDto>> getOrderPage(@RequestBody OrderQueryVo orderQueryVo){
         try {
             Page<OrderDto> tPage = buildPage(orderQueryVo);
-            List<OrderDto> list = orderService.getOrderPage(tPage, orderQueryVo);
+            List<OrderDto> list = orderService.getOrderPage(orderQueryVo);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }
@@ -79,7 +79,7 @@ public class OrderController extends BaseController<OrderInfo, OrderService> imp
                 return new BaseResult(BaseResultEnum.BLANK.getStatus(), "卖家用户ID不能为空", false);
             }
             Page<OrderDto> tPage = buildPage(orderQueryVo);
-            List<OrderDto> list = orderService.getOrderPageBySeller(tPage, orderQueryVo);
+            List<OrderDto> list = orderService.getOrderPageBySeller(orderQueryVo);
             if(StringUtils.isNotEmpty(list)){
                 tPage.setTotal(list.size());
             }

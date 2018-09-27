@@ -1,17 +1,20 @@
 package com.fmkj.race.server.service.impl;
 
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.base.BaseServiceImpl;
-import com.fmkj.race.dao.domain.GcActivity;
+import com.fmkj.common.util.PropertiesUtil;
+import com.fmkj.common.util.StringUtils;
+import com.fmkj.race.dao.domain.*;
 import com.fmkj.race.dao.dto.GcActivityDto;
-import com.fmkj.race.dao.mapper.GcActivityMapper;
+import com.fmkj.race.dao.mapper.*;
 import com.fmkj.race.dao.queryVo.GcBaseModel;
 import com.fmkj.race.server.service.GcActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +31,18 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
     @Autowired
     private GcActivityMapper gcActivityMapper;
 
+    @Autowired
+    private GcMessageMapper gcMessageMapper;
+
+    @Autowired
+    private GcActivitytypeMapper gcActivitytypeMapper;
+
+    @Autowired
+    private GcNoticeMapper gcNoticeMapper;
+
+    @Autowired
+    private GcPimageMapper gcPimageMapper;
+
     @Override
     /**
      * @author yangshengbin
@@ -36,8 +51,8 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @param gcBaseModel
      * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
     */
-    public List<GcActivityDto> queryAllActivityByPage(Pagination page, GcBaseModel gcBaseModel) {
-        return gcActivityMapper.queryAllActivityByPage(page,gcBaseModel);
+    public List<GcActivityDto> queryAllActivityByPage(GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryAllActivityByPage(gcBaseModel);
     }
 
     /**
@@ -60,8 +75,8 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @param gcBaseModel
      * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
     */
-    public  List<GcActivityDto> queryMyJoinActivityByUid(Pagination page, GcBaseModel gcBaseModel) {
-        return gcActivityMapper.queryMyJoinActivityByUid(page,gcBaseModel);
+    public  List<GcActivityDto> queryMyJoinActivityByUid(GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryMyJoinActivityByUid(gcBaseModel);
     }
 
 
@@ -74,8 +89,8 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @param gcBaseModel
      * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
     */
-    public List<GcActivityDto> queryMyStartActivityByUid(Pagination page, GcBaseModel gcBaseModel) {
-        return gcActivityMapper.queryMyStartActivityByUid(page,gcBaseModel);
+    public List<GcActivityDto> queryMyStartActivityByUid(GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryMyStartActivityByUid(gcBaseModel);
     }
 
 
@@ -85,13 +100,62 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
      * @return
      */
     @Override
-    public boolean addGcActivity(GcActivity ga) {
-        try {
-            gcActivityMapper.insert(ga);
-        } catch (Exception e) {
-            throw new RuntimeException("插入发起活动异常，uid"+ga.getStartid()+"" + e.getMessage());
+    public boolean addGcActivity(GcActivity ga, MultipartFile[] file) {
+        int row = gcActivityMapper.insert(ga);
+        if(row > 0){
+            boolean result = addNoticeAndMessage(ga.getStartid(), ga.getTypeid());
+            if(result){
+                //上传活动的文件
+                if(StringUtils.isNotNull(file)&&file.length>0) {
+                    GcActivity activity = gcActivityMapper.selectOne(ga);
+                    Integer aid = activity.getId();
+                    String url = PropertiesUtil.getInstance("interface_url").get("activityImagePath");
+                    int i = 1;
+                    for (MultipartFile multipartFile : file) {
+                        String fileName = null;
+                        try {
+                            fileName = PropertiesUtil.uploadImage(multipartFile, url);
+                        } catch (IOException e) {
+                            throw new RuntimeException("上传活动图片异常：" + e.getMessage());
+                        }
+                        GcPimage gp = new GcPimage();
+                        gp.setAid(aid);
+                        gp.setFlag(i++);
+                        gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
+                        gcPimageMapper.insert(gp);
+                    }
+                    return true;
+                }
+            }
+
         }
-        return true;
+        return false;
+    }
+
+    /**
+     * 发起活动插入信息
+     * @param startid
+     * @return
+     */
+    public boolean addNoticeAndMessage(Integer startid,Integer typeid) {
+        //查询活动类型
+        GcActivitytype gcActivitytype = gcActivitytypeMapper.selectById(typeid);
+        String type = gcActivitytype.getType();
+        GcMessage gcMessage = new GcMessage();
+        gcMessage.setTime(new Date());
+        gcMessage.setMessage("您已发起了"+type+"溢价活动，系统审核通过后，活动完成系统将扣除相应手续费后的资产包发送到您的账户，详情请查询活动发起规则。");
+        gcMessage.setType(0);
+        int row = gcMessageMapper.insert(gcMessage);
+        if(row > 0){
+            GcMessage message = gcMessageMapper.selectOne(gcMessage);
+            GcNotice gn = new GcNotice();
+            gn.setFlag(1);
+            gn.setUid(startid);
+            gn.setMid(message.getId());
+            gcNoticeMapper.insert(gn);
+            return true;
+        }
+        return false;
     }
 
 
@@ -108,12 +172,11 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
 
     /**
      * 传入uid查询用户未处理的活动
-     * @param tPage
      * @param gcBaseModel
      * @return
      */
     @Override
-    public List<GcActivityDto> queryMyUntreatedActivityByUid(Pagination tPage, GcBaseModel gcBaseModel) {
-        return gcActivityMapper.queryMyUntreatedActivityByUid(tPage,gcBaseModel);
+    public List<GcActivityDto> queryMyUntreatedActivityByUid(GcBaseModel gcBaseModel) {
+        return gcActivityMapper.queryMyUntreatedActivityByUid(gcBaseModel);
     }
 }

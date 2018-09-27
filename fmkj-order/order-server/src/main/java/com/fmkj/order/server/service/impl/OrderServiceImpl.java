@@ -1,7 +1,6 @@
 package com.fmkj.order.server.service.impl;
 
 
-import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.fmkj.common.annotation.BaseService;
 import com.fmkj.common.base.BaseServiceImpl;
 import com.fmkj.order.dao.domain.HcAccount;
@@ -44,13 +43,13 @@ public class OrderServiceImpl extends BaseServiceImpl<OrderMapper, OrderInfo> im
     private HcAccountMapper hcAccountMapper;
 
     @Override
-    public List<OrderDto> getOrderPage(Pagination page, OrderQueryVo orderQueryVo) {
-        return orderMapper.queryOrderPage(page, orderQueryVo);
+    public List<OrderDto> getOrderPage(OrderQueryVo orderQueryVo) {
+        return orderMapper.queryOrderPage(orderQueryVo);
     }
 
     @Override
-    public List<OrderDto> getOrderPageBySeller(Pagination page, OrderQueryVo orderQueryVo) {
-        return orderMapper.getOrderPageBySeller(page, orderQueryVo);
+    public List<OrderDto> getOrderPageBySeller(OrderQueryVo orderQueryVo) {
+        return orderMapper.getOrderPageBySeller(orderQueryVo);
     }
 
     @Override

@@ -60,9 +60,9 @@ public class GcOrderController extends BaseController<GcOrder,GcOrderService> im
         gcOrder.setNumber(number);
         boolean result = gcOrderService.sendGoodsByExample(gcOrder);
         if(!result) {
-            return new BaseResult(BaseResultEnum.ERROR.status, "发货失败,物流信息已存在!",null);
+            return new BaseResult(BaseResultEnum.ERROR.status, "发货失败,物流信息已存在!",false);
         }
-        return new BaseResult(BaseResultEnum.SUCCESS.status, "发货成功!",null);
+        return new BaseResult(BaseResultEnum.SUCCESS.status, "发货成功!",true);
     }
 
 
