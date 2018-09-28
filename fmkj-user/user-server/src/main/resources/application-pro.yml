@@ -1,6 +1,6 @@
 spring:
   application:
-    name: fmkj-race
+    name: fmkj-user
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
@@ -27,14 +27,17 @@ spring:
     maxOpenPreparedStatements: 20
   jpa:
     show-sql: true
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 mybatis-plus:
-  mapper-locations: classpath*:/com/fmkj/race/dao/mapper/*Mapper.xml
+  mapper-locations: classpath*:/com/fmkj/user/dao/mapper/xml/*Mapper.xml
   #实体扫描，多个package用逗号或者分号分隔
-  type-aliases-package: com.fmkj.race.dao.domain
+  type-aliases-package: com.fmkj.user.dao.domain
   global-config:
       #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
       id-type: 2
@@ -60,11 +63,38 @@ mybatis-plus:
         cache-enabled: false
 logging:
   level:
-     com.fmkj.race.dao: debug
+     com.fmkj.user.dao: debug
 server:
-  port: 8089
+  port: 8078
+feign:
+  hystrix:
+      enabled: true
 
-#竞锤后台活动图片物理地址
-activityImagePath: E:\\apache-tomcat-8.5.32\\webapps\\newfmkj
-#竞锤后台活动图片ip地址
-activityImageIpPath: http://127.0.0.1:8080/activityImage/
+
+#获取头像图片ip路径
+userHeadImageIpPath: http://127.0.0.1:9898/userHead/
+
+#存放头像图片物理路径
+userHeadImagePath: E:\\apache-tomcat-8.5.32\\webapps\\userHead
+
+#身份认证接口url
+cardPath: https://way.jd.com/youhuoBeijing/test
+
+#京东接口调用密匙
+cardPwd: 8fda758a86044ca3a6b67f268c3964a6
+
+#敏感词汇过滤接口url
+wordPath: https://way.jd.com/tongchengyuan/minganci
+
+#存放身份证照片物理路径
+userCodeImagePath: E:\\huangs\\cardImages
+
+#存放支付照片物理路径
+userPayImagePath: E:\\huangs\\payImages
+
+#公网ip:47.101.52.173
+#测试ip:47.74.181.255
+#获取身份证照片ip路径(实名认证后台活动图片ip地址)
+userCodeImageIpPath: http://47.101.52.255:9898/image/
+
+userPayImageIpPath: http://47.101.52.255:9898/payimage/

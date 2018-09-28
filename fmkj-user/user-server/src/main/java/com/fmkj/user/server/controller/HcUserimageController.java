@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,19 @@ public class HcUserimageController extends BaseController<HcUserimage, HcUserima
 
     @Autowired
     private HcUserimageService hcUserimageService;
+
+    @Value("${userPayImageIpPath}")
+    private String userPayImageIpPath;
+
+    @Value("${userPayImagePath}")
+    private String userPayImagePath;
+
+    @Value("${userCodeImagePath}")
+    private String userCodeImagePath;
+
+    @Value("${userCodeImageIpPath}")
+    private String userCodeImageIpPath;
+
 
     @ApiOperation(value="实名认证" ,notes="参数：id,cardnum,name,url,fullPhoto,reversePhoto")
     @UserLog(module= LogConstant.HC_CERT, actionDesc = "保存用户的实名信息")
@@ -72,15 +86,12 @@ public class HcUserimageController extends BaseController<HcUserimage, HcUserima
             }
             HcUserimage userimage = new HcUserimage();
             userimage.setUid(uid);
-            userimage.setUrl(PropertiesUtil.getInstance("user").get("userCodeImagePath"));
-
-            String url=PropertiesUtil.getInstance("user").get("userCodeImagePath");
-
-            String newFileName=PropertiesUtil.uploadImage(file,url);
+            userimage.setUrl(userCodeImagePath);
+            String newFileName=PropertiesUtil.uploadImage(file,userCodeImagePath);
             if(status == ImageEnum.TYPE_FULL.status){
-                userimage.setFullPhoto(PropertiesUtil.getInstance("user").get("userCodeImageIpPath")+newFileName);
+                userimage.setFullPhoto(userCodeImageIpPath + newFileName);
             }else if(status == ImageEnum.TYPE_REVERSE.status){
-                userimage.setReversePhoto(PropertiesUtil.getInstance("user").get("userCodeImageIpPath")+newFileName);
+                userimage.setReversePhoto(userCodeImageIpPath + newFileName);
             }
 
             HcUserimage hm = new HcUserimage();
@@ -124,13 +135,11 @@ public class HcUserimageController extends BaseController<HcUserimage, HcUserima
             HcUserimage userimage = new HcUserimage();
             userimage.setUid(uid);
 
-            String url=PropertiesUtil.getInstance("user").get("userPayImagePath");
-
-            String newFileName=PropertiesUtil.uploadImage(file,url);
+            String newFileName=PropertiesUtil.uploadImage(file,userPayImagePath);
             if(status == ImageEnum.TYPE_WECHAT.status){
-                userimage.setWechatPhoto(PropertiesUtil.getInstance("user").get("userPayImageIpPath")+newFileName);
+                userimage.setWechatPhoto(userPayImageIpPath + newFileName);
             }else if(status == ImageEnum.TYPE_ALIPAY.status){
-                userimage.setAlipayPhoto(PropertiesUtil.getInstance("user").get("userPayImageIpPath")+newFileName);
+                userimage.setAlipayPhoto(userPayImageIpPath + newFileName);
             }
 
             HcUserimage imagePay = new HcUserimage();

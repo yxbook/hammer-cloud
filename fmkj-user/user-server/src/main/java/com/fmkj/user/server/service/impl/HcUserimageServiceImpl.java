@@ -47,6 +47,9 @@ public class HcUserimageServiceImpl extends BaseServiceImpl<HcUserimageMapper, H
     @Autowired
     private HcPointsRecordMapper pointsRecordMapper;
 
+    @Autowired
+    private JDWXUtil jdwxUtil;
+
     public BaseResult saveUserRealInfo(Integer id, String name, String cardnum){
         //1.更新hc_account
         try {
@@ -56,7 +59,7 @@ public class HcUserimageServiceImpl extends BaseServiceImpl<HcUserimageMapper, H
             account.setName(name);
             account.setCardStatus(1);
             //1.1 验证用户名和省份证号码是否正确
-            boolean result = JDWXUtil.cardRealName(account);
+            boolean result = jdwxUtil.cardRealName(account);
             LOGGER.debug("验证用户名和省份证号码是否正确:"+result);
             if(result) {
                 boolean updateResult =hcAccountMapper.updateById(account)>0?true:false;

@@ -97,10 +97,12 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
     /**
      * 插入发起活动
      * @param ga
+     * @param activityImagePath
+     * @param activityImageIpPath
      * @return
      */
     @Override
-    public boolean addGcActivity(GcActivity ga, MultipartFile[] file) {
+    public boolean addGcActivity(GcActivity ga, MultipartFile[] file, String activityImagePath, String activityImageIpPath) {
         int row = gcActivityMapper.insert(ga);
         if(row > 0){
             boolean result = addNoticeAndMessage(ga.getStartid(), ga.getTypeid());
@@ -109,19 +111,18 @@ public class GcActivityServiceImpl extends BaseServiceImpl<GcActivityMapper,GcAc
                 if(StringUtils.isNotNull(file)&&file.length>0) {
                     GcActivity activity = gcActivityMapper.selectOne(ga);
                     Integer aid = activity.getId();
-                    String url = PropertiesUtil.getInstance("interface_url").get("activityImagePath");
                     int i = 1;
                     for (MultipartFile multipartFile : file) {
                         String fileName = null;
                         try {
-                            fileName = PropertiesUtil.uploadImage(multipartFile, url);
+                            fileName = PropertiesUtil.uploadImage(multipartFile, activityImagePath);
                         } catch (IOException e) {
                             throw new RuntimeException("上传活动图片异常：" + e.getMessage());
                         }
                         GcPimage gp = new GcPimage();
                         gp.setAid(aid);
                         gp.setFlag(i++);
-                        gp.setImageurl(PropertiesUtil.getInstance("interface_url").get("activityImageIpPath")+fileName);
+                        gp.setImageurl(activityImageIpPath + fileName);
                         gcPimageMapper.insert(gp);
                     }
                     return true;

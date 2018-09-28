@@ -25,6 +25,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.ResourceLoader;
@@ -64,7 +65,17 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    private JDWXUtil jdwxUtil;
+
     private static HashMap<String, String> codeMap = new HashMap<String, String>();
+
+    @Value("${userHeadImageIpPath}")
+    private String userHeadImageIpPath;
+
+    @Value("${userHeadImagePath}")
+    private String userHeadImagePath;
+
 
     /**
      * @author yangshengbin
@@ -373,13 +384,11 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
             if(StringUtils.isNull(id)){
                 return new BaseResult(BaseResultEnum.BLANK.status, "用户ID不能为空!", false);
             }
-            String path = PropertiesUtil.getInstance("user").get("userHeadImagePath");
-            String fileName =PropertiesUtil.uploadImage(file,path);
-            String logo = PropertiesUtil.getInstance("user").get("userHeadImageIpPath") + fileName;
+            String fileName =PropertiesUtil.uploadImage(file,userHeadImagePath);
             HcAccount hcAccount = new HcAccount();
             hcAccount.setId(id);
-            hcAccount.setLogo(logo);
-            hcAccountService.uploadUserHead(hcAccount, fileName, path);
+            hcAccount.setLogo(userHeadImageIpPath);
+            hcAccountService.uploadUserHead(hcAccount, fileName, userHeadImagePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -395,10 +404,9 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
      */
     @GetMapping(value = "/showUserHead", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity showUserHead(@RequestParam Integer id) throws FileNotFoundException {
-        String path = PropertiesUtil.getInstance("user").get("userHeadImagePath");
         HcAccount hc = hcAccountService.selectById(id);
         String logo = hc.getLogo();
-        InputStream in = new FileInputStream(new File(path + logo));
+        InputStream in = new FileInputStream(new File(userHeadImagePath + logo));
         InputStreamResource resource = new InputStreamResource(in);
         HttpHeaders httpHeaders = new HttpHeaders();
         return new ResponseEntity(resource, httpHeaders, HttpStatus.OK);
@@ -422,12 +430,11 @@ public class HcAccountController extends BaseController<HcAccount, HcAccountServ
         if(StringUtils.isNull(ha.getName())){
             return new BaseResult(BaseResultEnum.BLANK.getStatus(), "姓名不能为空!", false);
         }
-
-        boolean updateUser = hcAccountService.updateById(ha);
-        boolean result = JDWXUtil.cardRealName(ha);
+        boolean result = jdwxUtil.cardRealName(ha);
         if(!result) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "身份认证失败!", false);
         }
+        boolean updateUser = hcAccountService.updateById(ha);
         //ha.setCardStatus(1);
         if (!updateUser) {
             return new BaseResult(BaseResultEnum.ERROR.getStatus(), "系统错误，请重试!", false);

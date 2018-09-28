@@ -63,9 +63,11 @@ public interface GcActivityService extends BaseService<GcActivity>{
     /**
      * 插入发起活动信息
      * @param ga
+     * @param activityImagePath
+     * @param activityImageIpPath
      * @return
      */
-    boolean addGcActivity(GcActivity ga, MultipartFile[] file);
+    boolean addGcActivity(GcActivity ga, MultipartFile[] file, String activityImagePath, String activityImageIpPath);
 
 
     /**

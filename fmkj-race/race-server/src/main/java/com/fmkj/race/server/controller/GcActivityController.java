@@ -22,6 +22,7 @@ import com.fmkj.race.server.service.GcPimageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,7 +59,11 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
     @Autowired
     private GcNoticeService gcNoticeService;//通知接口  ,@RequestParam MultipartFile[] file   @RequestParam Map<String,Object> map,
 
+    @Value("${activityImagePath}")
+    private String activityImagePath;
 
+    @Value("${activityImageIpPath}")
+    private String activityImageIpPath;
 
     @ApiOperation(value="发起活动", notes="用户发起活动")
     @RaceLog(module= LogConstant.Gc_Activity, actionDesc = "用户发起活动")
@@ -130,16 +135,12 @@ public class GcActivityController extends BaseController<GcActivity,GcActivitySe
         ga.setNum(num);
         ga.setCollectgoodstatus(0);
         ga.setPar(par);
-        boolean result = gcActivityService.addGcActivity(ga, file);
+        boolean result = gcActivityService.addGcActivity(ga, file, activityImagePath, activityImageIpPath);
         if(result)
             return new BaseResult(BaseResultEnum.SUCCESS.status, "活动发起成功!",true);
         return new BaseResult(BaseResultEnum.ERROR.status, "活动发起失败!",false);
 
     }
-
-
-
-
 
     //  活动广场分页查询所有活动,只查询活动中(status=2)
     @ApiOperation(value="活动广场分页查询所有活动", notes="活动广场分页查询所有活动")
